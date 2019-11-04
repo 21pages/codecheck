@@ -2,12 +2,11 @@ lessThan(QT_MAJOR_VERSION, 5): error(requires >= Qt 5 (You used: $$QT_VERSION))
 
 TEMPLATE = app
 TARGET = codecheck
-DEPENDPATH += . \
-    ../lib
-INCLUDEPATH += . \
-    ../lib
-QT += widgets
-QT += printsupport
+#DEPENDPATH += . \
+#    ../lib
+#INCLUDEPATH += . \
+#    ../lib
+QT += widgets printsupport quick qml
 LIBS += -L$$PWD/../externals
 
 DESTDIR = .
@@ -42,12 +41,6 @@ win32 {
 }
 CONFIG += embed_manifest_exe
 
-contains(LINKCORE, [yY][eE][sS]) {
-} else {
-    BASEPATH = ../lib/
-    include($$PWD/../lib/lib.pri)
-}
-
 win32 {
     contains(LINKCORE, [yY][eE][sS]) {
     } else {
@@ -72,4 +65,21 @@ contains(HAVE_QCHART, [yY][eE][sS]) {
 
 SOURCES += \
     main.cpp
+
+# Additional import path used to resolve QML modules in Qt Creator's code model
+QML_IMPORT_PATH =
+
+# Additional import path used to resolve QML modules just for Qt Quick Designer
+QML_DESIGNER_IMPORT_PATH =
+
+include(material/material.pri)
+OPTIONS += roboto
+include(interface/interface.pri)
+include(../gui/gui.pri)
+
+RESOURCES += qml.qrc  \
+                         image/demo.qrc \
+                        image/icons/icons.qrc
+#RESOURCES = ../gui/gui.qrc
+
 

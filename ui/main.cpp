@@ -30,6 +30,10 @@
 #include "cppcheck.h"
 //#include "common.h"
 //#include "erroritem.h"
+#include <QQmlApplicationEngine>
+#include "material/src/plugin.h"
+#include "material/src/core/device.h"
+#include "material/src/core/units.h"
 
 int main(int argc, char *argv[])
 {
@@ -66,6 +70,18 @@ int main(int argc, char *argv[])
 
 //    // Register this metatype that is used to transfer error info
 //    qRegisterMetaType<ErrorItem>("ErrorItem");
+
+    QQmlApplicationEngine engine;
+    qmlRegisterSingletonType<Device>("Device", 0, 1, "Device", Device::qmlSingleton);
+    qmlRegisterUncreatableType<Units>("Units", 0, 3, "Units", QStringLiteral("Units can only be used via the attached property."));
+    engine.addImportPath(QString("qrc:/"));
+    const QUrl url(QStringLiteral("qrc:/main.qml"));
+    QObject::connect(&engine, &QQmlApplicationEngine::objectCreated,
+                     &app, [url](QObject *obj, const QUrl &objUrl) {
+        if (!obj && url == objUrl)
+            QCoreApplication::exit(-1);
+    }, Qt::QueuedConnection);
+    engine.load(url);
 
 
     return app.exec();
