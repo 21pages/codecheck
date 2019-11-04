@@ -4,8 +4,6 @@ QT += qml quick
 INCLUDEPATH += $$PWD
 DEPENDPATH += $$PWD
 
-message("material!!! "$$PWD)
-
 android {
     QT += androidextras svg xml
 }

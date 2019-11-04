@@ -237,19 +237,9 @@ protected slots:
     void moveIncludePathDown();
 
     /**
-    * @brief Add suppression to the list
-    */
-    void addSuppression();
-
-    /**
     * @brief Remove selected suppression from the list
     */
     void removeSuppression();
-
-    /**
-     * @brief Edit suppression (double clicking on suppression)
-     */
-    void editSuppression(const QModelIndex &index);
 
     /**
      * @brief Browse for misra file

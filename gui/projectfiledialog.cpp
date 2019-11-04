@@ -27,7 +27,6 @@
 #include <QSettings>
 #include <QProcess>
 #include "common.h"
-#include "newsuppressiondialog.h"
 #include "projectfiledialog.h"
 #include "checkthread.h"
 #include "projectfile.h"
@@ -190,9 +189,7 @@ ProjectFileDialog::ProjectFileDialog(ProjectFile *projectFile, QWidget *parent)
     connect(mUI.mBtnRemoveIgnorePath, &QPushButton::clicked, this, &ProjectFileDialog::removeExcludePath);
     connect(mUI.mBtnIncludeUp, &QPushButton::clicked, this, &ProjectFileDialog::moveIncludePathUp);
     connect(mUI.mBtnIncludeDown, &QPushButton::clicked, this, &ProjectFileDialog::moveIncludePathDown);
-    connect(mUI.mBtnAddSuppression, &QPushButton::clicked, this, &ProjectFileDialog::addSuppression);
     connect(mUI.mBtnRemoveSuppression, &QPushButton::clicked, this, &ProjectFileDialog::removeSuppression);
-    connect(mUI.mListSuppressions, &QListWidget::doubleClicked, this, &ProjectFileDialog::editSuppression);
     connect(mUI.mBtnBrowseMisraFile, &QPushButton::clicked, this, &ProjectFileDialog::browseMisraFile);
 
     loadFromProjectFile(projectFile);
@@ -691,14 +688,6 @@ void ProjectFileDialog::moveIncludePathDown()
     mUI.mListIncludeDirs->setCurrentItem(item);
 }
 
-void ProjectFileDialog::addSuppression()
-{
-    NewSuppressionDialog dlg;
-    if (dlg.exec() == QDialog::Accepted) {
-        setSuppressions(mSuppressions << dlg.getSuppression());
-    }
-}
-
 void ProjectFileDialog::removeSuppression()
 {
     const int row = mUI.mListSuppressions->currentRow();
@@ -710,21 +699,6 @@ void ProjectFileDialog::removeSuppression()
     if (suppressionIndex >= 0)
         mSuppressions.removeAt(suppressionIndex);
     delete item;
-}
-
-void ProjectFileDialog::editSuppression(const QModelIndex &)
-{
-    const int row = mUI.mListSuppressions->currentRow();
-    QListWidgetItem *item = mUI.mListSuppressions->item(row);
-    int suppressionIndex = getSuppressionIndex(item->text());
-    if (suppressionIndex >= 0) { // TODO what if suppression is not found?
-        NewSuppressionDialog dlg;
-        dlg.setSuppression(mSuppressions[suppressionIndex]);
-        if (dlg.exec() == QDialog::Accepted) {
-            mSuppressions[suppressionIndex] = dlg.getSuppression();
-            setSuppressions(mSuppressions);
-        }
-    }
 }
 
 int ProjectFileDialog::getSuppressionIndex(const QString &shortText) const

@@ -22,6 +22,9 @@
 #include <QMap>
 #include <QString>
 
+
+#define WGT 0
+
 /// @addtogroup GUI
 /// @{
 

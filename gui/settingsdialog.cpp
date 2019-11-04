@@ -25,11 +25,9 @@
 #include <QFileDialog>
 #include <QThread>
 #include "settingsdialog.h"
-#include "applicationdialog.h"
 #include "applicationlist.h"
 #include "translationhandler.h"
 #include "codeeditorstyle.h"
-#include "codeeditstyledialog.h"
 #include "common.h"
 
 SettingsDialog::SettingsDialog(ApplicationList *list,
@@ -71,25 +69,9 @@ SettingsDialog::SettingsDialog(ApplicationList *list,
 
     connect(mUI.mButtons, &QDialogButtonBox::accepted, this, &SettingsDialog::ok);
     connect(mUI.mButtons, &QDialogButtonBox::rejected, this, &SettingsDialog::reject);
-    connect(mUI.mBtnAddApplication, SIGNAL(clicked()),
-            this, SLOT(addApplication()));
-    connect(mUI.mBtnRemoveApplication, SIGNAL(clicked()),
-            this, SLOT(removeApplication()));
-    connect(mUI.mBtnEditApplication, SIGNAL(clicked()),
-            this, SLOT(editApplication()));
-    connect(mUI.mBtnDefaultApplication, SIGNAL(clicked()),
-            this, SLOT(defaultApplication()));
-    connect(mUI.mListWidget, SIGNAL(itemDoubleClicked(QListWidgetItem *)),
-            this, SLOT(editApplication()));
 
     connect(mUI.mBtnBrowsePythonPath, &QPushButton::clicked, this, &SettingsDialog::browsePythonPath);
     connect(mUI.mBtnBrowseMisraFile, &QPushButton::clicked, this, &SettingsDialog::browseMisraFile);
-    connect(mUI.mBtnEditTheme, SIGNAL(clicked()), this, SLOT(editCodeEditorStyle()));
-    connect(mUI.mThemeSystem, SIGNAL(released()), this, SLOT(setCodeEditorStyleDefault()));
-    connect(mUI.mThemeDark, SIGNAL(released()), this, SLOT(setCodeEditorStyleDefault()));
-    connect(mUI.mThemeLight, SIGNAL(released()), this, SLOT(setCodeEditorStyleDefault()));
-    connect(mUI.mThemeCustom, SIGNAL(toggled(bool)), mUI.mBtnEditTheme, SLOT(setEnabled(bool)));
-
     mUI.mListWidget->setSortingEnabled(false);
     populateApplicationList();
 
@@ -194,64 +176,6 @@ void SettingsDialog::saveCheckboxValue(QSettings *settings, QCheckBox *box,
     settings->setValue(name, checkStateToBool(box->checkState()));
 }
 
-void SettingsDialog::addApplication()
-{
-    Application app;
-    ApplicationDialog dialog(tr("Add a new application"), app, this);
-
-    if (dialog.exec() == QDialog::Accepted) {
-        mTempApplications->addApplication(app);
-        mUI.mListWidget->addItem(app.getName());
-    }
-}
-
-void SettingsDialog::removeApplication()
-{
-    QList<QListWidgetItem *> selected = mUI.mListWidget->selectedItems();
-    foreach (QListWidgetItem *item, selected) {
-        const int removeIndex = mUI.mListWidget->row(item);
-        const int currentDefault = mTempApplications->getDefaultApplication();
-        mTempApplications->removeApplication(removeIndex);
-        if (removeIndex == currentDefault)
-            // If default app is removed set default to unknown
-            mTempApplications->setDefault(-1);
-        else if (removeIndex < currentDefault)
-            // Move default app one up if earlier app was removed
-            mTempApplications->setDefault(currentDefault - 1);
-    }
-    mUI.mListWidget->clear();
-    populateApplicationList();
-}
-
-void SettingsDialog::editApplication()
-{
-    QList<QListWidgetItem *> selected = mUI.mListWidget->selectedItems();
-    QListWidgetItem *item = nullptr;
-    foreach (item, selected) {
-        int row = mUI.mListWidget->row(item);
-        Application& app = mTempApplications->getApplication(row);
-        ApplicationDialog dialog(tr("Modify an application"), app, this);
-
-        if (dialog.exec() == QDialog::Accepted) {
-            QString name = app.getName();
-            if (mTempApplications->getDefaultApplication() == row)
-                name += tr(" [Default]");
-            item->setText(name);
-        }
-    }
-}
-
-void SettingsDialog::defaultApplication()
-{
-    QList<QListWidgetItem *> selected = mUI.mListWidget->selectedItems();
-    if (!selected.isEmpty()) {
-        int index = mUI.mListWidget->row(selected[0]);
-        mTempApplications->setDefault(index);
-        mUI.mListWidget->clear();
-        populateApplicationList();
-    }
-}
-
 void SettingsDialog::populateApplicationList()
 {
     const int defapp = mTempApplications->getDefaultApplication();
@@ -325,29 +249,6 @@ void SettingsDialog::browseMisraFile()
     const QString fileName = QFileDialog::getOpenFileName(this, tr("Select MISRA File"), QDir::homePath(), "Misra File (*.pdf *.txt)");
     if (!fileName.isEmpty())
         mUI.mEditMisraFile->setText(fileName);
-}
-
-// Slot to set default light style
-void SettingsDialog::setCodeEditorStyleDefault()
-{
-    if (mUI.mThemeSystem->isChecked())
-        *mCurrentStyle = CodeEditorStyle::getSystemTheme();
-    if (mUI.mThemeLight->isChecked())
-        *mCurrentStyle = defaultStyleLight;
-    if (mUI.mThemeDark->isChecked())
-        *mCurrentStyle = defaultStyleDark;
-    manageStyleControls();
-}
-
-// Slot to edit custom style
-void SettingsDialog::editCodeEditorStyle()
-{
-    StyleEditDialog dlg(*mCurrentStyle, this);
-    int nResult = dlg.exec();
-    if (nResult == QDialog::Accepted) {
-        *mCurrentStyle = dlg.getStyle();
-        manageStyleControls();
-    }
 }
 
 void SettingsDialog::browseClangPath()

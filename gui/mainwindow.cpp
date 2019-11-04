@@ -32,21 +32,16 @@
 #include "cppcheck.h"
 
 #include "applicationlist.h"
-#include "aboutdialog.h"
 #include "common.h"
 #include "threadhandler.h"
-#include "fileviewdialog.h"
 #include "projectfile.h"
 #include "projectfiledialog.h"
 #include "report.h"
-#include "scratchpad.h"
-#include "statsdialog.h"
 #include "settingsdialog.h"
 #include "threadresult.h"
 #include "translationhandler.h"
 #include "filelist.h"
 #include "showtypes.h"
-#include "librarydialog.h"
 
 static const QString OnlineHelpURL("http://cppcheck.net/manual.html");
 static const QString compile_commands_json("compile_commands.json");
@@ -62,7 +57,6 @@ MainWindow::MainWindow(TranslationHandler* th, QSettings* settings) :
     mSettings(settings),
     mApplications(new ApplicationList(this)),
     mTranslation(th),
-    mScratchPad(nullptr),
     mProjectFile(nullptr),
     mPlatformActions(new QActionGroup(this)),
     mCStandardActions(new QActionGroup(this)),
@@ -112,8 +106,7 @@ MainWindow::MainWindow(TranslationHandler* th, QSettings* settings) :
     connect(mUI.mActionCollapseAll, &QAction::triggered, mUI.mResults, &ResultsView::collapseAllResults);
     connect(mUI.mActionExpandAll, &QAction::triggered, mUI.mResults, &ResultsView::expandAllResults);
     connect(mUI.mActionShowHidden, &QAction::triggered, mUI.mResults, &ResultsView::showHiddenResults);
-    connect(mUI.mActionViewStats, &QAction::triggered, this, &MainWindow::showStatistics);
-    connect(mUI.mActionLibraryEditor, &QAction::triggered, this, &MainWindow::showLibraryEditor);
+//    connect(mUI.mActionViewStats, &QAction::triggered, this, &MainWindow::showStatistics);
 
     connect(mUI.mActionReanalyzeModified, &QAction::triggered, this, &MainWindow::reAnalyzeModified);
     connect(mUI.mActionReanalyzeAll, &QAction::triggered, this, &MainWindow::reAnalyzeAll);
@@ -123,16 +116,11 @@ MainWindow::MainWindow(TranslationHandler* th, QSettings* settings) :
     connect(mUI.mActionStop, &QAction::triggered, this, &MainWindow::stopAnalysis);
     connect(mUI.mActionSave, &QAction::triggered, this, &MainWindow::save);
 
-    // About menu
-    connect(mUI.mActionAbout, &QAction::triggered, this, &MainWindow::about);
-    connect(mUI.mActionLicense, &QAction::triggered, this, &MainWindow::showLicense);
-
     // View > Toolbar menu
     connect(mUI.mActionToolBarMain, SIGNAL(toggled(bool)), this, SLOT(toggleMainToolBar()));
     connect(mUI.mActionToolBarView, SIGNAL(toggled(bool)), this, SLOT(toggleViewToolBar()));
     connect(mUI.mActionToolBarFilter, SIGNAL(toggled(bool)), this, SLOT(toggleFilterToolBar()));
 
-    connect(mUI.mActionAuthors, &QAction::triggered, this, &MainWindow::showAuthors);
     connect(mThread, &ThreadHandler::done, this, &MainWindow::analysisDone);
     connect(mThread, &ThreadHandler::log, mUI.mResults, &ResultsView::log);
     connect(mThread, &ThreadHandler::debugError, mUI.mResults, &ResultsView::debugError);
@@ -146,7 +134,6 @@ MainWindow::MainWindow(TranslationHandler* th, QSettings* settings) :
     // File menu
     connect(mUI.mActionNewProjectFile, &QAction::triggered, this, &MainWindow::newProjectFile);
     connect(mUI.mActionOpenProjectFile, &QAction::triggered, this, &MainWindow::openProjectFile);
-    connect(mUI.mActionShowScratchpad, &QAction::triggered, this, &MainWindow::showScratchpad);
     connect(mUI.mActionCloseProjectFile, &QAction::triggered, this, &MainWindow::closeProjectFile);
     connect(mUI.mActionEditProjectFile, &QAction::triggered, this, &MainWindow::editProjectFile);
 
@@ -231,7 +218,6 @@ MainWindow::MainWindow(TranslationHandler* th, QSettings* settings) :
 MainWindow::~MainWindow()
 {
     delete mProjectFile;
-    delete mScratchPad;
 }
 
 void MainWindow::handleCLIParams(const QStringList &params)
@@ -955,8 +941,6 @@ void MainWindow::analysisDone()
     mCppStandardActions->setEnabled(true);
     mSelectLanguageActions->setEnabled(true);
     mUI.mActionPosix->setEnabled(true);
-    if (mScratchPad)
-        mScratchPad->setEnabled(true);
     mUI.mActionViewStats->setEnabled(true);
 
     if (mProjectFile && !mProjectFile->getBuildDir().isEmpty()) {
@@ -978,8 +962,6 @@ void MainWindow::analysisDone()
 
     // Notify user - if the window is not active - that check is ready
     QApplication::alert(this, 3000);
-    if (mSettings->value(SETTINGS_SHOW_STATISTICS, false).toBool())
-        showStatistics();
 }
 
 void MainWindow::checkLockDownUI()
@@ -994,8 +976,6 @@ void MainWindow::checkLockDownUI()
     mCppStandardActions->setEnabled(false);
     mSelectLanguageActions->setEnabled(false);
     mUI.mActionPosix->setEnabled(false);
-    if (mScratchPad)
-        mScratchPad->setEnabled(false);
 
     for (int i = 0; i < MaxRecentProjects + 1; i++) {
         if (mRecentProjectActs[i] != nullptr)
@@ -1269,26 +1249,6 @@ void MainWindow::toggleAllChecked(bool checked)
     showInformation(checked);
 }
 
-void MainWindow::about()
-{
-    AboutDialog *dlg = new AboutDialog(CppCheck::version(), CppCheck::extraVersion(), this);
-    dlg->exec();
-}
-
-void MainWindow::showLicense()
-{
-    FileViewDialog *dlg = new FileViewDialog(":COPYING", tr("License"), this);
-    dlg->resize(570, 400);
-    dlg->exec();
-}
-
-void MainWindow::showAuthors()
-{
-    FileViewDialog *dlg = new FileViewDialog(":AUTHORS", tr("Authors"), this);
-    dlg->resize(350, 400);
-    dlg->exec();
-}
-
 void MainWindow::performSelectedFilesCheck(const QStringList &selectedFilesList)
 {
     reAnalyzeSelected(selectedFilesList);
@@ -1417,17 +1377,6 @@ void MainWindow::openProjectFile()
             loadProjectFile(filepath);
         }
     }
-}
-
-void MainWindow::showScratchpad()
-{
-    if (!mScratchPad)
-        mScratchPad = new ScratchPad(*this);
-
-    mScratchPad->show();
-
-    if (!mScratchPad->isActiveWindow())
-        mScratchPad->activateWindow();
 }
 
 void MainWindow::loadProjectFile(const QString &filePath)
@@ -1603,26 +1552,6 @@ void MainWindow::editProjectFile()
         mProjectFile->write();
         analyzeProject(mProjectFile);
     }
-}
-
-void MainWindow::showStatistics()
-{
-    StatsDialog statsDialog(this);
-
-    // Show a dialog with the previous scan statistics and project information
-    statsDialog.setProject(mProjectFile);
-    statsDialog.setPathSelected(mCurrentDirectory);
-    statsDialog.setNumberOfFilesScanned(mThread->getPreviousFilesCount());
-    statsDialog.setScanDuration(mThread->getPreviousScanDuration() / 1000.0);
-    statsDialog.setStatistics(mUI.mResults->getStatistics());
-
-    statsDialog.exec();
-}
-
-void MainWindow::showLibraryEditor()
-{
-    LibraryDialog libraryDialog(this);
-    libraryDialog.exec();
 }
 
 void MainWindow::filterResults()

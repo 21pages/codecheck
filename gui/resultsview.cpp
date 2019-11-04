@@ -48,6 +48,7 @@ ResultsView::ResultsView(QWidget * parent) :
     mShowNoErrorsMessage(true),
     mStatistics(new CheckStatistics(this))
 {
+#if WGT
     mUI.setupUi(this);
 
     connect(mUI.mTree, &ResultsTree::resultsHidden, this, &ResultsView::resultsHidden);
@@ -63,21 +64,22 @@ ResultsView::ResultsView(QWidget * parent) :
     connect(this, &ResultsView::showHiddenResults, mUI.mTree, &ResultsTree::showHiddenResults);
 
     mUI.mListLog->setContextMenuPolicy(Qt::CustomContextMenu);
+#endif
 }
 
 void ResultsView::initialize(QSettings *settings, ApplicationList *list, ThreadHandler *checkThreadHandler)
 {
-    mUI.mProgress->setMinimum(0);
-    mUI.mProgress->setVisible(false);
+//    mUI.mProgress->setMinimum(0);
+//    mUI.mProgress->setVisible(false);
 
-    CodeEditorStyle theStyle(CodeEditorStyle::loadSettings(settings));
-    mUI.mCode->setStyle(theStyle);
+//    CodeEditorStyle theStyle(CodeEditorStyle::loadSettings(settings));
+//    mUI.mCode->setStyle(theStyle);
 
-    QByteArray state = settings->value(SETTINGS_MAINWND_SPLITTER_STATE).toByteArray();
-    mUI.mVerticalSplitter->restoreState(state);
-    mShowNoErrorsMessage = settings->value(SETTINGS_SHOW_NO_ERRORS, true).toBool();
+//    QByteArray state = settings->value(SETTINGS_MAINWND_SPLITTER_STATE).toByteArray();
+//    mUI.mVerticalSplitter->restoreState(state);
+//    mShowNoErrorsMessage = settings->value(SETTINGS_SHOW_NO_ERRORS, true).toBool();
 
-    mUI.mTree->initialize(settings, list, checkThreadHandler);
+//    mUI.mTree->initialize(settings, list, checkThreadHandler);
 }
 
 ResultsView::~ResultsView()
@@ -87,6 +89,7 @@ ResultsView::~ResultsView()
 
 void ResultsView::clear(bool results)
 {
+#if WGT
     if (results) {
         mUI.mTree->clear();
     }
@@ -99,35 +102,47 @@ void ResultsView::clear(bool results)
     mUI.mProgress->setMaximum(PROGRESS_MAX);
     mUI.mProgress->setValue(0);
     mUI.mProgress->setFormat("%p%");
+#endif
 }
 
 void ResultsView::clear(const QString &filename)
 {
+#if WGT
     mUI.mTree->clear(filename);
+#endif
 }
 
 void ResultsView::clearRecheckFile(const QString &filename)
 {
+#if WGT
     mUI.mTree->clearRecheckFile(filename);
+#endif
 }
 
 void ResultsView::progress(int value, const QString& description)
 {
+#if WGT
     mUI.mProgress->setValue(value);
     mUI.mProgress->setFormat(QString("%p% (%1)").arg(description));
+#endif
 }
 
 void ResultsView::error(const ErrorItem &item)
 {
+#if WGT
     if (mUI.mTree->addErrorItem(item)) {
         emit gotResults();
         mStatistics->addItem(item.tool(), ShowTypes::SeverityToShowType(item.severity));
     }
+#endif
 }
 
 void ResultsView::filterResults(const QString& filter)
 {
+#if WGT
     mUI.mTree->filterResults(filter);
+#endif
+
 }
 
 void ResultsView::saveStatistics(const QString &filename) const
@@ -149,11 +164,14 @@ void ResultsView::saveStatistics(const QString &filename) const
 
 void ResultsView::updateFromOldReport(const QString &filename) const
 {
+#if WGT
     mUI.mTree->updateFromOldReport(filename);
+#endif
 }
 
 void ResultsView::save(const QString &filename, Report::Type type) const
 {
+#if WGT
     if (!hasResults()) {
         QMessageBox msgBox;
         msgBox.setText(tr("No errors found, nothing to save."));
@@ -192,10 +210,12 @@ void ResultsView::save(const QString &filename, Report::Type type) const
         msgBox.setIcon(QMessageBox::Critical);
         msgBox.exec();
     }
+#endif
 }
 
 void ResultsView::print()
 {
+#if WGT
     QPrinter printer;
     QPrintDialog dialog(&printer, this);
     dialog.setWindowTitle(tr("Print Report"));
@@ -203,18 +223,23 @@ void ResultsView::print()
         return;
 
     print(&printer);
+#endif
 }
 
 void ResultsView::printPreview()
 {
+#if WGT
     QPrinter printer;
     QPrintPreviewDialog dialog(&printer, this);
     connect(&dialog, SIGNAL(paintRequested(QPrinter*)), SLOT(print(QPrinter*)));
     dialog.exec();
+#endif
 }
 
 void ResultsView::print(QPrinter* printer)
 {
+#if WGT
+
     if (!hasResults()) {
         QMessageBox msgBox;
         msgBox.setText(tr("No errors found, nothing to print."));
@@ -227,6 +252,7 @@ void ResultsView::print(QPrinter* printer)
     mUI.mTree->saveResults(&report);
     QTextDocument doc(report.getFormattedReportText());
     doc.print(printer);
+#endif
 }
 
 void ResultsView::updateSettings(bool showFullPath,
@@ -236,36 +262,47 @@ void ResultsView::updateSettings(bool showFullPath,
                                  bool showErrorId,
                                  bool showInconclusive)
 {
+#if WGT
     mUI.mTree->updateSettings(showFullPath, saveFullPath, saveAllErrors, showErrorId, showInconclusive);
     mShowNoErrorsMessage = showNoErrorsMessage;
+#endif
 }
 
 void ResultsView::updateStyleSetting(QSettings *settings)
 {
+#if WGT
     CodeEditorStyle theStyle(CodeEditorStyle::loadSettings(settings));
     mUI.mCode->setStyle(theStyle);
+#endif
 }
 
 void ResultsView::setCheckDirectory(const QString &dir)
 {
+#if WGT
     mUI.mTree->setCheckDirectory(dir);
+#endif
 }
 
 QString ResultsView::getCheckDirectory(void)
 {
+#if WGT
     return mUI.mTree->getCheckDirectory();
+#endif
 }
 
 void ResultsView::checkingStarted(int count)
 {
+#if WGT
     mUI.mProgress->setVisible(true);
     mUI.mProgress->setMaximum(PROGRESS_MAX);
     mUI.mProgress->setValue(0);
     mUI.mProgress->setFormat(tr("%p% (%1 of %2 files checked)").arg(0).arg(count));
+#endif
 }
 
 void ResultsView::checkingFinished()
 {
+#if WGT
     mUI.mProgress->setVisible(false);
     mUI.mProgress->setFormat("%p%");
 
@@ -293,38 +330,50 @@ void ResultsView::checkingFinished()
             msg.exec();
         }
     }
+#endif
 }
 
 bool ResultsView::hasVisibleResults() const
 {
+#if WGT
     return mUI.mTree->hasVisibleResults();
+#endif
 }
 
 bool ResultsView::hasResults() const
 {
+#if WGT
     return mUI.mTree->hasResults();
+#endif
 }
 
 void ResultsView::saveSettings(QSettings *settings)
 {
+#if WGT
     mUI.mTree->saveSettings();
     QByteArray state = mUI.mVerticalSplitter->saveState();
     settings->setValue(SETTINGS_MAINWND_SPLITTER_STATE, state);
     mUI.mVerticalSplitter->restoreState(state);
+#endif
 }
 
 void ResultsView::translate()
 {
+#if WGT
     mUI.mTree->translate();
+#endif
 }
 
 void ResultsView::disableProgressbar()
 {
+#if WGT
     mUI.mProgress->setEnabled(false);
+#endif
 }
 
 void ResultsView::readErrorsXml(const QString &filename)
 {
+#if WGT
     const int version = XmlReport::determineVersion(filename);
     if (version == 0) {
         QMessageBox msgBox;
@@ -365,10 +414,12 @@ void ResultsView::readErrorsXml(const QString &filename)
     }
 
     mUI.mTree->setCheckDirectory(dir);
+#endif
 }
 
 void ResultsView::updateDetails(const QModelIndex &index)
 {
+#if WGT
     QStandardItemModel *model = qobject_cast<QStandardItemModel*>(mUI.mTree->model());
     QStandardItem *item = model->itemFromIndex(index);
 
@@ -421,34 +472,44 @@ void ResultsView::updateDetails(const QModelIndex &index)
         QTextStream in(&file);
         mUI.mCode->setError(in.readAll(), lineNumber, symbols);
     }
+#endif
 }
 
 void ResultsView::log(const QString &str)
 {
+#if WGT
     mUI.mListLog->addItem(str);
+#endif
 }
 
 void ResultsView::debugError(const ErrorItem &item)
 {
+#if WGT
     mUI.mListLog->addItem(item.ToString());
+#endif
 }
 
 void ResultsView::logClear()
 {
+#if WGT
     mUI.mListLog->clear();
+#endif
 }
 
 void ResultsView::logCopyEntry()
 {
+#if WGT
     const QListWidgetItem * item = mUI.mListLog->currentItem();
     if (nullptr != item) {
         QClipboard *clipboard = QApplication::clipboard();
         clipboard->setText(item->text());
     }
+#endif
 }
 
 void ResultsView::logCopyComplete()
 {
+#if WGT
     QString logText;
     for (int i=0; i < mUI.mListLog->count(); ++i) {
         const QListWidgetItem * item = mUI.mListLog->item(i);
@@ -458,10 +519,12 @@ void ResultsView::logCopyComplete()
     }
     QClipboard *clipboard = QApplication::clipboard();
     clipboard->setText(logText);
+#endif
 }
 
 void ResultsView::on_mListLog_customContextMenuRequested(const QPoint &pos)
 {
+#if WGT
     if (mUI.mListLog->count() <= 0)
         return;
 
@@ -473,4 +536,5 @@ void ResultsView::on_mListLog_customContextMenuRequested(const QPoint &pos)
     contextMenu.addAction(tr("Copy complete Log"), this, SLOT(logCopyComplete()));
 
     contextMenu.exec(globalPos);
+#endif
 }

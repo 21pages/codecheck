@@ -20,11 +20,14 @@
 #ifndef RESULTSVIEW_H
 #define RESULTSVIEW_H
 
-
+#include "common.h"
 #include <QWidget>
 #include "report.h"
 #include "showtypes.h"
+#if WGT
 #include "ui_resultsview.h"
+#endif
+#include "threadhandler.h"
 
 class ErrorItem;
 class ApplicationList;
@@ -51,7 +54,9 @@ public:
     ResultsView &operator=(const ResultsView &) = delete;
 
     void setTags(const QStringList &tags) {
+#if WGT
         mUI.mTree->setTags(tags);
+#endif
     }
 
     /**
@@ -195,7 +200,9 @@ public:
      * @return Pointer to Showtypes.
      */
     ShowTypes * getShowTypes() const {
+#if WGT
         return &mUI.mTree->mShowSeverities;
+#endif
     }
 
 signals:
@@ -343,9 +350,9 @@ protected:
     * @brief Should we show a "No errors found dialog" every time no errors were found?
     */
     bool mShowNoErrorsMessage;
-
+#if WGT
     Ui::ResultsView mUI;
-
+#endif
     CheckStatistics *mStatistics;
 private slots:
     /**

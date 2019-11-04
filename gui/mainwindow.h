@@ -32,10 +32,10 @@
 
 class ThreadHandler;
 class TranslationHandler;
-class ScratchPad;
 class ProjectFile;
 class ErrorItem;
 class QAction;
+class QLineEdit;
 
 /// @addtogroup GUI
 /// @{
@@ -148,15 +148,6 @@ public slots:
     /** @brief Slot to open program's settings dialog */
     void programSettings();
 
-    /** @brief Slot to open program's about dialog */
-    void about();
-
-    /** @brief Slot to to show license text */
-    void showLicense();
-
-    /** @brief Slot to to show authors list */
-    void showAuthors();
-
     /** @brief Slot to save results */
     void save();
 
@@ -166,20 +157,11 @@ public slots:
     /** @brief Slot to open project file and start analyzing contained paths. */
     void openProjectFile();
 
-    /** @brief Slot to show scratchpad. */
-    void showScratchpad();
-
     /** @brief Slot to close open project file. */
     void closeProjectFile();
 
     /** @brief Slot to edit project file. */
     void editProjectFile();
-
-    /** @brief Slot for showing the scan and project statistics. */
-    void showStatistics();
-
-    /** @brief Slot for showing the library editor */
-    void showLibraryEditor();
 
 protected slots:
 
@@ -420,9 +402,6 @@ private:
 
     /** @brief Current analyzed directory. */
     QString mCurrentDirectory;
-
-    /** @brief Scratchpad. */
-    ScratchPad* mScratchPad;
 
     /** @brief Project (file). */
     ProjectFile *mProjectFile;

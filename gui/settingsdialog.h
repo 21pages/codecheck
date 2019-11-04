@@ -20,8 +20,11 @@
 #ifndef SETTINGSDIALOG_H
 #define SETTINGSDIALOG_H
 
+#include "common.h"
 #include <QDialog>
+//#if WGT
 #include "ui_settings.h"
+//#endif
 
 class QSettings;
 class QWidget;
@@ -103,30 +106,6 @@ protected slots:
     */
     void ok();
 
-    /**
-    * @brief Slot for adding a new application to the list
-    *
-    */
-    void addApplication();
-
-    /**
-    * @brief Slot for deleting an application from the list
-    *
-    */
-    void removeApplication();
-
-    /**
-    * @brief Slot for modifying an application in the list
-    *
-    */
-    void editApplication();
-
-    /**
-    * @brief Slot for making the selected application as the default (first)
-    *
-    */
-    void defaultApplication();
-
     /** @brief Slot for browsing for the python binary */
     void browsePythonPath();
 
@@ -138,15 +117,6 @@ protected slots:
      */
     void browseMisraFile();
 
-    /**
-     * @brief Set Code Editor Style to Default
-     */
-    void setCodeEditorStyleDefault();
-
-    /**
-     * @brief Edit Custom Code Editor Style
-     */
-    void editCodeEditorStyle();
 
 protected:
     /**

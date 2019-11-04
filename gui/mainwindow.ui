@@ -62,7 +62,7 @@
      <x>0</x>
      <y>0</y>
      <width>640</width>
-     <height>28</height>
+     <height>23</height>
     </rect>
    </property>
    <widget class="QMenu" name="mMenuFile">
@@ -112,19 +112,7 @@
     <addaction name="separator"/>
     <addaction name="mActionShowHidden"/>
     <addaction name="separator"/>
-    <addaction name="mActionShowScratchpad"/>
     <addaction name="mActionViewStats"/>
-    <addaction name="mActionLibraryEditor"/>
-   </widget>
-   <widget class="QMenu" name="mMenuHelp">
-    <property name="title">
-     <string>&amp;Help</string>
-    </property>
-    <addaction name="mActionHelpContents"/>
-    <addaction name="mActionLicense"/>
-    <addaction name="mActionAuthors"/>
-    <addaction name="separator"/>
-    <addaction name="mActionAbout"/>
    </widget>
    <widget class="QMenu" name="mMenuAnalyze">
     <property name="title">
@@ -176,7 +164,6 @@
    <addaction name="mMenuEdit"/>
    <addaction name="mMenuView"/>
    <addaction name="mMenuAnalyze"/>
-   <addaction name="mMenuHelp"/>
   </widget>
   <widget class="QToolBar" name="mToolBarMain">
    <property name="windowTitle">
@@ -238,7 +225,7 @@
   </action>
   <action name="mActionAbout">
    <property name="icon">
-    <iconset resource="gui.qrc">
+    <iconset>
      <normaloff>:/images/help-browser.png</normaloff>:/images/help-browser.png</iconset>
    </property>
    <property name="text">
@@ -261,7 +248,7 @@
   </action>
   <action name="mActionAnalyzeDirectory">
    <property name="icon">
-    <iconset resource="gui.qrc">
+    <iconset>
      <normaloff>:/cppcheck-gui.png</normaloff>:/cppcheck-gui.png</iconset>
    </property>
    <property name="text">
@@ -279,7 +266,7 @@
   </action>
   <action name="mActionReanalyzeModified">
    <property name="icon">
-    <iconset resource="gui.qrc">
+    <iconset>
      <normaloff>:/images/view-refresh.png</normaloff>:/images/view-refresh.png</iconset>
    </property>
    <property name="text">
@@ -291,7 +278,7 @@
   </action>
   <action name="mActionReanalyzeAll">
    <property name="icon">
-    <iconset resource="gui.qrc">
+    <iconset>
      <normaloff>:/images/view-recheck.png</normaloff>:/images/view-recheck.png</iconset>
    </property>
    <property name="text">
@@ -300,7 +287,7 @@
   </action>
   <action name="mActionStop">
    <property name="icon">
-    <iconset resource="gui.qrc">
+    <iconset>
      <normaloff>:/images/process-stop.png</normaloff>:/images/process-stop.png</iconset>
    </property>
    <property name="text">
@@ -318,7 +305,7 @@
   </action>
   <action name="mActionSave">
    <property name="icon">
-    <iconset resource="gui.qrc">
+    <iconset>
      <normaloff>:/images/media-floppy.png</normaloff>:/images/media-floppy.png</iconset>
    </property>
    <property name="text">
@@ -335,7 +322,7 @@
   </action>
   <action name="mActionClearResults">
    <property name="icon">
-    <iconset resource="gui.qrc">
+    <iconset>
      <normaloff>:/images/edit-clear.png</normaloff>:/images/edit-clear.png</iconset>
    </property>
    <property name="text">
@@ -344,7 +331,7 @@
   </action>
   <action name="mActionSettings">
    <property name="icon">
-    <iconset resource="gui.qrc">
+    <iconset>
      <normaloff>:/images/preferences-system.png</normaloff>:/images/preferences-system.png</iconset>
    </property>
    <property name="text">
@@ -356,7 +343,7 @@
     <bool>true</bool>
    </property>
    <property name="icon">
-    <iconset resource="gui.qrc">
+    <iconset>
      <normaloff>:/images/applications-development.png</normaloff>:/images/applications-development.png</iconset>
    </property>
    <property name="text">
@@ -374,7 +361,7 @@
     <bool>true</bool>
    </property>
    <property name="icon">
-    <iconset resource="gui.qrc">
+    <iconset>
      <normaloff>:/images/showerrors.png</normaloff>:/images/showerrors.png</iconset>
    </property>
    <property name="text">
@@ -452,7 +439,7 @@
   </action>
   <action name="mActionOpenProjectFile">
    <property name="icon">
-    <iconset resource="gui.qrc">
+    <iconset>
      <normaloff>:/images/openproject.png</normaloff>:/images/openproject.png</iconset>
    </property>
    <property name="text">
@@ -461,7 +448,7 @@
   </action>
   <action name="mActionShowScratchpad">
    <property name="icon">
-    <iconset resource="gui.qrc">
+    <iconset>
      <normaloff>:/images/scratchpad.png</normaloff>:/images/scratchpad.png</iconset>
    </property>
    <property name="text">
@@ -502,7 +489,7 @@
     <bool>false</bool>
    </property>
    <property name="icon">
-    <iconset resource="gui.qrc">
+    <iconset>
      <normaloff>:/images/text-x-generic.png</normaloff>:/images/text-x-generic.png</iconset>
    </property>
    <property name="text">
@@ -514,7 +501,7 @@
     <bool>true</bool>
    </property>
    <property name="icon">
-    <iconset resource="gui.qrc">
+    <iconset>
      <normaloff>:/images/showwarnings.png</normaloff>:/images/showwarnings.png</iconset>
    </property>
    <property name="text">
@@ -532,7 +519,7 @@
     <bool>true</bool>
    </property>
    <property name="icon">
-    <iconset resource="gui.qrc">
+    <iconset>
      <normaloff>:/images/showperformance.png</normaloff>:/images/showperformance.png</iconset>
    </property>
    <property name="text">
@@ -558,7 +545,7 @@
     <bool>true</bool>
    </property>
    <property name="icon">
-    <iconset resource="gui.qrc">
+    <iconset>
      <normaloff>:/images/dialog-information.png</normaloff>:/images/dialog-information.png</iconset>
    </property>
    <property name="text">
@@ -573,7 +560,7 @@
     <bool>true</bool>
    </property>
    <property name="icon">
-    <iconset resource="gui.qrc">
+    <iconset>
      <normaloff>:/images/applications-system.png</normaloff>:/images/applications-system.png</iconset>
    </property>
    <property name="text">
@@ -588,7 +575,7 @@
     <bool>true</bool>
    </property>
    <property name="icon">
-    <iconset resource="gui.qrc">
+    <iconset>
      <normaloff>:/cppcheck-gui.png</normaloff>:/cppcheck-gui.png</iconset>
    </property>
    <property name="text">
@@ -603,7 +590,7 @@
     <bool>true</bool>
    </property>
    <property name="icon">
-    <iconset resource="gui.qrc">
+    <iconset>
      <normaloff>:/images/llvm-dragon.png</normaloff>:/images/llvm-dragon.png</iconset>
    </property>
    <property name="text">
@@ -840,8 +827,6 @@
    <container>1</container>
   </customwidget>
  </customwidgets>
- <resources>
-  <include location="gui.qrc"/>
- </resources>
+ <resources/>
  <connections/>
 </ui>
