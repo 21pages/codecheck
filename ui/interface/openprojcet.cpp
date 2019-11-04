@@ -10,4 +10,5 @@ OpenProjcet::OpenProjcet(QObject *parent) : QObject(parent)
 QJsonObject CC::OpenProjcet::open()
 {
     QFileDialog::getOpenFileName();
+    return QJsonObject();
 }

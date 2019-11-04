@@ -8,7 +8,7 @@ import "qrc:/Material/Extras/" as Extras
 /*Material.*/ApplicationWindow {
     id:root
     visible:  true
-    width: 800; height: 600
+    width: dp(800); height: dp(600)
     //minimumWidth: 800; minimumHeight: 600
 
     theme {

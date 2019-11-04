@@ -38,6 +38,7 @@ SettingsDialog::SettingsDialog(ApplicationList *list,
     mTempApplications(new ApplicationList(this)),
     mTranslator(translator)
 {
+#if WGT
     mUI.setupUi(this);
     QSettings settings;
     mTempApplications->copy(list);
@@ -83,6 +84,7 @@ SettingsDialog::SettingsDialog(ApplicationList *list,
 
     loadSettings();
     initTranslationsList();
+#endif
 }
 
 SettingsDialog::~SettingsDialog()
@@ -92,6 +94,7 @@ SettingsDialog::~SettingsDialog()
 
 void SettingsDialog::initTranslationsList()
 {
+#if WGT
     const QString current = mTranslator->getCurrentLanguage();
     QList<TranslationInfo> translations = mTranslator->getTranslations();
     foreach (TranslationInfo translation, translations) {
@@ -102,6 +105,7 @@ void SettingsDialog::initTranslationsList()
         if (translation.mCode == current || translation.mCode == current.mid(0, 2))
             mUI.mListLanguages->setCurrentItem(item);
     }
+#endif
 }
 
 Qt::CheckState SettingsDialog::boolToCheckState(bool yes)
@@ -137,6 +141,7 @@ void SettingsDialog::saveSettings() const
 
 void SettingsDialog::saveSettingValues() const
 {
+#if WGT
     int jobs = mUI.mJobs->text().toInt();
     if (jobs <= 0) {
         jobs = 1;
@@ -168,6 +173,7 @@ void SettingsDialog::saveSettingValues() const
         settings.setValue(SETTINGS_LANGUAGE, langcode);
     }
     CodeEditorStyle::saveSettings(&settings, *mCurrentStyle);
+#endif
 }
 
 void SettingsDialog::saveCheckboxValue(QSettings *settings, QCheckBox *box,
@@ -178,6 +184,7 @@ void SettingsDialog::saveCheckboxValue(QSettings *settings, QCheckBox *box,
 
 void SettingsDialog::populateApplicationList()
 {
+#if WGT
     const int defapp = mTempApplications->getDefaultApplication();
     for (int i = 0; i < mTempApplications->getApplicationCount(); i++) {
         const Application& app = mTempApplications->getApplication(i);
@@ -199,6 +206,7 @@ void SettingsDialog::populateApplicationList()
         else
             mUI.mListWidget->setCurrentRow(0);
     }
+#endif
 }
 
 void SettingsDialog::ok()
@@ -209,50 +217,79 @@ void SettingsDialog::ok()
 
 bool SettingsDialog::showFullPath() const
 {
+#if WGT
     return checkStateToBool(mUI.mShowFullPath->checkState());
+#else
+    return false;
+#endif
 }
 
 bool SettingsDialog::saveFullPath() const
 {
+#if WGT
     return checkStateToBool(mUI.mSaveFullPath->checkState());
+#else
+    return false;
+#endif
 }
 
 bool SettingsDialog::saveAllErrors() const
 {
+#if WGT
     return checkStateToBool(mUI.mSaveAllErrors->checkState());
+#else
+    return false;
+#endif
 }
 
 bool SettingsDialog::showNoErrorsMessage() const
 {
+#if WGT
     return checkStateToBool(mUI.mShowNoErrorsMessage->checkState());
+#else
+    return false;
+#endif
 }
 
 bool SettingsDialog::showErrorId() const
 {
+#if WGT
     return checkStateToBool(mUI.mShowErrorId->checkState());
+#else
+    return false;
+#endif
 }
 
 bool SettingsDialog::showInconclusive() const
 {
+#if WGT
     return checkStateToBool(mUI.mEnableInconclusive->checkState());
+#else
+    return false;
+#endif
 }
 
 void SettingsDialog::browsePythonPath()
 {
+#if WGT
     QString fileName = QFileDialog::getOpenFileName(this, tr("Select python binary"), QDir::rootPath());
     if (fileName.contains("python", Qt::CaseInsensitive))
         mUI.mEditPythonPath->setText(fileName);
+#endif
 }
 
 void SettingsDialog::browseMisraFile()
 {
+#if WGT
     const QString fileName = QFileDialog::getOpenFileName(this, tr("Select MISRA File"), QDir::homePath(), "Misra File (*.pdf *.txt)");
     if (!fileName.isEmpty())
         mUI.mEditMisraFile->setText(fileName);
+#endif
 }
 
 void SettingsDialog::browseClangPath()
 {
+#if WGT
     QString selectedDir = QFileDialog::getExistingDirectory(this,
                           tr("Select clang path"),
                           QDir::rootPath());
@@ -260,10 +297,12 @@ void SettingsDialog::browseClangPath()
     if (!selectedDir.isEmpty()) {
         mUI.mEditClangPath->setText(selectedDir);
     }
+#endif
 }
 
 void SettingsDialog::manageStyleControls()
 {
+#if WGT
     bool isSystemTheme = mCurrentStyle->isSystemTheme();
     bool isDefaultLight = !isSystemTheme && *mCurrentStyle == defaultStyleLight;
     bool isDefaultDark =  !isSystemTheme && *mCurrentStyle == defaultStyleDark;
@@ -272,5 +311,6 @@ void SettingsDialog::manageStyleControls()
     mUI.mThemeDark->setChecked(!isDefaultLight && isDefaultDark);
     mUI.mThemeCustom->setChecked(!isSystemTheme && !isDefaultLight && !isDefaultDark);
     mUI.mBtnEditTheme->setEnabled(!isSystemTheme && !isDefaultLight && !isDefaultDark);
+#endif
 }
 

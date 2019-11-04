@@ -25,8 +25,10 @@
 #include <QCheckBox>
 
 #include "suppressions.h"
-
+#include "common.h"
+#if WGT
 #include "ui_projectfiledialog.h"
+#endif
 
 class QWidget;
 
@@ -285,15 +287,14 @@ protected:
     int getSuppressionIndex(const QString &shortText) const;
 
 private:
+#if WGT
     Ui::ProjectFile mUI;
+#endif
 
     /**
      * @brief Projectfile path.
      */
     ProjectFile *mProjectFile;
-
-    /** @brief Library checkboxes */
-    QList<QCheckBox*> mLibraryCheckboxes;
 
     QString getExistingDirectory(const QString &caption, bool trailingSlash);
 

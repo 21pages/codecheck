@@ -22,9 +22,10 @@
 
 #include "common.h"
 #include <QDialog>
-//#if WGT
+#include <QCheckBox>
+#if WGT
 #include "ui_settings.h"
-//#endif
+#endif
 
 class QSettings;
 class QWidget;
@@ -196,7 +197,9 @@ protected:
     * @brief Dialog from UI designer
     *
     */
+#if WGT
     Ui::Settings mUI;
+#endif
 private:
     void manageStyleControls();
 

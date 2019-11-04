@@ -26,6 +26,7 @@
 #include <QDir>
 #include <QSettings>
 #include <QProcess>
+#include <QListWidget>
 #include "common.h"
 #include "projectfiledialog.h"
 #include "checkthread.h"
@@ -36,6 +37,7 @@
 /** Return paths from QListWidget */
 static QStringList getPaths(const QListWidget *list)
 {
+#if WGT
     const int count = list->count();
     QStringList paths;
     for (int i = 0; i < count; i++) {
@@ -43,6 +45,9 @@ static QStringList getPaths(const QListWidget *list)
         paths << QDir::fromNativeSeparators(item->text());
     }
     return paths;
+#else
+    return QStringList();
+#endif
 }
 
 /** Platforms shown in the platform combobox */
@@ -61,6 +66,7 @@ ProjectFileDialog::ProjectFileDialog(ProjectFile *projectFile, QWidget *parent)
     : QDialog(parent)
     , mProjectFile(projectFile)
 {
+#if WGT
     mUI.setupUi(this);
 
     mUI.mToolClangAnalyzer->hide();
@@ -193,6 +199,7 @@ ProjectFileDialog::ProjectFileDialog(ProjectFile *projectFile, QWidget *parent)
     connect(mUI.mBtnBrowseMisraFile, &QPushButton::clicked, this, &ProjectFileDialog::browseMisraFile);
 
     loadFromProjectFile(projectFile);
+#endif
 }
 
 ProjectFileDialog::~ProjectFileDialog()
@@ -226,6 +233,7 @@ static void updateAddonCheckBox(QCheckBox *cb, const ProjectFile *projectFile, c
 
 void ProjectFileDialog::loadFromProjectFile(const ProjectFile *projectFile)
 {
+#if WGT
     setRootPath(projectFile->getRootPath());
     setBuildDir(projectFile->getBuildDir());
     setIncludepaths(projectFile->getIncludeDirs());
@@ -310,10 +318,12 @@ void ProjectFileDialog::loadFromProjectFile(const ProjectFile *projectFile)
     }
     mUI.mEditTags->setText(projectFile->getTags().join(';'));
     updatePathsAndDefines();
+#endif
 }
 
 void ProjectFileDialog::saveToProjectFile(ProjectFile *projectFile) const
 {
+#if WGT
     projectFile->setRootPath(getRootPath());
     projectFile->setBuildDir(getBuildDir());
     projectFile->setImportProject(getImportProject());
@@ -337,22 +347,6 @@ void ProjectFileDialog::saveToProjectFile(ProjectFile *projectFile) const
             projectFile->setPlatform(QString());
     }
     projectFile->setSuppressions(getSuppressions());
-    // Human knowledge
-    /*
-    QStringList unknownReturnValues;
-    for (int row = 0; row < mUI.mListUnknownFunctionReturn->count(); ++row) {
-        QListWidgetItem *item = mUI.mListUnknownFunctionReturn->item(row);
-        if (item->checkState() == Qt::Checked)
-            unknownReturnValues << item->text();
-    }
-    projectFile->setCheckUnknownFunctionReturn(unknownReturnValues);
-    ProjectFile::SafeChecks safeChecks;
-    safeChecks.classes = mUI.mCheckSafeClasses->isChecked();
-    safeChecks.externalFunctions = mUI.mCheckSafeExternalFunctions->isChecked();
-    safeChecks.internalFunctions = mUI.mCheckSafeInternalFunctions->isChecked();
-    safeChecks.externalVariables = mUI.mCheckSafeExternalVariables->isChecked();
-    projectFile->setSafeChecks(safeChecks);
-    */
     // Addons
     QStringList list;
     if (mUI.mAddonThreadSafety->isChecked())
@@ -367,6 +361,7 @@ void ProjectFileDialog::saveToProjectFile(ProjectFile *projectFile) const
     projectFile->setClangAnalyzer(mUI.mToolClangAnalyzer->isChecked());
     projectFile->setClangTidy(mUI.mToolClangTidy->isChecked());
     projectFile->setTags(mUI.mEditTags->text().split(";", QString::SkipEmptyParts));
+#endif
 }
 
 void ProjectFileDialog::ok()
@@ -403,13 +398,16 @@ QString ProjectFileDialog::getExistingDirectory(const QString &caption, bool tra
 
 void ProjectFileDialog::browseBuildDir()
 {
+#if WGT
     const QString dir(getExistingDirectory(tr("Select Cppcheck build dir"), false));
     if (!dir.isEmpty())
         mUI.mEditBuildDir->setText(dir);
+#endif
 }
 
 void ProjectFileDialog::updatePathsAndDefines()
 {
+#if WGT
     const QString &fileName = mUI.mEditImportProject->text();
     bool importProject = !fileName.isEmpty();
     mUI.mBtnClearImportProject->setEnabled(importProject);
@@ -426,16 +424,20 @@ void ProjectFileDialog::updatePathsAndDefines()
     mUI.mBtnIncludeUp->setEnabled(!importProject);
     mUI.mBtnIncludeDown->setEnabled(!importProject);
     mUI.mChkAllVsConfigs->setEnabled(fileName.endsWith(".sln") || fileName.endsWith(".vcxproj"));
+#endif
 }
 
 void ProjectFileDialog::clearImportProject()
 {
+#if WGT
     mUI.mEditImportProject->clear();
     updatePathsAndDefines();
+#endif
 }
 
 void ProjectFileDialog::browseImportProject()
 {
+#if WGT
     const QFileInfo inf(mProjectFile->getFilename());
     const QDir &dir = inf.absoluteDir();
     QMap<QString,QString> filters;
@@ -449,15 +451,21 @@ void ProjectFileDialog::browseImportProject()
         mUI.mEditImportProject->setText(dir.relativeFilePath(fileName));
         updatePathsAndDefines();
     }
+#endif
 }
 
 QString ProjectFileDialog::getImportProject() const
 {
+#if WGT
     return mUI.mEditImportProject->text();
+#else
+    return QString();
+#endif
 }
 
 void ProjectFileDialog::addIncludeDir(const QString &dir)
 {
+#if WGT
     if (dir.isNull() || dir.isEmpty())
         return;
 
@@ -465,10 +473,12 @@ void ProjectFileDialog::addIncludeDir(const QString &dir)
     QListWidgetItem *item = new QListWidgetItem(newdir);
     item->setFlags(item->flags() | Qt::ItemIsEditable);
     mUI.mListIncludeDirs->addItem(item);
+#endif
 }
 
 void ProjectFileDialog::addCheckPath(const QString &path)
 {
+#if WGT
     if (path.isNull() || path.isEmpty())
         return;
 
@@ -476,10 +486,12 @@ void ProjectFileDialog::addCheckPath(const QString &path)
     QListWidgetItem *item = new QListWidgetItem(newpath);
     item->setFlags(item->flags() | Qt::ItemIsEditable);
     mUI.mListCheckPaths->addItem(item);
+#endif
 }
 
 void ProjectFileDialog::addExcludePath(const QString &path)
 {
+#if WGT
     if (path.isNull() || path.isEmpty())
         return;
 
@@ -487,51 +499,81 @@ void ProjectFileDialog::addExcludePath(const QString &path)
     QListWidgetItem *item = new QListWidgetItem(newpath);
     item->setFlags(item->flags() | Qt::ItemIsEditable);
     mUI.mListExcludedPaths->addItem(item);
+#endif
 }
 
 QString ProjectFileDialog::getRootPath() const
 {
+#if WGT
     QString root = mUI.mEditProjectRoot->text();
     root = root.trimmed();
     root = QDir::fromNativeSeparators(root);
     return root;
+#else
+    return QString();
+#endif
 }
 
 QString ProjectFileDialog::getBuildDir() const
 {
+#if WGT
     return mUI.mEditBuildDir->text();
+#else
+    return QString();
+#endif
 }
 
 QStringList ProjectFileDialog::getIncludePaths() const
 {
+#if WGT
     return getPaths(mUI.mListIncludeDirs);
+#else
+    return QStringList();
+#endif
 }
 
 QStringList ProjectFileDialog::getDefines() const
 {
+#if WGT
     return mUI.mEditDefines->text().trimmed().split(QRegExp("\\s*;\\s*"), QString::SkipEmptyParts);
+#else
+    return QStringList();
+#endif
 }
 
 QStringList ProjectFileDialog::getUndefines() const
 {
+#if WGT
     const QString undefine = mUI.mEditUndefines->text().trimmed();
     QStringList undefines = undefine.split(QRegExp("\\s*;\\s*"), QString::SkipEmptyParts);
     undefines.removeDuplicates();
     return undefines;
+#else
+    return QStringList();
+#endif
 }
 
 QStringList ProjectFileDialog::getCheckPaths() const
 {
+#if WGT
     return getPaths(mUI.mListCheckPaths);
+#else
+    return QStringList();
+#endif
 }
 
 QStringList ProjectFileDialog::getExcludedPaths() const
 {
+#if WGT
     return getPaths(mUI.mListExcludedPaths);
+#else
+    return QStringList();
+#endif
 }
 
 QStringList ProjectFileDialog::getLibraries() const
 {
+#if WGT
     QStringList libraries;
     for (int row = 0; row < mUI.mLibraries->count(); ++row) {
         QListWidgetItem *item = mUI.mLibraries->item(row);
@@ -539,64 +581,86 @@ QStringList ProjectFileDialog::getLibraries() const
             libraries << item->text();
     }
     return libraries;
+#else
+    return QStringList();
+#endif
 }
 
 void ProjectFileDialog::setRootPath(const QString &root)
 {
+#if WGT
     mUI.mEditProjectRoot->setText(QDir::toNativeSeparators(root));
+#endif
 }
 
 void ProjectFileDialog::setBuildDir(const QString &buildDir)
 {
+#if WGT
     mUI.mEditBuildDir->setText(buildDir);
+#endif
 }
 
 void ProjectFileDialog::setImportProject(const QString &importProject)
 {
+#if WGT
     mUI.mEditImportProject->setText(importProject);
+#endif
 }
 
 void ProjectFileDialog::setIncludepaths(const QStringList &includes)
 {
+#if WGT
     foreach (QString dir, includes) {
         addIncludeDir(dir);
     }
+#endif
 }
 
 void ProjectFileDialog::setDefines(const QStringList &defines)
 {
+#if WGT
     mUI.mEditDefines->setText(defines.join(";"));
+#endif
 }
 
 void ProjectFileDialog::setUndefines(const QStringList &undefines)
 {
+#if WGT
     mUI.mEditUndefines->setText(undefines.join(";"));
+#endif
 }
 
 void ProjectFileDialog::setCheckPaths(const QStringList &paths)
 {
+#if WGT
     foreach (QString path, paths) {
         addCheckPath(path);
     }
+#endif
 }
 
 void ProjectFileDialog::setExcludedPaths(const QStringList &paths)
 {
+#if WGT
     foreach (QString path, paths) {
         addExcludePath(path);
     }
+#endif
 }
 
 void ProjectFileDialog::setLibraries(const QStringList &libraries)
 {
+#if WGT
     for (int row = 0; row < mUI.mLibraries->count(); ++row) {
         QListWidgetItem *item = mUI.mLibraries->item(row);
         item->setCheckState(libraries.contains(item->text()) ? Qt::Checked : Qt::Unchecked);
     }
+#endif
 }
 
 void ProjectFileDialog::setSuppressions(const QList<Suppressions::Suppression> &suppressions)
 {
+#if WGT
     mSuppressions = suppressions;
 
     QStringList s;
@@ -607,6 +671,7 @@ void ProjectFileDialog::setSuppressions(const QList<Suppressions::Suppression> &
     mUI.mListSuppressions->clear();
     mUI.mListSuppressions->addItems(s);
     mUI.mListSuppressions->sortItems();
+#endif
 }
 
 void ProjectFileDialog::addCheckPath()
@@ -618,15 +683,19 @@ void ProjectFileDialog::addCheckPath()
 
 void ProjectFileDialog::editCheckPath()
 {
+#if WGT
     QListWidgetItem *item = mUI.mListCheckPaths->currentItem();
     mUI.mListCheckPaths->editItem(item);
+#endif
 }
 
 void ProjectFileDialog::removeCheckPath()
 {
+#if WGT
     const int row = mUI.mListCheckPaths->currentRow();
     QListWidgetItem *item = mUI.mListCheckPaths->takeItem(row);
     delete item;
+#endif
 }
 
 void ProjectFileDialog::addIncludeDir()
@@ -638,15 +707,19 @@ void ProjectFileDialog::addIncludeDir()
 
 void ProjectFileDialog::removeIncludeDir()
 {
+#if WGT
     const int row = mUI.mListIncludeDirs->currentRow();
     QListWidgetItem *item = mUI.mListIncludeDirs->takeItem(row);
     delete item;
+#endif
 }
 
 void ProjectFileDialog::editIncludeDir()
 {
+#if WGT
     QListWidgetItem *item = mUI.mListIncludeDirs->currentItem();
     mUI.mListIncludeDirs->editItem(item);
+#endif
 }
 
 void ProjectFileDialog::addExcludePath()
@@ -658,38 +731,47 @@ void ProjectFileDialog::addExcludePath()
 
 void ProjectFileDialog::editExcludePath()
 {
+#if WGT
     QListWidgetItem *item = mUI.mListExcludedPaths->currentItem();
     mUI.mListExcludedPaths->editItem(item);
+#endif
 }
 
 void ProjectFileDialog::removeExcludePath()
 {
+#if WGT
     const int row = mUI.mListExcludedPaths->currentRow();
     QListWidgetItem *item = mUI.mListExcludedPaths->takeItem(row);
     delete item;
+#endif
 }
 
 void ProjectFileDialog::moveIncludePathUp()
 {
+#if WGT
     int row = mUI.mListIncludeDirs->currentRow();
     QListWidgetItem *item = mUI.mListIncludeDirs->takeItem(row);
     row = row > 0 ? row - 1 : 0;
     mUI.mListIncludeDirs->insertItem(row, item);
     mUI.mListIncludeDirs->setCurrentItem(item);
+#endif
 }
 
 void ProjectFileDialog::moveIncludePathDown()
 {
+#if WGT
     int row = mUI.mListIncludeDirs->currentRow();
     QListWidgetItem *item = mUI.mListIncludeDirs->takeItem(row);
     const int count = mUI.mListIncludeDirs->count();
     row = row < count ? row + 1 : count;
     mUI.mListIncludeDirs->insertItem(row, item);
     mUI.mListIncludeDirs->setCurrentItem(item);
+#endif
 }
 
 void ProjectFileDialog::removeSuppression()
 {
+#if WGT
     const int row = mUI.mListSuppressions->currentRow();
     QListWidgetItem *item = mUI.mListSuppressions->takeItem(row);
     if (!item)
@@ -699,6 +781,7 @@ void ProjectFileDialog::removeSuppression()
     if (suppressionIndex >= 0)
         mSuppressions.removeAt(suppressionIndex);
     delete item;
+#endif
 }
 
 int ProjectFileDialog::getSuppressionIndex(const QString &shortText) const
@@ -713,6 +796,7 @@ int ProjectFileDialog::getSuppressionIndex(const QString &shortText) const
 
 void ProjectFileDialog::browseMisraFile()
 {
+#if WGT
     const QString fileName = QFileDialog::getOpenFileName(this, tr("Select MISRA rule texts file"), QDir::homePath(), tr("Misra rule texts file (%1)").arg("*.txt"));
     if (!fileName.isEmpty()) {
         QSettings settings;
@@ -723,4 +807,5 @@ void ProjectFileDialog::browseMisraFile()
         mUI.mAddonMisra->setEnabled(true);
         updateAddonCheckBox(mUI.mAddonMisra, nullptr, settings.value("DATADIR", QString()).toString(), "misra");
     }
+#endif
 }
