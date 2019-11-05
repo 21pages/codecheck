@@ -41,10 +41,10 @@ class ProjectFile;
 /**
 * @brief A dialog for editing project file data.
 */
-class ProjectFileDialog : public QDialog {
+class ProjectFileDialog : public QObject {
     Q_OBJECT
 public:
-    explicit ProjectFileDialog(ProjectFile *projectFile, QWidget *parent = nullptr);
+    explicit ProjectFileDialog(ProjectFile *projectFile, QObject *parent = nullptr);
     virtual ~ProjectFileDialog();
 
 private:

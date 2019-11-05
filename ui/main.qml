@@ -4,6 +4,7 @@ import QtGraphicalEffects 1.0
 import "qrc:/Material/" //as Material
 import "qrc:/Material/ListItems/" as ListItem
 import "qrc:/Material/Extras/" as Extras
+import CC 1.0 as CC
 
 /*Material.*/ApplicationWindow {
     id:root
@@ -18,16 +19,16 @@ import "qrc:/Material/Extras/" as Extras
     }
 
     property var styles: [
-            "Custom Icons", "Color Palette", "Typography"
+            "a1", "a2", "a3"
     ]
 
     property var basicComponents: [
-            "Button", "CheckBox", "Progress Bar", "Radio Button",
-            "Slider", "Switch", "TextField"
+            "b1", "b2", "b3", "b4",
+            "b5", "b6", "b7"
     ]
 
     property var compoundComponents: [
-            "Bottom Sheet", "Dialog", "Forms", "List Items", "Page Stack", "Time Picker", "Date Picker"
+            "c1", "c2", "c3", "c4", "c5", "c6", "c7"
     ]
 
     property var sections: [ basicComponents, styles, compoundComponents ]
@@ -35,6 +36,10 @@ import "qrc:/Material/Extras/" as Extras
     property var sectionTitles: [ "Basic Components", "Style", "Compound Components" ]
 
     property string selectedComponent: sections[0][0]
+
+    CC.OpenProjectManager{
+        id:openProject;
+    }
 
     initialPage: TabbedPage {
         id: page
@@ -287,6 +292,7 @@ import "qrc:/Material/Extras/" as Extras
             Action {
                 iconName: "file/file_download"
                 name: "打开项目"
+                onTriggered: openProject.open()
             },
 
             Action {

@@ -43,11 +43,11 @@ class CheckStatistics;
 * @brief Widget to show cppcheck progressbar and result
 *
 */
-class ResultsView : public QWidget {
+class ResultsView : public QObject {
     Q_OBJECT
 public:
 
-    explicit ResultsView(QWidget * parent = nullptr);
+    explicit ResultsView(QObject * parent = nullptr);
     void initialize(QSettings *settings, ApplicationList *list, ThreadHandler *checkThreadHandler);
     ResultsView(const ResultsView &) = delete;
     virtual ~ResultsView();

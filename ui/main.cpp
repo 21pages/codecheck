@@ -34,6 +34,8 @@
 #include "material/src/plugin.h"
 #include "material/src/core/device.h"
 #include "material/src/core/units.h"
+#include "manager.h"
+#include "interface.h"
 
 int main(int argc, char *argv[])
 {
@@ -56,20 +58,13 @@ int main(int argc, char *argv[])
     QCoreApplication::setOrganizationName("WSD");
     QCoreApplication::setApplicationName("codecheck");
 
-    QSettings* settings = new QSettings("WSD", "codecheck", &app);
-
-    // Set data dir..
-    foreach (const QString arg, app.arguments()) {
-        if (arg.startsWith("--data-dir=")) {
-            settings->setValue("DATADIR", arg.mid(11));
-            return 0;
-        }
-    }
-
 //    app.setWindowIcon(QIcon(":cppcheck-gui.png"));
 
 //    // Register this metatype that is used to transfer error info
 //    qRegisterMetaType<ErrorItem>("ErrorItem");
+    REGISTERS_INITIALIZA;
+    Manager *manager = Manager::instance();
+
 
     QQmlApplicationEngine engine;
     qmlRegisterSingletonType<Device>("Device", 0, 1, "Device", Device::qmlSingleton);
@@ -82,7 +77,6 @@ int main(int argc, char *argv[])
             QCoreApplication::exit(-1);
     }, Qt::QueuedConnection);
     engine.load(url);
-
 
     return app.exec();
 }

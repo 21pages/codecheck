@@ -43,8 +43,8 @@
 #include "path.h"
 #include "codeeditorstyle.h"
 
-ResultsView::ResultsView(QWidget * parent) :
-    QWidget(parent),
+ResultsView::ResultsView(QObject *parent) :
+    QObject(parent),
     mShowNoErrorsMessage(true),
     mStatistics(new CheckStatistics(this))
 {

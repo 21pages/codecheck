@@ -25,11 +25,14 @@
 #include <QActionGroup>
 #include <QTimer>
 #include <QStringList>
+#include "common.h"
+#include "applicationlist.h"
 
 #include "settings.h"
 #include "platforms.h"
+#if WGT
 #include "ui_mainwindow.h"
-
+#endif
 class ThreadHandler;
 class TranslationHandler;
 class ProjectFile;
@@ -44,7 +47,7 @@ class QLineEdit;
  * @brief Main window for cppcheck-gui
  *
  */
-class MainWindow : public QMainWindow {
+class MainWindow : public QObject {
     Q_OBJECT
 public:
 
@@ -54,9 +57,9 @@ public:
     enum { MaxRecentProjects = 5 };
 
     MainWindow(TranslationHandler* th, QSettings* settings);
-    MainWindow(const MainWindow &) = delete;
+    MainWindow(const QObject &) = delete;
     virtual ~MainWindow();
-    MainWindow &operator=(const MainWindow &) = delete;
+    MainWindow &operator=(const QObject &) = delete;
 
     /**
       * List of checked platforms.
@@ -195,9 +198,6 @@ protected slots:
     /** @brief Filters the results in the result list. */
     void filterResults();
 
-    /** @brief Opens recently opened project file. */
-    void openRecentProject();
-
     /** @brief Selects the platform as analyzed platform. */
     void selectPlatform();
 
@@ -207,7 +207,7 @@ protected slots:
     /** Suppress error ids */
     void suppressIds(QStringList ids);
 
-private:
+public:
 
     /** Get filename for last results */
     QString getLastResults() const;
@@ -246,9 +246,6 @@ private:
 
     /** @brief Helper function to enable/disable all check,recheck buttons */
     void enableCheckButtons(bool enable);
-
-    /** @brief Helper function to enable/disable results buttons (clear,save,print) */
-    void enableResultsButtons();
 
     /**
      * @brief Select files/or directory to analyze.
@@ -369,17 +366,6 @@ private:
     bool tryLoadLibrary(Library *library, QString filename);
 
     /**
-     * @brief Update project MRU items in File-menu.
-     */
-    void updateMRUMenuItems();
-
-    /**
-     * @brief Add project file (path) to the MRU list.
-     * @param project Full path to the project file to add.
-     */
-    void addProjectMRU(const QString &project);
-
-    /**
      * @brief Remove project file (path) from the MRU list.
      * @param project Full path of the project file to remove.
      */
@@ -396,18 +382,20 @@ private:
 
     /** @brief Class to handle translation changes */
     TranslationHandler *mTranslation;
-
+#if WGT
     /** @brief Class holding all UI components */
     Ui::MainWindow mUI;
-
+#endif
     /** @brief Current analyzed directory. */
     QString mCurrentDirectory;
 
     /** @brief Project (file). */
     ProjectFile *mProjectFile;
 
+#if WGT
     /** @brief Filter field in the Filter toolbar. */
     QLineEdit* mLineEditFilter;
+#endif
 
     /** @brief Timer to delay filtering while typing. */
     QTimer* mFilterTimer;

@@ -2,8 +2,11 @@ INCLUDEPATH += $$PWD
 DEPENDPATH += $$PWD
 
 HEADERS += \
-    $$PWD/openprojcet.h
+    $$PWD/interface.h \
+    $$PWD/manager.h \
+    $$PWD/openproject.h
 
 SOURCES += \
-    $$PWD/openprojcet.cpp
+    $$PWD/manager.cpp \
+    $$PWD/openproject.cpp
 

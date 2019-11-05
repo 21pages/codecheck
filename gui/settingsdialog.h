@@ -40,12 +40,12 @@ class CodeEditorStyle;
 * @brief Settings dialog
 *
 */
-class SettingsDialog : public QDialog {
+class SettingsDialog : public QObject {
     Q_OBJECT
 public:
     SettingsDialog(ApplicationList *list,
                    TranslationHandler *translator,
-                   QWidget *parent = nullptr);
+                   QObject *parent = nullptr);
     SettingsDialog(const SettingsDialog &) = delete;
     virtual ~SettingsDialog();
     SettingsDialog &operator=(const SettingsDialog &) = delete;

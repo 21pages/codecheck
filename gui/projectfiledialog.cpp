@@ -62,8 +62,8 @@ static const cppcheck::Platform::PlatformType builtinPlatforms[] = {
 
 static const int numberOfBuiltinPlatforms = sizeof(builtinPlatforms) / sizeof(builtinPlatforms[0]);
 
-ProjectFileDialog::ProjectFileDialog(ProjectFile *projectFile, QWidget *parent)
-    : QDialog(parent)
+ProjectFileDialog::ProjectFileDialog(ProjectFile *projectFile, QObject *parent)
+    : QObject(parent)
     , mProjectFile(projectFile)
 {
 #if WGT
@@ -210,15 +210,11 @@ ProjectFileDialog::~ProjectFileDialog()
 void ProjectFileDialog::loadSettings()
 {
     QSettings settings;
-    resize(settings.value(SETTINGS_PROJECT_DIALOG_WIDTH, 470).toInt(),
-           settings.value(SETTINGS_PROJECT_DIALOG_HEIGHT, 330).toInt());
 }
 
 void ProjectFileDialog::saveSettings() const
 {
     QSettings settings;
-    settings.setValue(SETTINGS_PROJECT_DIALOG_WIDTH, size().width());
-    settings.setValue(SETTINGS_PROJECT_DIALOG_HEIGHT, size().height());
 }
 
 static void updateAddonCheckBox(QCheckBox *cb, const ProjectFile *projectFile, const QString &dataDir, const QString &addon)
@@ -368,14 +364,16 @@ void ProjectFileDialog::ok()
 {
     saveToProjectFile(mProjectFile);
     mProjectFile->write();
+#if WGT
     accept();
+#endif
 }
 
 QString ProjectFileDialog::getExistingDirectory(const QString &caption, bool trailingSlash)
 {
     const QFileInfo inf(mProjectFile->getFilename());
     const QString rootpath = inf.absolutePath();
-    QString selectedDir = QFileDialog::getExistingDirectory(this,
+    QString selectedDir = QFileDialog::getExistingDirectory(nullptr,
                           caption,
                           rootpath);
 

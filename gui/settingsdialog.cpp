@@ -32,8 +32,8 @@
 
 SettingsDialog::SettingsDialog(ApplicationList *list,
                                TranslationHandler *translator,
-                               QWidget *parent) :
-    QDialog(parent),
+                               QObject *parent) :
+    QObject(parent),
     mApplications(list),
     mTempApplications(new ApplicationList(this)),
     mTranslator(translator)
@@ -128,15 +128,11 @@ bool SettingsDialog::checkStateToBool(Qt::CheckState state)
 void SettingsDialog::loadSettings()
 {
     QSettings settings;
-    resize(settings.value(SETTINGS_CHECK_DIALOG_WIDTH, 800).toInt(),
-           settings.value(SETTINGS_CHECK_DIALOG_HEIGHT, 600).toInt());
 }
 
 void SettingsDialog::saveSettings() const
 {
     QSettings settings;
-    settings.setValue(SETTINGS_CHECK_DIALOG_WIDTH, size().width());
-    settings.setValue(SETTINGS_CHECK_DIALOG_HEIGHT, size().height());
 }
 
 void SettingsDialog::saveSettingValues() const
@@ -212,7 +208,9 @@ void SettingsDialog::populateApplicationList()
 void SettingsDialog::ok()
 {
     mApplications->copy(mTempApplications);
+#if WGT
     accept();
+#endif
 }
 
 bool SettingsDialog::showFullPath() const
