@@ -10,3 +10,5 @@ SOURCES += \
     $$PWD/manager.cpp \
     $$PWD/openproject.cpp
 
+include(result/result.pri)
+
