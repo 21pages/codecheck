@@ -76,6 +76,7 @@ include(material/material.pri)
 OPTIONS += roboto
 include(interface/interface.pri)
 include(../gui/gui.pri)
+include(tool/tool.pri)
 
 RESOURCES += qml.qrc  \
                          image/demo.qrc \

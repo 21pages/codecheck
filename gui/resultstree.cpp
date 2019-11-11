@@ -52,8 +52,8 @@
 static const unsigned int COLUMN_SINCE_DATE = 6;
 static const unsigned int COLUMN_TAGS       = 7;
 
-ResultsTree::ResultsTree(QWidget * parent) :
-    QTreeView(parent),
+ResultsTree::ResultsTree(QObject *parent) :
+    QObject(parent),
     mSettings(nullptr),
     mApplications(nullptr),
     mContextItem(nullptr),
@@ -67,25 +67,25 @@ ResultsTree::ResultsTree(QWidget * parent) :
     mShowCppcheck(true),
     mShowClang(true)
 {
-    setModel(&mModel);
+//    setModel(&mModel);
     translate(); // Adds columns to grid
-    setExpandsOnDoubleClick(false);
-    setSortingEnabled(true);
+//    setExpandsOnDoubleClick(false);
+//    setSortingEnabled(true);
 
-    connect(this, &ResultsTree::doubleClicked, this, &ResultsTree::quickStartApplication);
+//    connect(this, &ResultsTree::doubleClicked, this, &ResultsTree::quickStartApplication);
 }
 
 ResultsTree::~ResultsTree()
 {
 }
 
-void ResultsTree::keyPressEvent(QKeyEvent *event)
-{
-    if (event->key() == Qt::Key_Enter || event->key() == Qt::Key_Return) {
-        quickStartApplication(this->currentIndex());
-    }
-    QTreeView::keyPressEvent(event);
-}
+//void ResultsTree::keyPressEvent(QKeyEvent *event)
+//{
+//    if (event->key() == Qt::Key_Enter || event->key() == Qt::Key_Return) {
+//        quickStartApplication(this->currentIndex());
+//    }
+//    QTreeView::keyPressEvent(event);
+//}
 
 void ResultsTree::initialize(QSettings *settings, ApplicationList *list, ThreadHandler *checkThreadHandler)
 {
@@ -228,7 +228,7 @@ bool ResultsTree::addErrorItem(const ErrorItem &item)
 
     // Partially refresh the tree: Unhide file item if necessary
     if (!hide) {
-        setRowHidden(fileItem->row(), QModelIndex(), !mShowSeverities.isShown(item.severity));
+//        setRowHidden(fileItem->row(), QModelIndex(), !mShowSeverities.isShown(item.severity));
     }
     return true;
 }
@@ -276,7 +276,7 @@ QStandardItem *ResultsTree::addBacktraceFiles(QStandardItem *parent,
 
     parent->appendRow(list);
 
-    setRowHidden(parent->rowCount() - 1, parent->index(), hide);
+//    setRowHidden(parent->rowCount() - 1, parent->index(), hide);
 
     if (!icon.isEmpty()) {
         list[0]->setIcon(QIcon(icon));
@@ -379,22 +379,22 @@ void ResultsTree::loadSettings()
 {
     for (int i = 0; i < mModel.columnCount(); i++) {
         QString temp = QString(SETTINGS_RESULT_COLUMN_WIDTH).arg(i);
-        setColumnWidth(i, qMax(20, mSettings->value(temp, 800 / mModel.columnCount()).toInt()));
+//        setColumnWidth(i, qMax(20, mSettings->value(temp, 800 / mModel.columnCount()).toInt()));
     }
 
     mSaveFullPath = mSettings->value(SETTINGS_SAVE_FULL_PATH, false).toBool();
     mSaveAllErrors = mSettings->value(SETTINGS_SAVE_ALL_ERRORS, false).toBool();
     mShowFullPath = mSettings->value(SETTINGS_SHOW_FULL_PATH, false).toBool();
 
-    showIdColumn(mSettings->value(SETTINGS_SHOW_ERROR_ID, false).toBool());
-    showInconclusiveColumn(mSettings->value(SETTINGS_INCONCLUSIVE_ERRORS, false).toBool());
+//    showIdColumn(mSettings->value(SETTINGS_SHOW_ERROR_ID, false).toBool());
+//    showInconclusiveColumn(mSettings->value(SETTINGS_INCONCLUSIVE_ERRORS, false).toBool());
 }
 
 void ResultsTree::saveSettings() const
 {
     for (int i = 0; i < mModel.columnCount(); i++) {
         QString temp = QString(SETTINGS_RESULT_COLUMN_WIDTH).arg(i);
-        mSettings->setValue(temp, columnWidth(i));
+//        mSettings->setValue(temp, columnWidth(i));
     }
 }
 
@@ -510,7 +510,7 @@ void ResultsTree::refreshTree()
             }
 
             //Hide/show accordingly
-            setRowHidden(j, fileItem->index(), hide);
+//            setRowHidden(j, fileItem->index(), hide);
 
             //If it was shown then the file itself has to be shown as well
             if (!hide) {
@@ -524,7 +524,7 @@ void ResultsTree::refreshTree()
         }
 
         //Show the file if any of it's errors are visible
-        setRowHidden(i, QModelIndex(), !show);
+//        setRowHidden(i, QModelIndex(), !show);
     }
 }
 
@@ -551,139 +551,139 @@ QStandardItem *ResultsTree::ensureFileItem(const QString &fullpath, const QStrin
     item->setData(QVariant(data));
     mModel.appendRow(item);
 
-    setRowHidden(mModel.rowCount() - 1, QModelIndex(), hide);
+//    setRowHidden(mModel.rowCount() - 1, QModelIndex(), hide);
 
     return item;
 }
 
-void ResultsTree::contextMenuEvent(QContextMenuEvent * e)
-{
-    QModelIndex index = indexAt(e->pos());
-    if (index.isValid()) {
-        bool multipleSelection = false;
-        mSelectionModel = selectionModel();
-        if (mSelectionModel->selectedRows().count() > 1)
-            multipleSelection = true;
+//void ResultsTree::contextMenuEvent(QContextMenuEvent * e)
+//{
+//    QModelIndex index = indexAt(e->pos());
+//    if (index.isValid()) {
+//        bool multipleSelection = false;
+//        mSelectionModel = selectionModel();
+//        if (mSelectionModel->selectedRows().count() > 1)
+//            multipleSelection = true;
 
-        mContextItem = mModel.itemFromIndex(index);
+//        mContextItem = mModel.itemFromIndex(index);
 
-        //Create a new context menu
-        QMenu menu(this);
+//        //Create a new context menu
+//        QMenu menu(nullptr);
 
-        //Store all applications in a list
-        QList<QAction*> actions;
+//        //Store all applications in a list
+//        QList<QAction*> actions;
 
-        //Create a signal mapper so we don't have to store data to class
-        //member variables
-        QSignalMapper *signalMapper = new QSignalMapper(this);
+//        //Create a signal mapper so we don't have to store data to class
+//        //member variables
+//        QSignalMapper *signalMapper = new QSignalMapper(this);
 
-        if (mContextItem && mApplications->getApplicationCount() > 0 && mContextItem->parent()) {
-            //Create an action for the application
-            int defaultApplicationIndex = mApplications->getDefaultApplication();
-            if (defaultApplicationIndex < 0)
-                defaultApplicationIndex = 0;
-            const Application& app = mApplications->getApplication(defaultApplicationIndex);
-            QAction *start = new QAction(app.getName(), &menu);
-            if (multipleSelection)
-                start->setDisabled(true);
+//        if (mContextItem && mApplications->getApplicationCount() > 0 && mContextItem->parent()) {
+//            //Create an action for the application
+//            int defaultApplicationIndex = mApplications->getDefaultApplication();
+//            if (defaultApplicationIndex < 0)
+//                defaultApplicationIndex = 0;
+//            const Application& app = mApplications->getApplication(defaultApplicationIndex);
+//            QAction *start = new QAction(app.getName(), &menu);
+//            if (multipleSelection)
+//                start->setDisabled(true);
 
-            //Add it to our list so we can disconnect later on
-            actions << start;
+//            //Add it to our list so we can disconnect later on
+//            actions << start;
 
-            //Add it to context menu
-            menu.addAction(start);
+//            //Add it to context menu
+//            menu.addAction(start);
 
-            //Connect the signal to signal mapper
-            connect(start, SIGNAL(triggered()), signalMapper, SLOT(map()));
+//            //Connect the signal to signal mapper
+//            connect(start, SIGNAL(triggered()), signalMapper, SLOT(map()));
 
-            //Add a new mapping
-            signalMapper->setMapping(start, defaultApplicationIndex);
+//            //Add a new mapping
+//            signalMapper->setMapping(start, defaultApplicationIndex);
 
-            connect(signalMapper, SIGNAL(mapped(int)),
-                    this, SLOT(context(int)));
-        }
+//            connect(signalMapper, SIGNAL(mapped(int)),
+//                    this, SLOT(context(int)));
+//        }
 
-        // Add popup menuitems
-        if (mContextItem) {
-            if (mApplications->getApplicationCount() > 0) {
-                menu.addSeparator();
-            }
+//        // Add popup menuitems
+//        if (mContextItem) {
+//            if (mApplications->getApplicationCount() > 0) {
+//                menu.addSeparator();
+//            }
 
-            //Create an action for the application
-            QAction *recheckSelectedFiles   = new QAction(tr("Recheck"), &menu);
-            QAction *copy                   = new QAction(tr("Copy"), &menu);
-            QAction *hide                   = new QAction(tr("Hide"), &menu);
-            QAction *hideallid              = new QAction(tr("Hide all with id"), &menu);
-            QAction *suppress               = new QAction(tr("Suppress selected id(s)"), &menu);
-            QAction *opencontainingfolder   = new QAction(tr("Open containing folder"), &menu);
+//            //Create an action for the application
+//            QAction *recheckSelectedFiles   = new QAction(tr("Recheck"), &menu);
+//            QAction *copy                   = new QAction(tr("Copy"), &menu);
+//            QAction *hide                   = new QAction(tr("Hide"), &menu);
+//            QAction *hideallid              = new QAction(tr("Hide all with id"), &menu);
+//            QAction *suppress               = new QAction(tr("Suppress selected id(s)"), &menu);
+//            QAction *opencontainingfolder   = new QAction(tr("Open containing folder"), &menu);
 
-            if (multipleSelection) {
-                hideallid->setDisabled(true);
-                opencontainingfolder->setDisabled(true);
-            }
-            if (mThread->isChecking())
-                recheckSelectedFiles->setDisabled(true);
-            else
-                recheckSelectedFiles->setDisabled(false);
+//            if (multipleSelection) {
+//                hideallid->setDisabled(true);
+//                opencontainingfolder->setDisabled(true);
+//            }
+//            if (mThread->isChecking())
+//                recheckSelectedFiles->setDisabled(true);
+//            else
+//                recheckSelectedFiles->setDisabled(false);
 
-            menu.addAction(recheckSelectedFiles);
-            menu.addSeparator();
-            menu.addAction(copy);
-            menu.addSeparator();
-            menu.addAction(hide);
-            menu.addAction(hideallid);
-            menu.addAction(suppress);
-            menu.addSeparator();
-            menu.addAction(opencontainingfolder);
+//            menu.addAction(recheckSelectedFiles);
+//            menu.addSeparator();
+//            menu.addAction(copy);
+//            menu.addSeparator();
+//            menu.addAction(hide);
+//            menu.addAction(hideallid);
+//            menu.addAction(suppress);
+//            menu.addSeparator();
+//            menu.addAction(opencontainingfolder);
 
-            connect(recheckSelectedFiles, SIGNAL(triggered()), this, SLOT(recheckSelectedFiles()));
-            connect(copy, SIGNAL(triggered()), this, SLOT(copy()));
-            connect(hide, SIGNAL(triggered()), this, SLOT(hideResult()));
-            connect(hideallid, SIGNAL(triggered()), this, SLOT(hideAllIdResult()));
-            connect(suppress, SIGNAL(triggered()), this, SLOT(suppressSelectedIds()));
-            connect(opencontainingfolder, SIGNAL(triggered()), this, SLOT(openContainingFolder()));
+//            connect(recheckSelectedFiles, SIGNAL(triggered()), this, SLOT(recheckSelectedFiles()));
+//            connect(copy, SIGNAL(triggered()), this, SLOT(copy()));
+//            connect(hide, SIGNAL(triggered()), this, SLOT(hideResult()));
+//            connect(hideallid, SIGNAL(triggered()), this, SLOT(hideAllIdResult()));
+//            connect(suppress, SIGNAL(triggered()), this, SLOT(suppressSelectedIds()));
+//            connect(opencontainingfolder, SIGNAL(triggered()), this, SLOT(openContainingFolder()));
 
-            if (!mTags.isEmpty()) {
-                menu.addSeparator();
-                QMenu *tagMenu = menu.addMenu(tr("Tag"));
-                {
-                    QAction *action = new QAction(tr("No tag"), tagMenu);
-                    tagMenu->addAction(action);
-                    connect(action, &QAction::triggered, [=]() {
-                        tagSelectedItems(QString());
-                    });
-                }
+//            if (!mTags.isEmpty()) {
+//                menu.addSeparator();
+//                QMenu *tagMenu = menu.addMenu(tr("Tag"));
+//                {
+//                    QAction *action = new QAction(tr("No tag"), tagMenu);
+//                    tagMenu->addAction(action);
+//                    connect(action, &QAction::triggered, [=]() {
+//                        tagSelectedItems(QString());
+//                    });
+//                }
 
-                foreach (const QString tagstr, mTags) {
-                    QAction *action = new QAction(tagstr, tagMenu);
-                    tagMenu->addAction(action);
-                    connect(action, &QAction::triggered, [=]() {
-                        tagSelectedItems(tagstr);
-                    });
-                }
-            }
-        }
+//                foreach (const QString tagstr, mTags) {
+//                    QAction *action = new QAction(tagstr, tagMenu);
+//                    tagMenu->addAction(action);
+//                    connect(action, &QAction::triggered, [=]() {
+//                        tagSelectedItems(tagstr);
+//                    });
+//                }
+//            }
+//        }
 
-        //Start the menu
-        menu.exec(e->globalPos());
-        index = indexAt(e->pos());
-        if (index.isValid()) {
-            mContextItem = mModel.itemFromIndex(index);
-            if (mContextItem && mApplications->getApplicationCount() > 0 && mContextItem->parent()) {
-                //Disconnect all signals
-                for (int i = 0; i < actions.size(); i++) {
+//        //Start the menu
+//        menu.exec(e->globalPos());
+//        index = indexAt(e->pos());
+//        if (index.isValid()) {
+//            mContextItem = mModel.itemFromIndex(index);
+//            if (mContextItem && mApplications->getApplicationCount() > 0 && mContextItem->parent()) {
+//                //Disconnect all signals
+//                for (int i = 0; i < actions.size(); i++) {
 
-                    disconnect(actions[i], SIGNAL(triggered()), signalMapper, SLOT(map()));
-                }
+//                    disconnect(actions[i], SIGNAL(triggered()), signalMapper, SLOT(map()));
+//                }
 
-                disconnect(signalMapper, SIGNAL(mapped(int)),
-                           this, SLOT(context(int)));
-                //And remove the signal mapper
-                delete signalMapper;
-            }
-        }
-    }
-}
+//                disconnect(signalMapper, SIGNAL(mapped(int)),
+//                           this, SLOT(context(int)));
+//                //And remove the signal mapper
+//                delete signalMapper;
+//            }
+//        }
+//    }
+//}
 
 void ResultsTree::startApplication(QStandardItem *target, int application)
 {
@@ -694,7 +694,7 @@ void ResultsTree::startApplication(QStandardItem *target, int application)
                         tr("No editor application configured.\n\n"
                            "Configure the editor application for Cppcheck in preferences/Applications."),
                         QMessageBox::Ok,
-                        this);
+                        nullptr);
         msg.exec();
         return;
     }
@@ -708,7 +708,7 @@ void ResultsTree::startApplication(QStandardItem *target, int application)
                         tr("No default editor application selected.\n\n"
                            "Please select the default editor application in preferences/Applications."),
                         QMessageBox::Ok,
-                        this);
+                        nullptr);
         msg.exec();
         return;
 
@@ -732,7 +732,7 @@ void ResultsTree::startApplication(QStandardItem *target, int application)
         QFileInfo info(file);
         if (!info.exists()) {
             if (info.isAbsolute()) {
-                QMessageBox msgbox(this);
+                QMessageBox msgbox(nullptr);
                 msgbox.setWindowTitle("Cppcheck");
                 msgbox.setText(tr("Could not find the file!"));
                 msgbox.setIcon(QMessageBox::Critical);
@@ -782,7 +782,7 @@ void ResultsTree::startApplication(QStandardItem *target, int application)
         if (!success) {
             QString text = tr("Could not start %1\n\nPlease check the application path and parameters are correct.").arg(program);
 
-            QMessageBox msgbox(this);
+            QMessageBox msgbox(nullptr);
             msgbox.setWindowTitle("Cppcheck");
             msgbox.setText(text);
             msgbox.setIcon(QMessageBox::Critical);
@@ -805,13 +805,13 @@ QString ResultsTree::askFileDir(const QString &file)
         title = tr("Select Directory");
     }
 
-    QMessageBox msgbox(this);
+    QMessageBox msgbox(nullptr);
     msgbox.setWindowTitle("Cppcheck");
     msgbox.setText(text);
     msgbox.setIcon(QMessageBox::Warning);
     msgbox.exec();
 
-    QString dir = QFileDialog::getExistingDirectory(this, title,
+    QString dir = QFileDialog::getExistingDirectory(nullptr, title,
                   getPath(SETTINGS_LAST_SOURCE_PATH),
                   QFileDialog::ShowDirsOnly | QFileDialog::DontResolveSymlinks);
 
@@ -1098,8 +1098,8 @@ void ResultsTree::saveResults(Report *report) const
     report->writeHeader();
 
     for (int i = 0; i < mModel.rowCount(); i++) {
-        if (mSaveAllErrors || !isRowHidden(i, QModelIndex()))
-            saveErrors(report, mModel.item(i, 0));
+//        if (mSaveAllErrors || !isRowHidden(i, QModelIndex()))
+//            saveErrors(report, mModel.item(i, 0));
     }
 
     report->writeFooter();
@@ -1118,9 +1118,9 @@ void ResultsTree::saveErrors(Report *report, QStandardItem *fileItem) const
             continue;
         }
 
-        if (isRowHidden(i, fileItem->index()) && !mSaveAllErrors) {
-            continue;
-        }
+//        if (isRowHidden(i, fileItem->index()) && !mSaveAllErrors) {
+//            continue;
+//        }
 
         ErrorItem item;
         readErrorItem(error, &item);
@@ -1233,8 +1233,8 @@ void ResultsTree::updateSettings(bool showFullPath,
     mSaveFullPath = saveFullPath;
     mSaveAllErrors = saveAllErrors;
 
-    showIdColumn(showErrorId);
-    showInconclusiveColumn(showInconclusive);
+//    showIdColumn(showErrorId);
+//    showInconclusiveColumn(showInconclusive);
 }
 
 void ResultsTree::setCheckDirectory(const QString &dir)
@@ -1345,25 +1345,25 @@ void ResultsTree::translate()
     //TODO go through all the errors in the tree and translate severity and message
 }
 
-void ResultsTree::showIdColumn(bool show)
-{
-    mShowErrorId = show;
-    if (show)
-        showColumn(3);
-    else
-        hideColumn(3);
-}
+//void ResultsTree::showIdColumn(bool show)
+//{
+//    mShowErrorId = show;
+//    if (show)
+//        showColumn(3);
+//    else
+//        hideColumn(3);
+//}
 
-void ResultsTree::showInconclusiveColumn(bool show)
-{
-    if (show)
-        showColumn(4);
-    else
-        hideColumn(4);
-}
+//void ResultsTree::showInconclusiveColumn(bool show)
+//{
+//    if (show)
+//        showColumn(4);
+//    else
+//        hideColumn(4);
+//}
 
-void ResultsTree::currentChanged(const QModelIndex &current, const QModelIndex &previous)
-{
-    QTreeView::currentChanged(current, previous);
-    emit treeSelectionChanged(current);
-}
+//void ResultsTree::currentChanged(const QModelIndex &current, const QModelIndex &previous)
+//{
+//    QTreeView::currentChanged(current, previous);
+//    emit treeSelectionChanged(current);
+//}

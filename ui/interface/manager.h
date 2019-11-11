@@ -7,6 +7,8 @@
 
 class MainWindow;
 class ResultsView;
+class ResultsTree;
+class ErrorItem;
 
 class Manager : public QObject
 {
@@ -14,10 +16,14 @@ class Manager : public QObject
 public:
     explicit Manager(QObject *parent = nullptr);
     static Manager *instance();
+    void addErrorItem(const ErrorItem& item);
+    void beginResetModel();
+    void endResetModel();
 public:
     QSettings* settings;
     MainWindow* mainWindow;
     ResultsView* resultView;
+    ResultsTree *resultsTree;
 private:
 //    Manager *sInstance;
 };

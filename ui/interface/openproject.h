@@ -4,7 +4,7 @@
 #include <QObject>
 #include <QJsonObject>
 
-#define OpenProjectRegister {   \
+#define OPENPROJECT_REGISTER {   \
     qmlRegisterType<CC::OpenProject>("CC",1,0,"OpenProjectManager");    \
 }
 

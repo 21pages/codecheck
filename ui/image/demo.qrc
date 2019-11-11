@@ -1,28 +1,53 @@
-<!DOCTYPE RCC>
-<RCC version="1.0">
-
-<qresource>
-	<file>icons/action_account_circle.svg</file>
-	<file>icons/action_autorenew.svg</file>
-	<file>icons/action_delete.svg</file>
-	<file>icons/action_language.svg</file>
-	<file>icons/action_settings.svg</file>
-	<file>icons/alert_warning.svg</file>
-	<file>icons/communication_email.svg</file>
-	<file>icons/content_add.svg</file>
-	<file>icons/content_create.svg</file>
-	<file>icons/content_forward.svg</file>
-	<file>icons/device_access_alarm.svg</file>
-	<file>icons/file_file_download.svg</file>
-	<file>icons/image_color_lens.svg</file>
-	<file>icons/maps_place.svg</file>
-	<file>icons/navigation_arrow_drop_down.svg</file>
-	<file>icons/social_share.svg</file>
-	<file>images/balloon.jpg</file>
-	<file>images/go-last.color.svg</file>
-	<file>images/list-add.color.svg</file>
-	<file>images/weather-pouring.svg</file>
-	<file>images/weather-sunset.svg</file>
-</qresource>
-
+<RCC>
+    <qresource prefix="/">
+        <file>icons/action_account_circle.svg</file>
+        <file>icons/action_autorenew.svg</file>
+        <file>icons/action_delete.svg</file>
+        <file>icons/action_language.svg</file>
+        <file>icons/action_settings.svg</file>
+        <file>icons/alert_warning.svg</file>
+        <file>icons/communication_email.svg</file>
+        <file>icons/content_add.svg</file>
+        <file>icons/content_create.svg</file>
+        <file>icons/content_forward.svg</file>
+        <file>icons/device_access_alarm.svg</file>
+        <file>icons/file_file_download.svg</file>
+        <file>icons/image_color_lens.svg</file>
+        <file>icons/maps_place.svg</file>
+        <file>icons/navigation_arrow_drop_down.svg</file>
+        <file>icons/social_share.svg</file>
+        <file>images/balloon.jpg</file>
+        <file>images/go-last.color.svg</file>
+        <file>images/list-add.color.svg</file>
+        <file>images/weather-pouring.svg</file>
+        <file>images/weather-sunset.svg</file>
+        <file>images/language-cpp.png</file>
+        <file>images/error.png</file>
+        <file>old/applications-development.png</file>
+        <file>old/applications-system.png</file>
+        <file>old/dialog-error.png</file>
+        <file>old/dialog-information.png</file>
+        <file>old/dialog-warning.png</file>
+        <file>old/edit-clear.png</file>
+        <file>old/go-down.png</file>
+        <file>old/go-home.png</file>
+        <file>old/go-next.png</file>
+        <file>old/go-previous.png</file>
+        <file>old/help-browser.png</file>
+        <file>old/llvm-dragon.png</file>
+        <file>old/llvm-dragon.svg</file>
+        <file>old/media-floppy.png</file>
+        <file>old/openproject.png</file>
+        <file>old/preferences-system.png</file>
+        <file>old/process-stop.png</file>
+        <file>old/scratchpad.png</file>
+        <file>old/showerrors.png</file>
+        <file>old/showperformance.png</file>
+        <file>old/showstylewarnings.png</file>
+        <file>old/showwarnings.png</file>
+        <file>old/text-x-generic.png</file>
+        <file>old/utilities-system-monitor.png</file>
+        <file>old/view-recheck.png</file>
+        <file>old/view-refresh.png</file>
+    </qresource>
 </RCC>

@@ -45,10 +45,10 @@ class ThreadHandler;
 * @brief Cppcheck's results are shown in this tree
 *
 */
-class ResultsTree : public QTreeView {
+class ResultsTree : public QObject {
     Q_OBJECT
 public:
-    explicit ResultsTree(QWidget * parent = nullptr);
+    explicit ResultsTree(QObject * parent = nullptr);
     virtual ~ResultsTree();
     void initialize(QSettings *settings, ApplicationList *list, ThreadHandler *checkThreadHandler);
 
@@ -157,12 +157,12 @@ public:
     /**
     * @brief Show optional column "Id"
     */
-    void showIdColumn(bool show);
+//    void showIdColumn(bool show);
 
     /**
     * @brief Show optional column "Inconclusve"
     */
-    void showInconclusiveColumn(bool show);
+//    void showInconclusiveColumn(bool show);
 
     /**
     * @brief Returns true if column "Id" is shown
@@ -176,7 +176,7 @@ public:
      */
     ShowTypes mShowSeverities;
 
-    virtual void keyPressEvent(QKeyEvent *event);
+//    virtual void keyPressEvent(QKeyEvent *event);
 
 signals:
     /**
@@ -288,7 +288,7 @@ protected slots:
     * @param current Model index to specify new selected item.
     * @param previous Model index to specify previous selected item.
     */
-    virtual void currentChanged(const QModelIndex &current, const QModelIndex &previous);
+//    virtual void currentChanged(const QModelIndex &current, const QModelIndex &previous);
 
 protected:
 
@@ -359,7 +359,7 @@ protected:
     *
     * @param e Event
     */
-    void contextMenuEvent(QContextMenuEvent * e);
+//    void contextMenuEvent(QContextMenuEvent * e);
 
     /**
     * @brief Add a new error item beneath a file or a backtrace item beneath an error

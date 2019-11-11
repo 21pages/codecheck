@@ -1,5 +1,7 @@
 <RCC>
     <qresource prefix="/">
         <file>main.qml</file>
+        <file>qml/MaterialTreeView.qml</file>
+        <file>qml/ResultTree.qml</file>
     </qresource>
 </RCC>

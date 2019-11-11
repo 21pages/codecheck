@@ -44,25 +44,69 @@
     Provides a simple tree model to show how to create and use hierarchical
     models.
 */
-
-#include "treeitem.h"
 #include "treemodel.h"
-
-#include "customtype.h"
-
 #include <QStringList>
+#include <QJsonObject>
+#include <QDir>
+#include <algorithm>
+#include "treeitem.h"
+#include "erroritem.h"
+#include "helper.h"
 
+using namespace CC;
 //! [0]
-TreeModel::TreeModel(const QString &data, QObject *parent)
+TreeModel::TreeModel(QObject *parent)
     : QAbstractItemModel(parent)
 {
-    m_roleNameMapping[TreeModelRoleName] = "title";
-    m_roleNameMapping[TreeModelRoleDescription] = "summary";
+    m_roleNameMapping[static_cast<int>(TreeModelRoles::file)] = CONST_file.toUtf8();
+    m_roleNameMapping[static_cast<int>(TreeModelRoles::iconFile)] = CONST_iconFile.toUtf8();
+    m_roleNameMapping[static_cast<int>(TreeModelRoles::severity)] = CONST_severity.toUtf8();
+    m_roleNameMapping[static_cast<int>(TreeModelRoles::severityStr)] = CONST_severityStr.toUtf8();
+    m_roleNameMapping[static_cast<int>(TreeModelRoles::line)] = CONST_line.toUtf8();
+    m_roleNameMapping[static_cast<int>(TreeModelRoles::id)] = CONST_id.toUtf8();
+    m_roleNameMapping[static_cast<int>(TreeModelRoles::summary)] = CONST_summary.toUtf8();
+    m_roleNameMapping[static_cast<int>(TreeModelRoles::hide)] = CONST_hide.toUtf8();
+    m_roleNameMapping[static_cast<int>(TreeModelRoles::message)] = CONST_message.toUtf8();
+    m_roleNameMapping[static_cast<int>(TreeModelRoles::column)] = CONST_column.toUtf8();
+    m_roleNameMapping[static_cast<int>(TreeModelRoles::inconclusive)] = CONST_inconclusive.toUtf8();
+    m_roleNameMapping[static_cast<int>(TreeModelRoles::file0)] = CONST_file0.toUtf8();
+    m_roleNameMapping[static_cast<int>(TreeModelRoles::sinceDate)] = CONST_sinceDate.toUtf8();
+    m_roleNameMapping[static_cast<int>(TreeModelRoles::tags)] = CONST_tags.toUtf8();
 
-    QList<QVariant> rootData;
-    rootData << "Title" << "Summary";
+    QMap<QString,QVariant> rootData;
+    rootData.insert(CONST_file,CONST_file);
+    rootData.insert(CONST_iconFile,CONST_iconFile);
+    rootData.insert(CONST_severity,CONST_severity);
+    rootData.insert(CONST_severityStr,CONST_severityStr);
+    rootData.insert(CONST_line,CONST_line);
+    rootData.insert(CONST_id,CONST_id);
+    rootData.insert(CONST_summary,CONST_summary);
+    rootData.insert(CONST_hide,CONST_hide);
+    rootData.insert(CONST_message,CONST_message);
+    rootData.insert(CONST_column,CONST_column);
+    rootData.insert(CONST_inconclusive,CONST_inconclusive);
+    rootData.insert(CONST_file0,CONST_file0);
+    rootData.insert(CONST_sinceDate,CONST_sinceDate);
+    rootData.insert(CONST_tags,CONST_tags);
     rootItem = new TreeItem(rootData);
-    setupModelData(data.split(QString("\n")), rootItem);
+
+    rootData[CONST_iconFile] = QJsonObject({{"file","file1.cpp"},{"icon","qrc:/images/language-cpp.png"}});
+    TreeItem *item1 = new TreeItem(rootData,rootItem);
+    rootItem->appendChild(item1);
+    rootData[CONST_iconFile] = QJsonObject({{"file","file1.cpp"},{"icon","qrc:/images/error.png"}});
+    TreeItem *item11 = new TreeItem(rootData,item1);
+    item1->appendChild(item11);
+}
+
+void TreeModel::BeginResetModel()
+{
+    this->beginResetModel();
+}
+
+void TreeModel::EndResetModel()
+{
+    this->endResetModel();
+
 }
 //! [0]
 
@@ -89,12 +133,11 @@ QVariant TreeModel::data(const QModelIndex &index, int role) const
     if (!index.isValid())
         return QVariant();
 
-    if (role != TreeModelRoleName && role != TreeModelRoleDescription)
+    if (!m_roleNameMapping.keys().contains(role)) {
         return QVariant();
-
+    }
     TreeItem *item = static_cast<TreeItem*>(index.internalPointer());
-
-    return item->data(role - Qt::UserRole - 1);
+    return item->data(m_roleNameMapping.value(role));
 }
 //! [3]
 
@@ -102,7 +145,7 @@ QVariant TreeModel::data(const QModelIndex &index, int role) const
 Qt::ItemFlags TreeModel::flags(const QModelIndex &index) const
 {
     if (!index.isValid())
-        return 0;
+        return Qt::NoItemFlags;
 
     return QAbstractItemModel::flags(index);
 }
@@ -112,9 +155,20 @@ Qt::ItemFlags TreeModel::flags(const QModelIndex &index) const
 QVariant TreeModel::headerData(int section, Qt::Orientation orientation,
                                int role) const
 {
-    if (orientation == Qt::Horizontal && role == Qt::DisplayRole)
-        return rootItem->data(section);
-
+    if (orientation == Qt::Horizontal && role == Qt::DisplayRole) {
+        switch (section) {
+        case static_cast<int>(TreeModelColumn::iconFile):
+            return rootItem->data(CONST_file);
+        case static_cast<int>(TreeModelColumn::severityStr):
+            return rootItem->data(CONST_severityStr);
+        case static_cast<int>(TreeModelColumn::line):
+            return rootItem->data(CONST_line);
+        case static_cast<int>(TreeModelColumn::id):
+            return rootItem->data(CONST_id);
+        case static_cast<int>(TreeModelColumn::summary):
+            return rootItem->data(CONST_summary);
+        }
+    }
     return QVariant();
 }
 //! [5]
@@ -178,61 +232,126 @@ QHash<int, QByteArray> TreeModel::roleNames() const
     return m_roleNameMapping;
 }
 
-QVariant TreeModel::newCustomType(const QString &text, int position)
+TreeModel *TreeModel::instance()
 {
-    CustomType *t = new CustomType(this);
-    t->setText(text);
-    t->setIndentation(position);
-    QVariant v;
-    v.setValue(t);
-    return v;
+    static TreeModel model;
+    return &model;
 }
 
-void TreeModel::setupModelData(const QStringList &lines, TreeItem *parent)
+bool TreeModel::addErrorItem(const ErrorItem &item)
 {
-    QList<TreeItem*> parents;
-    QList<int> indentations;
-    parents << parent;
-    indentations << 0;
+    bool ret = addErrorItemExec(item);
+    return ret;
+}
 
-    int number = 0;
-
-    while (number < lines.count()) {
-        int position = 0;
-        while (position < lines[number].length()) {
-            if (lines[number].at(position) != ' ')
-                break;
-            position++;
-        }
-
-        QString lineData = lines[number].mid(position).trimmed();
-
-        if (!lineData.isEmpty()) {
-            // Read the column data from the rest of the line.
-            QStringList columnStrings = lineData.split("\t", QString::SkipEmptyParts);
-            QList<QVariant> columnData;
-            for (int column = 0; column < columnStrings.count(); ++column)
-                columnData << newCustomType(columnStrings[column], position);
-
-            if (position > indentations.last()) {
-                // The last child of the current parent is now the new parent
-                // unless the current parent has no children.
-
-                if (parents.last()->childCount() > 0) {
-                    parents << parents.last()->child(parents.last()->childCount()-1);
-                    indentations << position;
-                }
-            } else {
-                while (position < indentations.last() && parents.count() > 0) {
-                    parents.pop_back();
-                    indentations.pop_back();
-                }
-            }
-
-            // Append a new item to the current parent's list of children.
-            parents.last()->appendChild(new TreeItem(columnData, parents.last()));
-        }
-
-        ++number;
+bool TreeModel::addErrorItemExec(const ErrorItem &item)
+{
+    if (item.errorPath.isEmpty()) {
+        return false;
     }
+    const QErrorPathItem &loc = item.errorId.startsWith("clang") ? item.errorPath.front() : item.errorPath.back();
+    QString relativeFile = Helper::GetStripPath(loc.file);
+    if (relativeFile.isEmpty()) {
+        relativeFile = tr("Undefined file");
+    }
+    bool hide = false;
+    if (mHiddenMessageId.contains(item.errorId)) {
+        hide = true;
+    }
+    if (!hide && !mFilter.isEmpty()) {
+        if (!item.summary.contains(mFilter, Qt::CaseInsensitive) &&
+            !item.message.contains(mFilter, Qt::CaseInsensitive) &&
+            !item.errorPath.back().file.contains(mFilter, Qt::CaseInsensitive) &&
+            !item.errorId.contains(mFilter, Qt::CaseInsensitive)) {
+            hide = true;
+        }
+    }
+    if (!hide) {
+        mHasVisibleErrors = true;
+    }
+    TreeItem *fileItem = nullptr;
+//    if(rootItem->children().count()) {
+//        std::for_each(rootItem->children().begin(),rootItem->children().end(),[relativeFile,&fileItem](TreeItem *child) {
+//            if(child->data(CONST_file) == relativeFile){
+//                fileItem =  child;
+//            }
+//         });
+//    }
+    for(const auto & child : rootItem->children()) {
+            if(child->data(CONST_file) == relativeFile){
+                fileItem =  child;
+            }
+    }
+
+    if(!fileItem) {
+        QMap<QString,QVariant> fileItemData;
+        fileItemData.insert(CONST_iconFile, QJsonObject({{"file",relativeFile},{"icon","qrc:/images/language-cpp.png"}}));
+        fileItem = new TreeItem(fileItemData,rootItem);
+        rootItem->appendChild(fileItem);
+    }
+    QMap<QString,QVariant> errorItemData;
+    errorItemData.insert(CONST_file,             relativeFile);
+    errorItemData.insert(CONST_severity,     item.severity);
+    errorItemData.insert(CONST_line,             loc.line);
+    errorItemData.insert(CONST_id,               item.errorId);
+    errorItemData.insert(CONST_summary,  item.summary);
+    errorItemData.insert(CONST_hide,         hide);
+    errorItemData.insert(CONST_message,  item.message);
+    errorItemData.insert(CONST_column,       "");
+    errorItemData.insert(CONST_inconclusive,     item.inconclusive);
+    errorItemData.insert(CONST_file0,            item.file0);
+    errorItemData.insert(CONST_sinceDate,    item.sinceDate);
+    errorItemData.insert(CONST_tags,             item.tags);
+    QString icon;
+    QString severityStr;
+    Helper::Severity2Icon(item.severity,icon,severityStr);
+    errorItemData.insert(CONST_iconFile,QJsonObject({{"file",relativeFile},{"icon",":old/go-down.png"}}));
+    errorItemData.insert(CONST_severityStr,severityStr);
+    TreeItem *errorItem = checkExistingItem(fileItem->children(),errorItemData);
+    if(!errorItem) {
+        TreeItem *errorItem = new TreeItem(errorItemData, fileItem);
+        fileItem->appendChild(errorItem);
+    }
+    if (item.errorPath.size() > 1) {
+        for (int i = 0; i < item.errorPath.size(); i++) {
+            const QErrorPathItem &e = item.errorPath[i];
+            QMap<QString,QVariant> pathItemData;
+            pathItemData[CONST_file] = e.file;
+            pathItemData[CONST_line] = e.line;
+            pathItemData[CONST_column] = e.column;
+            pathItemData[CONST_message] = e.info;
+            pathItemData[CONST_summary] = e.info;
+            pathItemData[CONST_severityStr] = "note";
+            errorItemData.insert(CONST_iconFile,QJsonObject({{"file",e.file},{"icon",icon}}));
+            TreeItem *pathItem = checkExistingItem(errorItem->children(),pathItemData);
+            if (!pathItem) {
+                pathItem = new TreeItem(pathItemData,errorItem);
+                errorItem->appendChild(pathItem);
+            }
+        }
+    }
+    return true;
+}
+
+TreeItem *TreeModel::checkExistingItem(QList<TreeItem *> children, const QMap<QString, QVariant> &data)
+{
+    TreeItem *item = nullptr;
+//    if(children.count()) {
+//        std::for_each(children.begin(),children.end(),[&item,data](TreeItem *child) {
+//           if((child->data(CONST_line) == data[CONST_line])
+//                   && (child->data(CONST_severity) == data[CONST_severity])
+//                   && (child->data(CONST_summary) == data[CONST_summary])) {
+//               item = child;
+//           }
+//        });
+//    }
+    for(const auto & child : children) {
+           if((child->data(CONST_line) == data[CONST_line])
+                   && (child->data(CONST_severity) == data[CONST_severity])
+                   && (child->data(CONST_summary) == data[CONST_summary])) {
+               item = child;
+           }
+    }
+
+    return item;
 }

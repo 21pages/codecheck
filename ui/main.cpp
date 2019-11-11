@@ -22,20 +22,19 @@
 #include <QMetaType>
 #include <QStringList>
 #include <QSettings>
-#ifdef _WIN32
+#include <QQmlContext>
+#include <QQmlApplicationEngine>
 #include <QMessageBox>
-#else
-#include <iostream>
-#endif
+#include <QThreadPool>
 #include "cppcheck.h"
 //#include "common.h"
 //#include "erroritem.h"
-#include <QQmlApplicationEngine>
 #include "material/src/plugin.h"
 #include "material/src/core/device.h"
 #include "material/src/core/units.h"
 #include "manager.h"
 #include "interface.h"
+using namespace CC;
 
 int main(int argc, char *argv[])
 {
@@ -62,11 +61,17 @@ int main(int argc, char *argv[])
 
 //    // Register this metatype that is used to transfer error info
 //    qRegisterMetaType<ErrorItem>("ErrorItem");
-    REGISTERS_INITIALIZA;
+
+    if ( QThreadPool::globalInstance()->maxThreadCount() > 1 )
+    {
+        QThreadPool::globalInstance()->setMaxThreadCount( QThreadPool::globalInstance()->maxThreadCount() - 1 );
+    }
     Manager *manager = Manager::instance();
+    Q_UNUSED(manager);
 
 
     QQmlApplicationEngine engine;
+    REGISTERS_INITIALIZA;
     qmlRegisterSingletonType<Device>("Device", 0, 1, "Device", Device::qmlSingleton);
     qmlRegisterUncreatableType<Units>("Units", 0, 3, "Units", QStringLiteral("Units can only be used via the attached property."));
     engine.addImportPath(QString("qrc:/"));

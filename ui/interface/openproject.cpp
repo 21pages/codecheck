@@ -12,4 +12,5 @@ OpenProject::OpenProject(QObject *parent) : QObject(parent)
 QJsonObject CC::OpenProject::open()
 {
     Manager::instance()->mainWindow->openProjectFile();
+    return QJsonObject();
 }

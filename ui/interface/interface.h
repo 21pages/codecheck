@@ -2,10 +2,12 @@
 #define INTERFACE_H
 
 #include "openproject.h"
+#include "treemodel.h"
 
 #define REGISTERS_INITIALIZA     \
 {   \
-OpenProjectRegister;    \
+OPENPROJECT_REGISTER;    \
+TREEMODEL_REGISTER; \
 }
 
 

@@ -42,6 +42,8 @@
 #include "checkstatistics.h"
 #include "path.h"
 #include "codeeditorstyle.h"
+#include "manager.h"
+#include "resultstree.h"
 
 ResultsView::ResultsView(QObject *parent) :
     QObject(parent),
@@ -379,7 +381,6 @@ void ResultsView::disableProgressbar()
 
 void ResultsView::readErrorsXml(const QString &filename)
 {
-#if WGT
     const int version = XmlReport::determineVersion(filename);
     if (version == 0) {
         QMessageBox msgBox;
@@ -408,10 +409,16 @@ void ResultsView::readErrorsXml(const QString &filename)
     }
 
     ErrorItem item;
+    Manager::instance()->beginResetModel();
+    bool time = true;
     foreach (item, errors) {
-        mUI.mTree->addErrorItem(item);
+        Manager::instance()->resultsTree->addErrorItem(item);
+        if(time) {
+            time = false;
+            Manager::instance()->addErrorItem(item);
+        }
     }
-
+    Manager::instance()->endResetModel();
     QString dir;
     if (!errors.isEmpty() && !errors[0].errorPath.isEmpty()) {
         QString relativePath = QFileInfo(filename).canonicalPath();
@@ -419,8 +426,7 @@ void ResultsView::readErrorsXml(const QString &filename)
             dir = relativePath;
     }
 
-    mUI.mTree->setCheckDirectory(dir);
-#endif
+    Manager::instance()->resultsTree->setCheckDirectory(dir);
 }
 
 void ResultsView::updateDetails(const QModelIndex &index)

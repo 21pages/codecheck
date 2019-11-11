@@ -48,8 +48,9 @@
 
 #include "treeitem.h"
 
+using namespace CC;
 //! [0]
-TreeItem::TreeItem(const QList<QVariant> &data, TreeItem *parent)
+TreeItem::TreeItem(const QMap<QString,QVariant> &data, TreeItem *parent)
 {
     m_parentItem = parent;
     m_itemData = data;
@@ -92,9 +93,9 @@ int TreeItem::columnCount() const
 //! [5]
 
 //! [6]
-QVariant TreeItem::data(int column) const
+QVariant TreeItem::data(QString key) const
 {
-    return m_itemData.value(column);
+    return m_itemData.value(key,QVariant());
 }
 //! [6]
 
@@ -102,6 +103,11 @@ QVariant TreeItem::data(int column) const
 TreeItem *TreeItem::parentItem()
 {
     return m_parentItem;
+}
+
+QList<TreeItem *> TreeItem::children()
+{
+    return m_childItems;
 }
 //! [7]
 

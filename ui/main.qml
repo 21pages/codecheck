@@ -23,7 +23,7 @@ import CC 1.0 as CC
     ]
 
     property var basicComponents: [
-            "b1", "b2", "b3", "b4",
+            "b1", "ResultTree", "b3", "b4",
             "b5", "b6", "b7"
     ]
 
@@ -260,9 +260,9 @@ import CC 1.0 as CC
                     // selectedComponent will always be valid, as it defaults to the first component
                     source: {
                         if (navDrawer.enabled) {
-                            return Qt.resolvedUrl("%1Demo.qml").arg(root.selectedComponent.replace(" ", ""))
+                            return Qt.resolvedUrl("qrc:/qml/%.qml").arg(root.selectedComponent.replace(" ", ""))
                         } else {
-                            return Qt.resolvedUrl("%1Demo.qml").arg(selectedComponent.replace(" ", ""))
+                            return Qt.resolvedUrl("qrc:/qml/%.qml").arg(selectedComponent.replace(" ", ""))
                         }
                     }
                 }
