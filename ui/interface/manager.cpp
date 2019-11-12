@@ -6,6 +6,8 @@
 #include "resultstree.h"
 #include "treemodel.h"
 
+Manager *Manager::sInstance = new Manager(nullptr);
+
 Manager::Manager(QObject *parent) : QObject(parent)
 {
     QCoreApplication *app = QApplication::instance();
@@ -18,8 +20,7 @@ Manager::Manager(QObject *parent) : QObject(parent)
 
 Manager *Manager::instance()
 {
-    static Manager manager;
-    return &manager;
+    return sInstance;
 }
 
 void Manager::addErrorItem(const ErrorItem &item)

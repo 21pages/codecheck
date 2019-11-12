@@ -25,7 +25,8 @@ public:
     ResultsView* resultView;
     ResultsTree *resultsTree;
 private:
-//    Manager *sInstance;
+    static Manager *sInstance;
+    QList<ErrorItem*> errorItemList;
 };
 
 #endif // MANAGER_H

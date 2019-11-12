@@ -1239,35 +1239,6 @@ void MainWindow::uncheckAll()
     toggleAllChecked(false);
 }
 
-void MainWindow::closeEvent(QCloseEvent *event)
-{
-    // Check that we aren't checking files
-    if (!mThread->isChecking()) {
-        saveSettings();
-        event->accept();
-    } else {
-        const QString text(tr("Analyzer is running.\n\n" \
-                              "Do you want to stop the analysis and exit Cppcheck?"));
-
-        QMessageBox msg(QMessageBox::Warning,
-                        tr("Cppcheck"),
-                        text,
-                        QMessageBox::Yes | QMessageBox::No,
-                        nullptr);
-
-        msg.setDefaultButton(QMessageBox::No);
-        int rv = msg.exec();
-        if (rv == QMessageBox::Yes) {
-            // This isn't really very clean way to close threads but since the app is
-            // exiting it doesn't matter.
-            mThread->stop();
-            saveSettings();
-            mExiting = true;
-        }
-        event->ignore();
-    }
-}
-
 void MainWindow::toggleAllChecked(bool checked)
 {
 #if WGT

@@ -6,7 +6,7 @@ TARGET = codecheck
 #    ../lib
 #INCLUDEPATH += . \
 #    ../lib
-QT += widgets printsupport quick qml
+QT +=  printsupport quick qml opengl
 LIBS += -L$$PWD/../externals
 
 DESTDIR = .

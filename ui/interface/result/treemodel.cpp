@@ -75,8 +75,7 @@ TreeModel::TreeModel(QObject *parent)
 
     QMap<QString,QVariant> rootData;
     rootData.insert(CONST_file,CONST_file);
-    rootData.insert(CONST_iconFile,CONST_iconFile);
-    rootData.insert(CONST_severity,CONST_severity);
+    rootData[CONST_iconFile] = QJsonObject({{"file","file1.cpp"},{"icon","qrc:/images/language-cpp.png"}});    rootData.insert(CONST_severity,CONST_severity);
     rootData.insert(CONST_severityStr,CONST_severityStr);
     rootData.insert(CONST_line,CONST_line);
     rootData.insert(CONST_id,CONST_id);
@@ -89,13 +88,6 @@ TreeModel::TreeModel(QObject *parent)
     rootData.insert(CONST_sinceDate,CONST_sinceDate);
     rootData.insert(CONST_tags,CONST_tags);
     rootItem = new TreeItem(rootData);
-
-    rootData[CONST_iconFile] = QJsonObject({{"file","file1.cpp"},{"icon","qrc:/images/language-cpp.png"}});
-    TreeItem *item1 = new TreeItem(rootData,rootItem);
-    rootItem->appendChild(item1);
-    rootData[CONST_iconFile] = QJsonObject({{"file","file1.cpp"},{"icon","qrc:/images/error.png"}});
-    TreeItem *item11 = new TreeItem(rootData,item1);
-    item1->appendChild(item11);
 }
 
 void TreeModel::BeginResetModel()
@@ -270,13 +262,6 @@ bool TreeModel::addErrorItemExec(const ErrorItem &item)
         mHasVisibleErrors = true;
     }
     TreeItem *fileItem = nullptr;
-//    if(rootItem->children().count()) {
-//        std::for_each(rootItem->children().begin(),rootItem->children().end(),[relativeFile,&fileItem](TreeItem *child) {
-//            if(child->data(CONST_file) == relativeFile){
-//                fileItem =  child;
-//            }
-//         });
-//    }
     for(const auto & child : rootItem->children()) {
             if(child->data(CONST_file) == relativeFile){
                 fileItem =  child;
@@ -286,6 +271,10 @@ bool TreeModel::addErrorItemExec(const ErrorItem &item)
     if(!fileItem) {
         QMap<QString,QVariant> fileItemData;
         fileItemData.insert(CONST_iconFile, QJsonObject({{"file",relativeFile},{"icon","qrc:/images/language-cpp.png"}}));
+        fileItemData.insert(CONST_severityStr,"");
+        fileItemData.insert(CONST_line,"");
+        fileItemData.insert(CONST_id,"");
+        fileItemData.insert(CONST_summary,"");
         fileItem = new TreeItem(fileItemData,rootItem);
         rootItem->appendChild(fileItem);
     }
@@ -305,11 +294,11 @@ bool TreeModel::addErrorItemExec(const ErrorItem &item)
     QString icon;
     QString severityStr;
     Helper::Severity2Icon(item.severity,icon,severityStr);
-    errorItemData.insert(CONST_iconFile,QJsonObject({{"file",relativeFile},{"icon",":old/go-down.png"}}));
+    errorItemData.insert(CONST_iconFile,QJsonObject({{"file",relativeFile},{"icon",icon}}));
     errorItemData.insert(CONST_severityStr,severityStr);
     TreeItem *errorItem = checkExistingItem(fileItem->children(),errorItemData);
     if(!errorItem) {
-        TreeItem *errorItem = new TreeItem(errorItemData, fileItem);
+        errorItem = new TreeItem(errorItemData, fileItem);
         fileItem->appendChild(errorItem);
     }
     if (item.errorPath.size() > 1) {
@@ -322,7 +311,8 @@ bool TreeModel::addErrorItemExec(const ErrorItem &item)
             pathItemData[CONST_message] = e.info;
             pathItemData[CONST_summary] = e.info;
             pathItemData[CONST_severityStr] = "note";
-            errorItemData.insert(CONST_iconFile,QJsonObject({{"file",e.file},{"icon",icon}}));
+            pathItemData.insert(CONST_id,"");
+            pathItemData.insert(CONST_iconFile,QJsonObject({{"file",e.file},{"icon","qrc:/old/go-down.png"}}));
             TreeItem *pathItem = checkExistingItem(errorItem->children(),pathItemData);
             if (!pathItem) {
                 pathItem = new TreeItem(pathItemData,errorItem);

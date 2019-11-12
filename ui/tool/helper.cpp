@@ -15,27 +15,27 @@ void Helper::Severity2Icon(Severity::SeverityType type, QString &icon, QString &
         severityStr = "无";
         break;
     case Severity::error:
-        icon = ":old/dialog-error.png";
+        icon = "qrc:/old/dialog-error.png";
         severityStr = "错误";
         break;
     case Severity::warning:
-        icon = ":old/dialog-warning.png";
+        icon = "qrc:/old/dialog-warning.png";
         severityStr = "警告";
         break;
     case Severity::style:
-        icon = ":old/applications-development.png";
+        icon = "qrc:/old/applications-development.png";
         severityStr = "代码样式";
         break;
     case Severity::performance:
-        icon = ":old/utilities-system-monitor.png";
+        icon = "qrc:/old/utilities-system-monitor.png";
         severityStr = "性能";
         break;
     case Severity::portability:
-        icon = ":old/applications-system.png";
+        icon = "qrc:/old/applications-system.png";
         severityStr = "可移植性";
         break;
     case Severity::information:
-        icon = ":old/dialog-information.png";
+        icon = "qrc:/old/dialog-information.png";
         severityStr = "信息";
         break;
     case Severity::debug:

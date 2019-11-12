@@ -62,6 +62,21 @@ TreeItem::~TreeItem()
 {
     qDeleteAll(m_childItems);
 }
+
+TreeItem::TreeItem(const TreeItem &other)
+{
+    this->m_childItems = other.m_childItems;
+    this->m_itemData = other.m_itemData;
+    this->m_parentItem = other.m_parentItem;
+}
+
+TreeItem &TreeItem::operator =(const TreeItem &other)
+{
+    this->m_childItems = other.m_childItems;
+    this->m_itemData = other.m_itemData;
+    this->m_parentItem = other.m_parentItem;
+    return *this;
+}
 //! [1]
 
 //! [2]

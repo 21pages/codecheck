@@ -409,16 +409,16 @@ void ResultsView::readErrorsXml(const QString &filename)
     }
 
     ErrorItem item;
-    Manager::instance()->beginResetModel();
     bool time = true;
     foreach (item, errors) {
-        Manager::instance()->resultsTree->addErrorItem(item);
+//        Manager::instance()->resultsTree->addErrorItem(item);
         if(time) {
-            time = false;
+//            time = false;
+            Manager::instance()->beginResetModel();
             Manager::instance()->addErrorItem(item);
+            Manager::instance()->endResetModel();
         }
     }
-    Manager::instance()->endResetModel();
     QString dir;
     if (!errors.isEmpty() && !errors[0].errorPath.isEmpty()) {
         QString relativePath = QFileInfo(filename).canonicalPath();

@@ -1,5 +1,5 @@
 import QtQuick 2.12
-import QtQuick.Controls 2.12
+import QtQuick.Controls 2.0
 import QtGraphicalEffects 1.0
 import "qrc:/Material/" //as Material
 import "qrc:/Material/ListItems/" as ListItem
@@ -11,6 +11,7 @@ import CC 1.0 as CC
     visible:  true
     width: dp(800); height: dp(600)
     //minimumWidth: 800; minimumHeight: 600
+    flags: flags | Qt.FramelessWindowHint
 
     theme {
         primaryColor: "blue"
@@ -39,6 +40,10 @@ import CC 1.0 as CC
 
     CC.OpenProjectManager{
         id:openProject;
+    }
+
+    Component.onCompleted: {
+        root.showMaximized()
     }
 
     initialPage: TabbedPage {

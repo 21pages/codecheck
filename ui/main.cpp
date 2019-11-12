@@ -38,11 +38,14 @@ using namespace CC;
 
 int main(int argc, char *argv[])
 {
+//#ifdef Q_OS_WIN
+//    qputenv( "QSG_RENDER_LOOP", "basic" );
+//#endif
 
-#if (QT_VERSION >= QT_VERSION_CHECK(5, 6, 0))
-    QApplication::setAttribute(Qt::AA_EnableHighDpiScaling);
-    QApplication::setAttribute(Qt::AA_UseHighDpiPixmaps);
-#endif
+//#if (QT_VERSION >= QT_VERSION_CHECK(5, 6, 0))
+//    QApplication::setAttribute(Qt::AA_EnableHighDpiScaling);
+//    QApplication::setAttribute(Qt::AA_UseHighDpiPixmaps);
+//#endif
 
     QApplication app(argc, argv);
 
@@ -62,10 +65,10 @@ int main(int argc, char *argv[])
 //    // Register this metatype that is used to transfer error info
 //    qRegisterMetaType<ErrorItem>("ErrorItem");
 
-    if ( QThreadPool::globalInstance()->maxThreadCount() > 1 )
-    {
-        QThreadPool::globalInstance()->setMaxThreadCount( QThreadPool::globalInstance()->maxThreadCount() - 1 );
-    }
+//    if ( QThreadPool::globalInstance()->maxThreadCount() > 1 )
+//    {
+//        QThreadPool::globalInstance()->setMaxThreadCount( QThreadPool::globalInstance()->maxThreadCount() - 1 );
+//    }
     Manager *manager = Manager::instance();
     Q_UNUSED(manager);
 
