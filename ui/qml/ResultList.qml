@@ -2,6 +2,7 @@ import QtQuick 2.12
 import QtQuick.Controls 2.0
 import QtQuick.Controls 1.4
 import CC 1.0
+import "qrc:/qml/"
 
 ListView {
     id: listView

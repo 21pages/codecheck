@@ -6,5 +6,6 @@
         <file>main2.qml</file>
         <file>qml/ResultList.qml</file>
         <file>qml/ListRowDelegate.qml</file>
+        <file>qml/LineRowDelegate.qml</file>
     </qresource>
 </RCC>
