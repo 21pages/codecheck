@@ -19,6 +19,7 @@ public:
     void addErrorItem(const ErrorItem& item);
     void beginResetModel();
     void endResetModel();
+    bool listAddErrorItem(const ErrorItem &item);
 public:
     QSettings* settings;
     MainWindow* mainWindow;
@@ -26,7 +27,12 @@ public:
     ResultsTree *resultsTree;
 private:
     static Manager *sInstance;
-    QList<ErrorItem*> errorItemList;
+    QList<QSharedPointer<ErrorItem>> errorItemList;
+
+    //for provideer
+    QStringList mHiddenMessageId;
+    QString mFilter;
+    bool mHasVisibleErrors = false;
 };
 
 #endif // MANAGER_H

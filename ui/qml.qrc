@@ -4,5 +4,7 @@
         <file>qml/MaterialTreeView.qml</file>
         <file>qml/ResultTree.qml</file>
         <file>main2.qml</file>
+        <file>qml/ResultList.qml</file>
+        <file>qml/ListRowDelegate.qml</file>
     </qresource>
 </RCC>

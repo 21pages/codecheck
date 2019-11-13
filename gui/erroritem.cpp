@@ -55,6 +55,18 @@ ErrorItem::ErrorItem(const ErrorLogger::ErrorMessage &errmsg)
     }
 }
 
+ErrorItem::ErrorItem(const ErrorItem &other)
+{
+    this->errorId = other.errorId;
+    this->severity = other.severity;
+    this->inconclusive = other.inconclusive;
+    this->summary = other.summary;
+    this->message = other.message;
+    this->cwe = other.cwe;
+    this->symbolNames = other.symbolNames;
+    this->errorPath = other.errorPath;
+}
+
 QString ErrorItem::tool() const
 {
     if (errorId == CLANG_ANALYZER)

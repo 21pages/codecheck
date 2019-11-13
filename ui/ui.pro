@@ -6,8 +6,9 @@ TARGET = codecheck
 #    ../lib
 #INCLUDEPATH += . \
 #    ../lib
-QT +=  printsupport quick qml opengl
+QT +=  qml quick  widgets printsupport
 LIBS += -L$$PWD/../externals
+#LIBS += -lopengl32.dll
 
 DESTDIR = .
 RCC_DIR = temp

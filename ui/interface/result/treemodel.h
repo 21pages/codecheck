@@ -5,27 +5,13 @@
 #include <QAbstractItemModel>
 #include <QModelIndex>
 #include <QVariant>
+#include "iglobal.h"
 
 #define TREEMODEL_REGISTER \
 {   \
     auto treeModel = CC::TreeModel::instance();                                   \
     engine.rootContext()->setContextProperty("treeModel", treeModel);   \
 }
-
-const QString CONST_file("file");
-const QString CONST_iconFile("iconFile");
-const QString CONST_severity("severity");
-const QString CONST_severityStr("severityStr");
-const QString CONST_line("line");
-const QString CONST_id("id");
-const QString CONST_summary("summary");
-const QString CONST_hide("hide");
-const QString CONST_message("message");
-const QString CONST_column("column");
-const QString CONST_inconclusive("inconclusive");
-const QString CONST_file0("file0");
-const QString CONST_sinceDate("sinceDate");
-const QString CONST_tags("tags");
 
 class  ErrorItem;
 namespace CC {
@@ -54,8 +40,8 @@ public:
         tags,
     };
     enum class TreeModelColumn : int {
-        iconFile,
-        severityStr,
+        iconFile = 100,
+        severityStr = 0,
         line,
         id,
         summary,

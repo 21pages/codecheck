@@ -49,7 +49,7 @@ public:
 /**
 * @brief A class containing data for one error path item
 */
-class QErrorPathItem {
+class QErrorPathItem  {
 public:
     QErrorPathItem() : line(0), column(-1) {}
     explicit QErrorPathItem(const ErrorLogger::ErrorMessage::FileLocation &loc);
@@ -73,6 +73,7 @@ class ErrorItem {
 public:
     ErrorItem();
     explicit ErrorItem(const ErrorLogger::ErrorMessage &errmsg);
+    ErrorItem(const ErrorItem& other);
 
     /**
     * @brief Convert error item to string.

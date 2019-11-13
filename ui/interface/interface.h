@@ -3,11 +3,13 @@
 
 #include "openproject.h"
 #include "treemodel.h"
+#include "provider.h"
 
 #define REGISTERS_INITIALIZA     \
 {   \
 OPENPROJECT_REGISTER;    \
 TREEMODEL_REGISTER; \
+Provider_Register;\
 }
 
 

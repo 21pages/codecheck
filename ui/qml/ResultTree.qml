@@ -9,16 +9,16 @@ TreeView {
     id:treeView
     model: treeModel
 
-    TableViewColumn {
-        role: "iconFile"
-        title: "文件名"
-        delegate: iconTextDelegate
-        width: treeView.width * 0.3
-    }
+//    TableViewColumn {
+//        role: "iconFile"
+//        title: "文件名"
+//        delegate: iconTextDelegate
+//        width: treeView.width * 0.3
+//    }
     TableViewColumn {
         role: "severityStr"
         title: "错误级别"
-        width: treeView.width * 0.1
+        width: treeView.width * 0.4
     }
     TableViewColumn {
         role: "line"

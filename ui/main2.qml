@@ -12,7 +12,7 @@ import QtGraphicalEffects 1.0
 Window {
     id:root
     visible: true
-    minimumWidth: 600; minimumHeight: 800
+//    minimumWidth: 600; minimumHeight: 800
     width: 600; height: 800
 
     CC.OpenProjectManager{
@@ -25,11 +25,15 @@ Window {
         id:btn
         onClicked:openProject.open()
     }
-    ResultTree{
-        id:treeView
+    Item {
         x:200;y:0
         width:parent.width-200
         height: parent.height
+        ResultList{
+
+        }
     }
+
+
 
 }

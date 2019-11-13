@@ -11,7 +11,7 @@ import CC 1.0 as CC
     visible:  true
     width: dp(800); height: dp(600)
     //minimumWidth: 800; minimumHeight: 600
-    flags: flags | Qt.FramelessWindowHint
+//    flags: flags | Qt.FramelessWindowHint
 
     theme {
         primaryColor: "blue"
@@ -24,7 +24,7 @@ import CC 1.0 as CC
     ]
 
     property var basicComponents: [
-            "b1", "ResultTree", "b3", "b4",
+            "b1", "ResultList", "b3", "b4",
             "b5", "b6", "b7"
     ]
 

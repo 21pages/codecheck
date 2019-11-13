@@ -2,6 +2,7 @@ INCLUDEPATH += $$PWD
 DEPENDPATH += $$PWD
 
 HEADERS += \
+    $$PWD/iglobal.h \
     $$PWD/interface.h \
     $$PWD/manager.h \
     $$PWD/openproject.h

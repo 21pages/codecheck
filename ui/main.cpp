@@ -38,14 +38,16 @@ using namespace CC;
 
 int main(int argc, char *argv[])
 {
-//#ifdef Q_OS_WIN
-//    qputenv( "QSG_RENDER_LOOP", "basic" );
-//#endif
+#ifdef Q_OS_WIN
+    qputenv( "QSG_RENDER_LOOP", "basic" );
+#endif
 
 //#if (QT_VERSION >= QT_VERSION_CHECK(5, 6, 0))
 //    QApplication::setAttribute(Qt::AA_EnableHighDpiScaling);
 //    QApplication::setAttribute(Qt::AA_UseHighDpiPixmaps);
 //#endif
+
+//    QApplication::setAttribute(Qt::AA_UseDesktopOpenGL);
 
     QApplication app(argc, argv);
 
@@ -65,10 +67,10 @@ int main(int argc, char *argv[])
 //    // Register this metatype that is used to transfer error info
 //    qRegisterMetaType<ErrorItem>("ErrorItem");
 
-//    if ( QThreadPool::globalInstance()->maxThreadCount() > 1 )
-//    {
-//        QThreadPool::globalInstance()->setMaxThreadCount( QThreadPool::globalInstance()->maxThreadCount() - 1 );
-//    }
+    if ( QThreadPool::globalInstance()->maxThreadCount() > 1 )
+    {
+        QThreadPool::globalInstance()->setMaxThreadCount( QThreadPool::globalInstance()->maxThreadCount() - 1 );
+    }
     Manager *manager = Manager::instance();
     Q_UNUSED(manager);
 
@@ -78,7 +80,7 @@ int main(int argc, char *argv[])
     qmlRegisterSingletonType<Device>("Device", 0, 1, "Device", Device::qmlSingleton);
     qmlRegisterUncreatableType<Units>("Units", 0, 3, "Units", QStringLiteral("Units can only be used via the attached property."));
     engine.addImportPath(QString("qrc:/"));
-    const QUrl url(QStringLiteral("qrc:/main.qml"));
+    const QUrl url(QStringLiteral("qrc:/main2.qml"));
     QObject::connect(&engine, &QQmlApplicationEngine::objectCreated,
                      &app, [url](QObject *obj, const QUrl &objUrl) {
         if (!obj && url == objUrl)

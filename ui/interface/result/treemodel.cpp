@@ -270,7 +270,7 @@ bool TreeModel::addErrorItemExec(const ErrorItem &item)
 
     if(!fileItem) {
         QMap<QString,QVariant> fileItemData;
-        fileItemData.insert(CONST_iconFile, QJsonObject({{"file",relativeFile},{"icon","qrc:/images/language-cpp.png"}}));
+//        fileItemData.insert(CONST_iconFile, QJsonObject({{"file",relativeFile},{"icon","qrc:/images/language-cpp.png"}}));
         fileItemData.insert(CONST_severityStr,"");
         fileItemData.insert(CONST_line,"");
         fileItemData.insert(CONST_id,"");
@@ -294,7 +294,7 @@ bool TreeModel::addErrorItemExec(const ErrorItem &item)
     QString icon;
     QString severityStr;
     Helper::Severity2Icon(item.severity,icon,severityStr);
-    errorItemData.insert(CONST_iconFile,QJsonObject({{"file",relativeFile},{"icon",icon}}));
+//    errorItemData.insert(CONST_iconFile,QJsonObject({{"file",relativeFile},{"icon",icon}}));
     errorItemData.insert(CONST_severityStr,severityStr);
     TreeItem *errorItem = checkExistingItem(fileItem->children(),errorItemData);
     if(!errorItem) {
@@ -312,7 +312,7 @@ bool TreeModel::addErrorItemExec(const ErrorItem &item)
             pathItemData[CONST_summary] = e.info;
             pathItemData[CONST_severityStr] = "note";
             pathItemData.insert(CONST_id,"");
-            pathItemData.insert(CONST_iconFile,QJsonObject({{"file",e.file},{"icon","qrc:/old/go-down.png"}}));
+//            pathItemData.insert(CONST_iconFile,QJsonObject({{"file",e.file},{"icon","qrc:/old/go-down.png"}}));
             TreeItem *pathItem = checkExistingItem(errorItem->children(),pathItemData);
             if (!pathItem) {
                 pathItem = new TreeItem(pathItemData,errorItem);
