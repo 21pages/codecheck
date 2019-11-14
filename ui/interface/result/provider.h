@@ -6,6 +6,7 @@
 #include <QObject>
 #include <QSharedPointer>
 #include <QJsonArray>
+#include <QQuickTextDocument>
 
 #define Provider_Register \
 {       \
@@ -27,19 +28,25 @@ DECLARE_Q_OBJECT_LIST_MODEL( DataItemRO)
 class Provider : public QObject {
     Q_OBJECT
     Q_PROPERTY( QObjectListModel_DataItemRO* items READ items CONSTANT )
+    Q_PROPERTY(QQuickTextDocument* document READ document WRITE setDocument NOTIFY documentChanged)
 public:
     Q_INVOKABLE void addItem(const QString& file, const QString& severity,
                              const QString& id, int line, const QString& summary, const QJsonArray &array);
-    Q_INVOKABLE void removeItem(int index);
+    Q_INVOKABLE void removeItem(DataItemRO *item);
+    Q_INVOKABLE void initHighlighter(const QString& fileName);
     static Provider* instance();
-
 private:
     explicit Provider( QObject* parent = Q_NULLPTR );
+signals:
+    void documentChanged();
 private:
     // Since this getter is not safe (ownership remains to c++)
     // and it is used for QML only it'd better to make it private.
-    QObjectListModel_DataItemRO* items();
+    QObjectListModel_DataItemRO* items() {return &m_items;}
     QObjectListModel_DataItemRO  m_items;
+    QQuickTextDocument *document() {return m_document;}
+    void setDocument(QQuickTextDocument *document) {m_document = document;}
+    QQuickTextDocument *m_document;
     static Provider *Instance;
 };
 }

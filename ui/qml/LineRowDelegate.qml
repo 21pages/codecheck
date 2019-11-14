@@ -24,4 +24,13 @@ Rectangle {
             padding: 10
         }
     }
+    MouseArea {
+        anchors.fill: parent
+        propagateComposedEvents: true
+        onClicked: {
+            console.log("lineRowDelegate");
+            provider.initHighlighter(modelData.file);
+            mouse.accepted = false;
+        }
+    }
 }

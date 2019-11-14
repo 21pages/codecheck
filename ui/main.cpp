@@ -71,11 +71,9 @@ int main(int argc, char *argv[])
     {
         QThreadPool::globalInstance()->setMaxThreadCount( QThreadPool::globalInstance()->maxThreadCount() - 1 );
     }
-    Manager *manager = Manager::instance();
-    Q_UNUSED(manager);
-
-
     QQmlApplicationEngine engine;
+    Manager *manager = Manager::instance();
+    manager->setEngine(&engine);
     REGISTERS_INITIALIZA;
     qmlRegisterSingletonType<Device>("Device", 0, 1, "Device", Device::qmlSingleton);
     qmlRegisterUncreatableType<Units>("Units", 0, 3, "Units", QStringLiteral("Units can only be used via the attached property."));

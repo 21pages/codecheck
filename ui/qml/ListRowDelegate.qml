@@ -6,49 +6,72 @@ Rectangle {
     property var d
     Layout.fillWidth: true
     Layout.fillHeight: true
-    height:column.height + listView.height
+    height:column.height + listView2.height
 
     Rectangle {
         id:column
         height: 100
         width: parent.width
         border.width: 1;border.color: "green"
-        ColumnLayout {
-            Text {
-                y:0
-                text: modelData.file + "\t行号:" +modelData.line
-                height: 50
-                padding: 10
+        RowLayout {
+            height: parent.height
+            Rectangle {
+                id:rect
+                width: 50;height: parent.height
+                visible: modelData.array.length !== 0
                 color: "blue"
             }
-            Text {
-                y:50
-                text: modelData.id + ":" + modelData.summary
-                height: 50
-                padding: 10
-                color: "blue"
+            ColumnLayout {
+                Text {
+                    y:0
+                    text: modelData.file + "\t行号:" +modelData.line
+                    height: 50
+                    padding: 10
+                    color: "blue"
+                }
+                Text {
+                    y:50
+                    text: modelData.id + ":" + modelData.summary
+                    height: 50
+                    padding: 10
+                    color: "blue"
+                }
             }
         }
 
         MouseArea {
-            z:1
             anchors.fill: parent
+            propagateComposedEvents: true
             onClicked: {
                 console.log(d);
                 if(modelData.array.length !== 0) {
-                    listView.visible = !listView.visible;
-                    listView.height = listView.visible ? 80 * modelData.array.length: 0;
+                    listView2.visible = !listView2.visible;
+                    listView2.height = listView2.visible ? 80 * modelData.array.length: 0;
                 }
+                provider.initHighlighter(modelData.file);
+                mouse.accepted = false;
             }
         }
     }
     ListView {
         y:100
-        id:listView
+        id:listView2
         model: modelData.array
         delegate:LineRowDelegate{}
         visible: false
+        highlightFollowsCurrentItem:true
 
+        MouseArea {
+            anchors.fill: parent
+            propagateComposedEvents: true
+            onClicked: {
+                console.log("contentX:",listView2.contentX,"contentY:",listView2.contentY);
+                console.log("x:",mouse.x,"y:",mouse.y);
+                listView2.currentIndex = listView2.indexAt(mouse.x + listView2.contentX,mouse.y + listView2.contentY);
+                console.log("ListRowDelegateCurrentIndex:",listView2.currentIndex);
+                mouse.accepted = false;
+            }
+        }
     }
 }
 

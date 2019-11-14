@@ -90,3 +90,18 @@ bool Manager::listAddErrorItem(const ErrorItem &item)
     errorItemList<< QSharedPointer<ErrorItem>(new ErrorItem(item));
     return true;
 }
+
+void Manager::setEngine(QQmlApplicationEngine *engine)
+{
+    Engine = engine;
+}
+
+QQmlApplicationEngine *Manager::engine()
+{
+    return Engine;
+}
+
+QObject *Manager::findChild(QString objname)
+{
+    return reinterpret_cast<QObject*>(Engine->rootObjects().first()->findChild<QObject*>(objname)) ;
+}

@@ -4,6 +4,7 @@
 #include <QObject>
 #include <QSharedPointer>
 #include <QSettings>
+#include <QQmlApplicationEngine>
 
 class MainWindow;
 class ResultsView;
@@ -20,6 +21,9 @@ public:
     void beginResetModel();
     void endResetModel();
     bool listAddErrorItem(const ErrorItem &item);
+    void setEngine(QQmlApplicationEngine *engine);
+    QQmlApplicationEngine * engine();
+    QObject* findChild(QString objname);
 public:
     QSettings* settings;
     MainWindow* mainWindow;
@@ -27,6 +31,7 @@ public:
     ResultsTree *resultsTree;
 private:
     static Manager *sInstance;
+    QQmlApplicationEngine * Engine;
     QList<QSharedPointer<ErrorItem>> errorItemList;
 
     //for provideer
