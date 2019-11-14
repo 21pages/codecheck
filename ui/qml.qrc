@@ -7,5 +7,7 @@
         <file>qml/ResultList.qml</file>
         <file>qml/ListRowDelegate.qml</file>
         <file>qml/LineRowDelegate.qml</file>
+        <file>qml/Global.qml</file>
+        <file>qml/qmldir</file>
     </qresource>
 </RCC>

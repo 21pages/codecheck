@@ -7,16 +7,12 @@ import "qrc:/qml/"
 ListView {
     id: listView
     anchors.fill: parent
-//    anchors.topMargin: buttons.implicitHeight + 10
     anchors.bottomMargin: 10
     boundsBehavior: Flickable.DragOverBounds
     clip: true
     cacheBuffer: 2
     highlightFollowsCurrentItem:true
 
-    // model of "itemsIndex" provides indices only.
-    // also it dispatches all necessary signals
-    // that allow view to react on indices changes
     model: provider.items
 
     delegate: ListRowDelegate {
@@ -29,18 +25,15 @@ ListView {
         NumberAnimation { properties: "x,y"; duration: 100; easing.type: Easing.InOutQuad }
     }
 
-    MouseArea {
-        anchors.fill: parent
-        propagateComposedEvents: true
-        onClicked: {
-//            console.log(listView.currentIndex);
-//            console.log("contentX:",listView.contentX,"contentY:",listView.contentY);
-//            console.log("x:",mouse.x,"y:",mouse.y);
-            listView.currentIndex = listView.indexAt(mouse.x + listView.contentX,mouse.y + listView.contentY);
-            console.log("resultListCurrentIndex:",listView.currentIndex);
-            mouse.accepted = false;
-        }
-    }
+//    MouseArea {
+//        anchors.fill: parent
+//        propagateComposedEvents: true
+//        onClicked: {
+//            listView.currentIndex = listView.indexAt(mouse.x + listView.contentX,mouse.y + listView.contentY);
+//            console.log("resultListCurrentIndex:",listView.currentIndex);
+//            mouse.accepted = false;
+//        }
+//    }
 
 }
 

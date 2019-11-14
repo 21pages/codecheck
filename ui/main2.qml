@@ -13,7 +13,7 @@ Window {
     id:root
     visible: true
 //    minimumWidth: 600; minimumHeight: 800
-    width: 600; height: 800
+    width: Global.screenWidth; height: Global.screenHeight
 
     CC.OpenProjectManager{
         id:openProject;
