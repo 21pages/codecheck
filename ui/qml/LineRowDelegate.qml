@@ -3,19 +3,11 @@ import QtQuick.Layouts 1.3
 import QtQuick.Controls 1.4
 
 
-MouseArea {
-//    Layout.fillWidth: true
-//    Layout.fillHeight: true
-//    border.width: 1;border.color: "red"
+Rectangle {
+    id:subListDelegate
+    Layout.fillWidth: true
     height: Global.subListHeight
-    width: parent.width
-    onClicked: {
-        console.log("lineRowDelegate");
-        provider.initHighlighter(modelData.file);
-        mouse.accepted = false;
-    }
-
-
+    width: listView.width
 
     Column {
         id:column
@@ -33,21 +25,15 @@ MouseArea {
         }
 
     }
-
-//    MouseArea {
-//        Layout.fillHeight:true;
-//        Layout.fillWidth: true;
-//        enabled: true
-//        propagateComposedEvents: true
-//        onClicked: {
-//            console.log("lineRowDelegate");
-//            provider.initHighlighter(modelData.file);
-//            mouse.accepted = false;
-//        }
-//    }
-
-//    Button {
-//        text:"btn";
-//        onClicked: console.log("btn");
-//    }
+    MouseArea {
+        anchors.fill: parent
+        enabled: true
+        propagateComposedEvents: true
+        onClicked: {
+            console.log("lineRowDelegate");
+            var obj = {"file":modelData.file,"line":modelData.line}
+            root.onListViewClicked(obj);
+            mouse.accepted = false;
+        }
+    }
 }

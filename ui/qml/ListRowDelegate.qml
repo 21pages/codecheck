@@ -1,8 +1,9 @@
 import QtQuick 2.7
 import QtQuick.Layouts 1.3
+import QtQuick.Controls.Styles 1.4
 
 Rectangle {
-    id:root
+    id:listViewDelegate
     property var d
     Layout.fillWidth: true
     Layout.fillHeight: true
@@ -13,6 +14,8 @@ Rectangle {
         height: Global.listHeight
         width: parent.width
         border.width: 1;border.color: "green"
+        color: Global.severityColorMap[modelData.severity] !== undefined ? Global.severityColorMap[modelData.severity]:"#fefefe";
+
         RowLayout {
             height: parent.height
             Rectangle {
@@ -48,7 +51,8 @@ Rectangle {
                     listView2.visible = !listView2.visible;
                     listView2.height = listView2.visible ? Global.subListHeight * modelData.array.length: 0;
                 }
-                provider.initHighlighter(modelData.file);
+                var obj = {"file":modelData.file,"line":modelData.line}
+                root.onListViewClicked(obj);
                 mouse.accepted = false;
             }
         }

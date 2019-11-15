@@ -5,18 +5,18 @@
 #include <QJsonObject>
 
 #define OPENPROJECT_REGISTER {   \
-    qmlRegisterType<CC::OpenProject>("CC",1,0,"OpenProjectManager");    \
+    qmlRegisterType<CC::Project>("CC",1,0,"ProjectManager");    \
 }
 
 namespace CC {
-    class OpenProject : public QObject
+    class Project : public QObject
     {
         Q_OBJECT
-        Q_DISABLE_COPY(OpenProject)
+        Q_DISABLE_COPY(Project)
     public:
-        explicit OpenProject(QObject *parent = nullptr);
-
+        explicit Project(QObject *parent = nullptr);
         Q_INVOKABLE QJsonObject open();
+        Q_INVOKABLE QJsonObject create();
     };
 }
 

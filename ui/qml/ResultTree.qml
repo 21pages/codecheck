@@ -31,8 +31,8 @@ TreeView {
         width: treeView.width * 0.2
     }
     TableViewColumn {
-        role: "summary"
-        title: "概要"
+        role: "summary";
+        title: "概要";
         width: treeView.width * 0.3
     }
 

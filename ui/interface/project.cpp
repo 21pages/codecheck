@@ -1,16 +1,21 @@
-#include "openproject.h"
+#include "project.h"
 #include <QFileDialog>
 #include "manager.h"
 #include "mainwindow.h"
 
 using namespace CC;
-OpenProject::OpenProject(QObject *parent) : QObject(parent)
+Project::Project(QObject *parent) : QObject(parent)
 {
 
 }
 
-QJsonObject CC::OpenProject::open()
+QJsonObject CC::Project::open()
 {
     Manager::instance()->mainWindow->openProjectFile();
+    return QJsonObject();
+}
+
+QJsonObject Project::create()
+{
     return QJsonObject();
 }

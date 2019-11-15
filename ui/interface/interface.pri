@@ -5,11 +5,11 @@ HEADERS += \
     $$PWD/iglobal.h \
     $$PWD/interface.h \
     $$PWD/manager.h \
-    $$PWD/openproject.h
+    $$PWD/project.h
 
 SOURCES += \
     $$PWD/manager.cpp \
-    $$PWD/openproject.cpp
+    $$PWD/project.cpp
 
 include(result/result.pri)
 

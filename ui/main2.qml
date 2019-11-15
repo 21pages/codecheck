@@ -15,15 +15,23 @@ Window {
 //    minimumWidth: 600; minimumHeight: 800
     width: Global.screenWidth; height: Global.screenHeight
 
-    CC.OpenProjectManager{
-        id:openProject;
+    CC.ProjectManager{
+        id:projectManager;
     }
     Row {
         height: 100
         Button {
             width: 100;height: 100
             text: "open"
-            onClicked:openProject.open()
+            onClicked:projectManager.open()
+        }
+        Button {
+            width: 100;height: 100
+            text: "create"
+            onClicked: {
+                createProjectDialog.open();
+                projectManager.create();
+            }
         }
         Button {
             width: 100;height: 100
@@ -39,7 +47,7 @@ Window {
             width: 100;height: 100
             text: "text"
             onClicked: {
-
+                textSelect(30,32);
             }
         }
     }
@@ -73,18 +81,35 @@ Window {
            }
 
            TextEdit {
-//               baseUrl: Qt.resolvedUrl("qrc:/qml/ResultTree.qml")
                id: edit
                width: flick.width
                focus: true
                wrapMode: TextEdit.Wrap
                onCursorRectangleChanged: flick.ensureVisible(cursorRectangle)
+               readOnly: true
            }
            Component.onCompleted: {
                provider.document = edit.textDocument;
            }
        }
 
+    function textSelect(obj) {
+        var start = obj["start"];
+        var end = obj["end"];
+        edit.deselect();
+        edit.select(start, end);
+    }
 
+    function onListViewClicked(obj) {
+        obj.codec = "utf8";
+        provider.onListViewClicked(obj);
+    }
 
+    CreateProjectDialog{
+        id:createProjectDialog;
+    }
+
+    Component.onCompleted: {
+        provider.sigSelectionPos.connect(textSelect);
+    }
 }

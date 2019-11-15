@@ -6,6 +6,8 @@
 #include <QObject>
 #include <QSharedPointer>
 #include <QJsonArray>
+#include <QJsonValue>
+#include <QJsonObject>
 #include <QQuickTextDocument>
 
 #define Provider_Register \
@@ -33,12 +35,13 @@ public:
     Q_INVOKABLE void addItem(const QString& file, const QString& severity,
                              const QString& id, int line, const QString& summary, const QJsonArray &array);
     Q_INVOKABLE void removeItem(DataItemRO *item);
-    Q_INVOKABLE void initHighlighter(const QString& fileName);
+    Q_INVOKABLE void onListViewClicked(const QJsonObject &obj);
     static Provider* instance();
 private:
     explicit Provider( QObject* parent = Q_NULLPTR );
 signals:
     void documentChanged();
+    void sigSelectionPos(QJsonObject obj);
 private:
     // Since this getter is not safe (ownership remains to c++)
     // and it is used for QML only it'd better to make it private.

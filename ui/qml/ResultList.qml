@@ -25,15 +25,15 @@ ListView {
         NumberAnimation { properties: "x,y"; duration: 100; easing.type: Easing.InOutQuad }
     }
 
-//    MouseArea {
-//        anchors.fill: parent
-//        propagateComposedEvents: true
-//        onClicked: {
-//            listView.currentIndex = listView.indexAt(mouse.x + listView.contentX,mouse.y + listView.contentY);
-//            console.log("resultListCurrentIndex:",listView.currentIndex);
-//            mouse.accepted = false;
-//        }
-//    }
+    MouseArea {
+        anchors.fill: parent
+        propagateComposedEvents: true
+        onClicked: {
+            listView.currentIndex = listView.indexAt(mouse.x + listView.contentX,mouse.y + listView.contentY);
+            console.log("resultListCurrentIndex:",listView.currentIndex);
+            mouse.accepted = false;
+        }
+    }
 
 }
 

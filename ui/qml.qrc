@@ -9,5 +9,6 @@
         <file>qml/LineRowDelegate.qml</file>
         <file>qml/Global.qml</file>
         <file>qml/qmldir</file>
+        <file>qml/CreateProjectDialog.qml</file>
     </qresource>
 </RCC>
