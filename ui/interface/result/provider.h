@@ -16,6 +16,9 @@
    qmlRegisterUncreatableType<CC::QObjectListModel_DataItemRO>("CC",1,0,"QObjectListModel_DataItemRO","interface"); \
     auto provider = CC::Provider::instance();                                   \
     engine.rootContext()->setContextProperty("provider", provider);   \
+    QStringList dirveList; \
+    for(auto info :QDir::drives()) {dirveList<<info.path();} \
+    engine.rootContext()->setContextProperty("driveModel",dirveList);\
 }
 
 // "app" namespace is defined on purpose to show the case of using

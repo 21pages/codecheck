@@ -59,7 +59,7 @@ void Provider::onListViewClicked(const QJsonObject& obj)
     QString tmp = fileName;
     tmp.replace("\\","/");
 //    QString fullFileName = Manager::instance()->resultView->getCheckDirectory() + "/" + tmp;
-    QString fullFileName = QString("C:/wisdom/done/56/codecheck") + "/" +tmp;
+    QString fullFileName = /*QString("C:/wisdom/done/56/codecheck")*/QString("D:/learn/Qt/cppcheck-master/cfg") + "/" +tmp;
     qDebug()<<fullFileName;
     QFile file(fullFileName);
     QTextDocument *doc = m_document->textDocument();

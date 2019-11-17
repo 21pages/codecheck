@@ -1,14 +1,15 @@
 <RCC>
     <qresource prefix="/">
         <file>main.qml</file>
-        <file>qml/MaterialTreeView.qml</file>
-        <file>qml/ResultTree.qml</file>
-        <file>main2.qml</file>
         <file>qml/ResultList.qml</file>
         <file>qml/ListRowDelegate.qml</file>
         <file>qml/LineRowDelegate.qml</file>
         <file>qml/Global.qml</file>
         <file>qml/qmldir</file>
         <file>qml/CreateProjectDialog.qml</file>
+        <file>qtquickcontrols2.conf</file>
+        <file>qml/FilePicker.qml</file>
+        <file>qml/FolderPicker.qml</file>
+        <file>js/utils.js</file>
     </qresource>
 </RCC>

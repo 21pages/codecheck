@@ -6,7 +6,7 @@ TARGET = codecheck
 #    ../lib
 #INCLUDEPATH += . \
 #    ../lib
-QT +=  qml quick  widgets printsupport
+QT +=  quick-private gui gui-private core core-private qml qml-private quickcontrols2 widgets
 LIBS += -L$$PWD/../externals
 #LIBS += -lopengl32.dll
 
@@ -57,12 +57,12 @@ contains(QMAKE_CXX, clang++) {
     QMAKE_CXXFLAGS += -std=c++11
 }
 
-contains(HAVE_QCHART, [yY][eE][sS]) {
-    QT += charts
-    DEFINES += HAVE_QCHART
-} else {
-    message("Charts disabled - to enable it pass HAVE_QCHART=yes to qmake.")
-}
+#contains(HAVE_QCHART, [yY][eE][sS]) {
+#    QT += charts
+#    DEFINES += HAVE_QCHART
+#} else {
+#    message("Charts disabled - to enable it pass HAVE_QCHART=yes to qmake.")
+#}
 
 SOURCES += \
     main.cpp
@@ -73,15 +73,15 @@ QML_IMPORT_PATH =
 # Additional import path used to resolve QML modules just for Qt Quick Designer
 QML_DESIGNER_IMPORT_PATH =
 
-include(material/material.pri)
-OPTIONS += roboto
+#include(material/material.pri)
+#OPTIONS += roboto
 include(interface/interface.pri)
 include(../gui/gui.pri)
 include(tool/tool.pri)
 
 RESOURCES += qml.qrc  \
-                         image/demo.qrc \
-                        image/icons/icons.qrc
+             image/demo.qrc \
+            image/icons/icons.qrc
 #RESOURCES = ../gui/gui.qrc
 
 

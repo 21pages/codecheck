@@ -4,8 +4,12 @@
 #include <QObject>
 #include <QJsonObject>
 
+//qmlRegisterType<CC::Project>("CC",1,0,"ProjectManager");    \
+
+
 #define OPENPROJECT_REGISTER {   \
-    qmlRegisterType<CC::Project>("CC",1,0,"ProjectManager");    \
+    auto projectManager = CC::Project::instance();                                   \
+    engine.rootContext()->setContextProperty("projectManager", projectManager);   \
 }
 
 namespace CC {
@@ -17,6 +21,9 @@ namespace CC {
         explicit Project(QObject *parent = nullptr);
         Q_INVOKABLE QJsonObject open();
         Q_INVOKABLE QJsonObject create();
+        static Project* instance();
+    private:
+        static Project *Instance;
     };
 }
 

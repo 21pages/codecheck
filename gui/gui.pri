@@ -10,7 +10,7 @@ INCLUDEPATH += \
     $$PWD/../lib \
     $$PWD
 QT += widgets
-QT += printsupport
+#QT += printsupport
 
 contains(LINKCORE, [yY][eE][sS]) {
     LIBS += -l$$PWD/../bin/cppcheck-core

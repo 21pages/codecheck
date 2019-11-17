@@ -1,317 +1,132 @@
 import QtQuick 2.12
-import QtQuick.Controls 2.0
+import QtQuick.Controls 2.12
+import QtQuick.Window 2.12
+import QtQuick.Layouts 1.0
 import QtGraphicalEffects 1.0
-import "qrc:/Material/" //as Material
-import "qrc:/Material/ListItems/" as ListItem
-import "qrc:/Material/Extras/" as Extras
+//import QtQuick.Dialogs 1.3
+import Qt.labs.platform 1.1
+import QtQuick.Controls.Styles 1.4
+import QtQuick.Controls.Material 2.0
 import CC 1.0 as CC
+import "qrc:/qml/"
 
-/*Material.*/ApplicationWindow {
+
+
+Window {
     id:root
-    visible:  true
-    width: dp(800); height: dp(600)
-    //minimumWidth: 800; minimumHeight: 600
-//    flags: flags | Qt.FramelessWindowHint
+    visible: true
+    width: Global.screenWidth; height: Global.screenHeight
 
-    theme {
-        primaryColor: "blue"
-        accentColor: "red"
-        tabHighlightColor: "white"
+    property Component filePicker : FilePicker{
+        onFileSelected: {
+            stackView.pop();
+            projectManager.open(fileName);
+        }
     }
 
-    property var styles: [
-            "a1", "a2", "a3"
-    ]
-
-    property var basicComponents: [
-            "b1", "ResultList", "b3", "b4",
-            "b5", "b6", "b7"
-    ]
-
-    property var compoundComponents: [
-            "c1", "c2", "c3", "c4", "c5", "c6", "c7"
-    ]
-
-    property var sections: [ basicComponents, styles, compoundComponents ]
-
-    property var sectionTitles: [ "Basic Components", "Style", "Compound Components" ]
-
-    property string selectedComponent: sections[0][0]
-
-    CC.OpenProjectManager{
-        id:openProject;
-    }
-
-    Component.onCompleted: {
-        root.showMaximized()
-    }
-
-    initialPage: TabbedPage {
-        id: page
-
-        title: "Demo"
-
-        actionBar.maxActionCount: navDrawer.enabled ? 3 : 4
-
-        actions: [
-            Action {
-                iconName: "maps/place"
-                name:"项目"
-                onTriggered: projectSheet.open()
-            },
-
-            Action {
-                iconName: "alert/warning"
-                name: "Dummy error"
-                onTriggered: root.showError("Something went wrong", "Do you want to retry?", "Close", true)
-            },
-
-            Action {
-                iconName: "image/color_lens"
-                name: "Colors"
-                onTriggered: colorPicker.show()
-            },
-
-            Action {
-                iconName: "action/settings"
-                name: "Settings"
-                hoverAnimation: true
-            },
-
-            Action {
-                iconName: "alert/warning"
-                name: "THIS SHOULD BE HIDDEN!"
-                visible: false
-            },
-
-            Action {
-                iconName: "action/language"
-                name: "Language"
-                enabled: false
-            },
-
-            Action {
-                iconName: "action/account_circle"
-                name: "Accounts"
-            }
-        ]
-
-        backAction: navDrawer.action
-
-        NavigationDrawer {
-            id: navDrawer
-
-            enabled: page.width < dp(500)
-
-            onEnabledChanged: smallLoader.active = enabled
-
-            Flickable {
-                anchors.fill: parent
-
-                contentHeight: Math.max(content.implicitHeight, height)
-
-                Column {
-                    id: content
-                    anchors.fill: parent
-
-                    Repeater {
-                        model: sections
-
-                        delegate: Column {
-                            width: parent.width
-
-                            ListItem.Subheader {
-                                text: sectionTitles[index]
-                            }
-
-                            Repeater {
-                                model: modelData
-                                delegate: ListItem.Standard {
-                                    text: modelData
-                                    selected: modelData == root.selectedComponent
-                                    onClicked: {
-                                        root.selectedComponent = modelData
-                                        navDrawer.close()
-                                    }
-                                }
-                            }
-                        }
+    StackView {
+        id:stackView
+        anchors.fill: parent
+        initialItem: Item {
+            Row {
+                height: 100
+                Button {
+                    width: 100;height: 100
+                    text: "open"
+                    onClicked: {
+                        stackView.push(filePicker);
+                    }
+                }
+                Button {
+                    width: 100;height: 100
+                    text: "create"
+                    onClicked: {
+                        createProjectDialog.open();
+                        projectManager.create();
+                    }
+                }
+                Button {
+                    width: 100;height: 100
+                    text: "remove"
+                    onClicked: {
+        //                provider.removeItem(provider.items.item(0)); //ok
+                        console.log(resultList.currentIndex);
+                        console.log(resultList.currentItem.d);
+                        provider.removeItem(resultList.currentItem.d);
+                    }
+                }
+                Button {
+                    width: 100;height: 100
+                    text: "text"
+                    onClicked: {
+                        textSelect(30,32);
                     }
                 }
             }
-        }
 
-        Repeater {
-            model: !navDrawer.enabled ? sections : 0
-
-            delegate: Tab {
-                title: sectionTitles[index]
-
-                property string selectedComponent: modelData[0]
-                property var section: modelData
-
-                sourceComponent: tabDelegate
-            }
-        }
-
-        Loader {
-            id: smallLoader
-            anchors.fill: parent
-            sourceComponent: tabDelegate
-
-            property var section: []
-            visible: active
-            active: false
-        }
-    }
-
-    Dialog {
-        id: colorPicker
-        title: "Pick color"
-
-        positiveButtonText: "Done"
-
-        MenuField {
-            id: selection
-            model: ["Primary color", "Accent color", "Background color"]
-            width: dp(160)
-        }
-
-        Grid {
-            columns: 7
-            spacing: dp(8)
-
-            Repeater {
-                model: [
-                    "red", "pink", "purple", "deepPurple", "indigo",
-                    "blue", "lightBlue", "cyan", "teal", "green",
-                    "lightGreen", "lime", "yellow", "amber", "orange",
-                    "deepOrange", "grey", "blueGrey", "brown", "black",
-                    "white"
-                ]
-
-                Rectangle {
-                    width: dp(30)
-                    height: dp(30)
-                    radius: dp(2)
-                    color: Palette.colors[modelData]["500"]
-                    border.width: modelData === "white" ? dp(2) : 0
-                    border.color: Theme.alpha("#000", 0.26)
-
-                    Ink {
-                        anchors.fill: parent
-
-                        onPressed: {
-                            switch(selection.selectedIndex) {
-                                case 0:
-                                    theme.primaryColor = parent.color
-                                    break;
-                                case 1:
-                                    theme.accentColor = parent.color
-                                    break;
-                                case 2:
-                                    theme.backgroundColor = parent.color
-                                    break;
-                            }
-                        }
-                    }
-                }
-            }
-        }
-
-        onRejected: {
-            // TODO set default colors again but we currently don't know what that is
-        }
-    }
-
-    Component {
-        id: tabDelegate
-
-        Item {
-
-            Sidebar {
-                id: sidebar
-
-                expanded: !navDrawer.enabled
-
-                Column {
-                    width: parent.width
-
-                    Repeater {
-                        model: section
-                        delegate: ListItem.Standard {
-                            text: modelData
-                            selected: modelData == selectedComponent
-                            onClicked: selectedComponent = modelData
-                        }
-                    }
+            Item {
+                x:0;y:100
+                width:parent.width
+                height: 300
+                ResultList{
+                    id:resultList
                 }
             }
             Flickable {
-                id: flickable
-                anchors {
-                    left: sidebar.right
-                    right: parent.right
-                    top: parent.top
-                    bottom: parent.bottom
-                }
-                clip: true
-                contentHeight: Math.max(example.implicitHeight + 40, height)
-                Loader {
-                    id: example
-                    anchors.fill: parent
-                    asynchronous: true
-                    visible: status == Loader.Ready
-                    // selectedComponent will always be valid, as it defaults to the first component
-                    source: {
-                        if (navDrawer.enabled) {
-                            return Qt.resolvedUrl("qrc:/qml/%.qml").arg(root.selectedComponent.replace(" ", ""))
-                        } else {
-                            return Qt.resolvedUrl("qrc:/qml/%.qml").arg(selectedComponent.replace(" ", ""))
-                        }
-                    }
-                }
+                   id: flick
+                   x:0;y:400
+                   width: 300; height: 200;
+                   contentWidth: edit.paintedWidth
+                   contentHeight: edit.paintedHeight
+                   clip: true
 
-                ProgressCircle {
-                    anchors.centerIn: parent
-                    visible: example.status == Loader.Loading
-                }
+                   function ensureVisible(r)
+                   {
+                       if (contentX >= r.x)
+                           contentX = r.x;
+                       else if (contentX+width <= r.x+r.width)
+                           contentX = r.x+r.width-width;
+                       if (contentY >= r.y)
+                           contentY = r.y;
+                       else if (contentY+height <= r.y+r.height)
+                           contentY = r.y+r.height-height;
+                   }
+
+                   TextEdit {
+                       id: edit
+                       width: flick.width
+                       focus: true
+                       wrapMode: TextEdit.Wrap
+                       onCursorRectangleChanged: flick.ensureVisible(cursorRectangle)
+                       readOnly: true
+                   }
+                   Component.onCompleted: {
+                       provider.document = edit.textDocument;
+                   }
+               }
+
+            CreateProjectDialog{
+                id:createProjectDialog;
             }
-            Scrollbar {
-                flickableItem: flickable
+
+            Component.onCompleted: {
+                provider.sigSelectionPos.connect(textSelect);
             }
+
         }
     }
 
-    BottomActionSheet {
-        id: projectSheet
-
-        title: "项目"
-
-        actions: [
-            Action {
-                iconName: "social/share"
-                name: "新建项目"
-            },
-
-            Action {
-                iconName: "file/file_download"
-                name: "打开项目"
-                onTriggered: openProject.open()
-            },
-
-            Action {
-                iconName: "action/autorenew"
-                name: "编辑项目"
-                hasDividerAfter: true
-            },
-
-            Action {
-                iconName: "action/settings"
-                name: "关闭项目"
-            }
-        ]
+    function textSelect(obj) {
+        var start = obj["start"];
+        var end = obj["end"];
+        edit.deselect();
+        edit.select(start, end);
     }
+
+    function onListViewClicked(obj) {
+        obj.codec = "utf8";
+        provider.onListViewClicked(obj);
+    }
+
 
 }
-

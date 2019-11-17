@@ -49,5 +49,7 @@
         <file>old/utilities-system-monitor.png</file>
         <file>old/view-recheck.png</file>
         <file>old/view-refresh.png</file>
+        <file>images/ic_folder_open_black_48dp.png</file>
+        <file>images/ic_insert_drive_file_black_48dp.png</file>
     </qresource>
 </RCC>

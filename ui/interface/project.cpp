@@ -4,6 +4,8 @@
 #include "mainwindow.h"
 
 using namespace CC;
+
+Project* Project::Instance = new Project();
 Project::Project(QObject *parent) : QObject(parent)
 {
 
@@ -18,4 +20,9 @@ QJsonObject CC::Project::open()
 QJsonObject Project::create()
 {
     return QJsonObject();
+}
+
+Project *Project::instance()
+{
+    return Instance;
 }
