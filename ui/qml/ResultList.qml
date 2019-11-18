@@ -10,8 +10,8 @@ ListView {
     anchors.bottomMargin: 10
     boundsBehavior: Flickable.DragOverBounds
     clip: true
-    cacheBuffer: 2
-    highlightFollowsCurrentItem:true
+    cacheBuffer: 9999
+    signal listViewItemClicked(var obj)
 
     model: provider.items
 
@@ -19,21 +19,13 @@ ListView {
         d: provider.items.item(index)
         anchors.left: parent.left
         anchors.right: parent.right
+        onListViewItemClicked: {
+            listView.listViewItemClicked(obj);
+        }
     }
 
     removeDisplaced: Transition {
         NumberAnimation { properties: "x,y"; duration: 100; easing.type: Easing.InOutQuad }
     }
-
-    MouseArea {
-        anchors.fill: parent
-        propagateComposedEvents: true
-        onClicked: {
-            listView.currentIndex = listView.indexAt(mouse.x + listView.contentX,mouse.y + listView.contentY);
-            console.log("resultListCurrentIndex:",listView.currentIndex);
-            mouse.accepted = false;
-        }
-    }
-
 }
 

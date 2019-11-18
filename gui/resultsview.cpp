@@ -22,9 +22,6 @@
 #include <QVariant>
 #include <QString>
 #include <QModelIndex>
-#include <QPrinter>
-#include <QPrintDialog>
-#include <QPrintPreviewDialog>
 #include <QSettings>
 #include <QDir>
 #include <QDate>
@@ -409,15 +406,8 @@ void ResultsView::readErrorsXml(const QString &filename)
     }
 
     ErrorItem item;
-    bool time = true;
     foreach (item, errors) {
-//        Manager::instance()->resultsTree->addErrorItem(item);
-        if(time) {
-//            time = false;
-            Manager::instance()->beginResetModel();
             Manager::instance()->addErrorItem(item);
-            Manager::instance()->endResetModel();
-        }
     }
     QString dir;
     if (!errors.isEmpty() && !errors[0].errorPath.isEmpty()) {

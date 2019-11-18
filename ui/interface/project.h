@@ -3,6 +3,7 @@
 
 #include <QObject>
 #include <QJsonObject>
+#include <QFutureWatcher>
 
 //qmlRegisterType<CC::Project>("CC",1,0,"ProjectManager");    \
 
@@ -19,11 +20,14 @@ namespace CC {
         Q_DISABLE_COPY(Project)
     public:
         explicit Project(QObject *parent = nullptr);
-        Q_INVOKABLE QJsonObject open();
-        Q_INVOKABLE QJsonObject create();
+        Q_INVOKABLE void open(const QString &filepath);
+        Q_INVOKABLE void create();
         static Project* instance();
     private:
+        void watcher_open_finished();
+    private:
         static Project *Instance;
+        QFutureWatcher<void> *m_watcher_open;
     };
 }
 

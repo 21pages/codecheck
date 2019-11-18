@@ -8,6 +8,7 @@ Rectangle {
     Layout.fillWidth: true
     height: Global.subListHeight
     width: listView.width
+    signal listViewItemClicked(var obj)
 
     Column {
         id:column
@@ -28,12 +29,10 @@ Rectangle {
     MouseArea {
         anchors.fill: parent
         enabled: true
-        propagateComposedEvents: true
         onClicked: {
-            console.log("lineRowDelegate");
             var obj = {"file":modelData.file,"line":modelData.line}
-            root.onListViewClicked(obj);
-            mouse.accepted = false;
+//            root.onListViewClicked(obj);
+            subListDelegate.listViewItemClicked(obj);
         }
     }
 }

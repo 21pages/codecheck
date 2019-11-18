@@ -156,7 +156,7 @@ Item {
 
 		Button {
 			id: button
-            icon.source: "qrc:/icons/navigation/back.svg"
+            icon.source: "qrc:/icons/navigation/back2.svg"
 			anchors.right: parent.right
 			anchors.rightMargin: buttonHeight
 			anchors.bottom: parent.bottom

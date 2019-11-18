@@ -6,7 +6,7 @@ TARGET = codecheck
 #    ../lib
 #INCLUDEPATH += . \
 #    ../lib
-QT +=  quick-private gui gui-private core core-private qml qml-private quickcontrols2 widgets
+QT +=  quick-private gui gui-private core core-private qml qml-private quickcontrols2 widgets concurrent
 LIBS += -L$$PWD/../externals
 #LIBS += -lopengl32.dll
 

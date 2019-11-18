@@ -3,10 +3,14 @@
 #include <QFile>
 #include <QDir>
 #include <QTextCodec>
+#include <QtConcurrent>
+#include <QMetaObject>
+#include <QQmlApplicationEngine>
 #include "manager.h"
 #include "codeeditor.h"
 #include "codeeditorstyle.h"
 #include "resultsview.h"
+#include "helper.h"
 
 namespace CC {
 
@@ -14,6 +18,17 @@ Provider *Provider::Instance = new Provider;
 
 Provider::Provider( QObject* parent )
     : QObject( parent ) {
+    m_watcher_listClick = new QFutureWatcher<QVariant>(this);
+    connect(m_watcher_listClick,&QFutureWatcher<QVariant>::finished,this,&Provider::watchFinished_listClick);
+}
+
+void Provider::watchFinished_listClick()
+{
+    QObject *root = Manager::instance()->engine()->rootObjects().first();
+    if(root) {
+        QMetaObject::invokeMethod(root,"textSelect",Qt::QueuedConnection,Q_ARG(QVariant,m_watcher_listClick->result()));
+    }
+//    emit sigSelectionPos();
 }
 
 Provider *Provider::instance()
@@ -36,67 +51,30 @@ void Provider::removeItem(DataItemRO *item) {
     }
 }
 
-static int getPos(const QString &fileData, int lineNumber)
+void Provider::initDocument()
 {
-    if (lineNumber <= 1)
-        return 0;
-    for (int pos = 0, line = 1; pos < fileData.size(); ++pos) {
-        if (fileData[pos] != '\n')
-            continue;
-        ++line;
-        if (line >= lineNumber)
-            return pos + 1;
-    }
-    return fileData.size();
+    QTextDocument *doc = m_document->textDocument();
+    Highlighter *highLighter = new Highlighter(doc,new CodeEditorStyle(defaultStyleLight));
+    Q_UNUSED(highLighter)
 }
 
 void Provider::onListViewClicked(const QJsonObject& obj)
 {
-    QString fileName = obj.value("file").toString();
-    int line = obj.value("line").toInt();
-    QString codec = obj.value("codec").toString();
-    qDebug()<<"fileName:"<<fileName;
-    QString tmp = fileName;
-    tmp.replace("\\","/");
-//    QString fullFileName = Manager::instance()->resultView->getCheckDirectory() + "/" + tmp;
-    QString fullFileName = /*QString("C:/wisdom/done/56/codecheck")*/QString("D:/learn/Qt/cppcheck-master/cfg") + "/" +tmp;
-    qDebug()<<fullFileName;
-    QFile file(fullFileName);
-    QTextDocument *doc = m_document->textDocument();
-    if(!file.open(QIODevice::ReadOnly | QIODevice::Text)) {
-        doc->setPlainText(QString());
-    }
-    QString fileContent;
-    if(QString::compare(codec,"gbk",Qt::CaseInsensitive)) {
-        fileContent = QString::fromLocal8Bit(file.readAll());
-    } else {
-        fileContent = QString::fromUtf8(file.readAll());
-    }
-    /*QString::fromUtf8(file.readAll());*/
-    doc->setPlainText(fileContent);
-    file.close();
-    Highlighter *highLighter = new Highlighter(doc,new CodeEditorStyle(defaultStyleLight));
-    Q_UNUSED(highLighter)
-    int cursorPosStart = getPos(fileContent,line);
-    int cursorPosEnd = getPos(fileContent,line+1) - 1;
-    emit sigSelectionPos({
-                             {"start",cursorPosStart},
-                             {"end",cursorPosEnd}
-                         });
-
-
-//    QFile file(filepath);
-//    if (file.open(QIODevice::ReadOnly | QIODevice::Text)) {
-//        QStringList symbols;
-//        QRegularExpression re(".*: ([A-Za-z_][A-Za-z0-9_]*)$");
-//        const QString errorMessage = data["message"].toString();
-//        QRegularExpressionMatch match = re.match(errorMessage);
-//        if (match.hasMatch()) {
-//            symbols << match.captured(1);
-//        }
-//        mUI.mCode->setError(fileContent, lineNumber, symbols);
-
-
+    auto  future = QtConcurrent::run(QThreadPool::globalInstance(),[obj](){
+        qDebug()<<"onListViewClicked-threadid:"<<QThread::currentThread();
+        QString fileName = obj.value("file").toString();
+        int line = obj.value("line").toInt();
+        QString codec = obj.value("codec").toString();
+        qDebug()<<"fileName:"<<fileName;
+        QString tmp = fileName;
+        tmp.replace("\\","/");
+    //    QString fullFileName = Manager::instance()->resultView->getCheckDirectory() + "/" + tmp;
+        QString fullFileName = QString("C:/wisdom/done/56/codecheck")/*QString("D:/learn/Qt/cppcheck-master/cfg")*/ + "/" +tmp;
+        qDebug()<<fullFileName;
+        QJsonObject retobj = Helper::getFileContent(fullFileName,codec,line);
+        return QVariant::fromValue<QJsonObject>(retobj);
+    });
+    m_watcher_listClick->setFuture(future);
 }
 
 }

@@ -6,7 +6,7 @@
         <file>qml/LineRowDelegate.qml</file>
         <file>qml/Global.qml</file>
         <file>qml/qmldir</file>
-        <file>qml/CreateProjectDialog.qml</file>
+        <file>qml/CreateProject.qml</file>
         <file>qtquickcontrols2.conf</file>
         <file>qml/FilePicker.qml</file>
         <file>qml/FolderPicker.qml</file>

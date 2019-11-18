@@ -5,9 +5,9 @@
 #include "mainwindow.h"
 #include "resultsview.h"
 #include "resultstree.h"
-#include "treemodel.h"
 #include "provider.h"
 #include "helper.h"
+#include "iglobal.h"
 
 Manager *Manager::sInstance = new Manager(nullptr);
 
@@ -28,18 +28,7 @@ Manager *Manager::instance()
 
 void Manager::addErrorItem(const ErrorItem &item)
 {
-    CC::TreeModel::instance()->addErrorItem(item);
     listAddErrorItem(item);
-}
-
-void Manager::beginResetModel()
-{
-    CC::TreeModel::instance()->BeginResetModel();
-}
-
-void Manager::endResetModel()
-{
-    CC::TreeModel::instance()->EndResetModel();
 }
 
 bool Manager::listAddErrorItem(const ErrorItem &item)
@@ -86,7 +75,15 @@ bool Manager::listAddErrorItem(const ErrorItem &item)
             array.append(obj);
         }
     }
-    CC::Provider::instance()->addItem(loc.file,severityStr,item.errorId,loc.line,item.summary,array);
+//    CC::Provider::instance()->addItem(loc.file,severityStr,item.errorId,loc.line,item.summary,array);
+    errorJsonList<<QSharedPointer<QJsonObject>(new QJsonObject({
+                                                                   {CONST_file,loc.file},
+                                                                   {CONST_severityStr,severityStr},
+                                                                   {CONST_id,item.errorId},
+                                                                   {CONST_line,loc.line},
+                                                                   {CONST_summary,item.summary},
+                                                                   {CONST_array,array}
+                                                               }));
     errorItemList<< QSharedPointer<ErrorItem>(new ErrorItem(item));
     return true;
 }
@@ -101,7 +98,7 @@ QQmlApplicationEngine *Manager::engine()
     return Engine;
 }
 
-QObject *Manager::findChild(QString objname)
+QObject *Manager::findQuick(QString objname)
 {
     return reinterpret_cast<QObject*>(Engine->rootObjects().first()->findChild<QObject*>(objname)) ;
 }

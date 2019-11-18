@@ -18,22 +18,20 @@ public:
     explicit Manager(QObject *parent = nullptr);
     static Manager *instance();
     void addErrorItem(const ErrorItem& item);
-    void beginResetModel();
-    void endResetModel();
     bool listAddErrorItem(const ErrorItem &item);
     void setEngine(QQmlApplicationEngine *engine);
     QQmlApplicationEngine * engine();
-    QObject* findChild(QString objname);
+    QObject* findQuick(QString objname);
 public:
     QSettings* settings;
     MainWindow* mainWindow;
     ResultsView* resultView;
     ResultsTree *resultsTree;
+    QList<QSharedPointer<QJsonObject>> errorJsonList;
 private:
     static Manager *sInstance;
     QQmlApplicationEngine * Engine;
     QList<QSharedPointer<ErrorItem>> errorItemList;
-
     //for provideer
     QStringList mHiddenMessageId;
     QString mFilter;

@@ -27,6 +27,7 @@
 #include <QMessageBox>
 #include <QThreadPool>
 #include <QDir>
+#include <QQuickStyle>
 //#include "common.h"
 //#include "erroritem.h"
 //#include "material/src/plugin.h"
@@ -40,7 +41,7 @@ using namespace CC;
 int main(int argc, char *argv[])
 {
 #ifdef Q_OS_WIN
-    qputenv( "QSG_RENDER_LOOP", "basic" );
+    qputenv( "QSG_RENDER_LOOP", "basic" ); // threaded
 #endif
 
 //#if (QT_VERSION >= QT_VERSION_CHECK(5, 6, 0))
@@ -64,6 +65,7 @@ int main(int argc, char *argv[])
     {
         QThreadPool::globalInstance()->setMaxThreadCount( QThreadPool::globalInstance()->maxThreadCount() - 1 );
     }
+    QQuickStyle::setStyle("Material");
     QQmlApplicationEngine engine;
     Manager *manager = Manager::instance();
     manager->setEngine(&engine);
@@ -79,6 +81,8 @@ int main(int argc, char *argv[])
             QCoreApplication::exit(-1);
     }, Qt::QueuedConnection);
     engine.load(url);
+
+    qDebug()<<"main-threadid:"<<QThread::currentThread();
 
     return app.exec();
 }

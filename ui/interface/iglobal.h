@@ -18,6 +18,7 @@ const QString CONST_inconclusive("inconclusive");
 const QString CONST_file0("file0");
 const QString CONST_sinceDate("sinceDate");
 const QString CONST_tags("tags");
+const QString CONST_array("array");
 
 
 #endif // IGLOBAL_H

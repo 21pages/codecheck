@@ -158,7 +158,7 @@ public slots:
     void newProjectFile();
 
     /** @brief Slot to open project file and start analyzing contained paths. */
-    void openProjectFile();
+    void openProjectFile(const QString &filepath);
 
     /** @brief Slot to close open project file. */
     void closeProjectFile();

@@ -1,5 +1,6 @@
 import QtQuick 2.12
 import QtQuick.Controls 2.12
+import QtQuick.Controls 1.4 as C14
 import QtQuick.Window 2.12
 import QtQuick.Layouts 1.0
 import QtGraphicalEffects 1.0
@@ -14,6 +15,7 @@ import "qrc:/qml/"
 
 Window {
     id:root
+    objectName: "root"
     visible: true
     width: Global.screenWidth; height: Global.screenHeight
 
@@ -24,9 +26,59 @@ Window {
         }
     }
 
+    property Component createProject: CreateProject {
+
+    }
+
+    ToolBar {
+            x:0; y:0;
+            width: parent.width;
+            height: Global.toolBarHeight
+            Material.foreground: "white"
+
+            RowLayout {
+                spacing: 20
+                anchors.fill: parent
+
+                ToolButton {
+                    icon.source: stackView.depth > 1 ? "qrc:/icons/navigation/back.svg" : "qrc:/icons/navigation/menu.svg"
+                    onClicked: {
+                        if (stackView.depth > 1) {
+                            stackView.pop()
+                            listView.currentIndex = -1
+                        } else {
+//                            drawer.open()
+                        }
+                    }
+                }
+
+                Label {
+                    id: titleLabel
+                    text: "CodeCheck"
+                    font.pixelSize: 20
+                    elide: Label.ElideRight
+                    horizontalAlignment: Qt.AlignHCenter
+                    verticalAlignment: Qt.AlignVCenter
+                    Layout.fillWidth: true
+                }
+
+                ToolButton {
+                    icon.source: "qrc:/icons/navigation/menu2.svg"
+                    onClicked: optionsMenu.open()
+
+                    Menu {
+                        id: optionsMenu
+                    }
+                }
+            }
+        }
+
+
     StackView {
         id:stackView
-        anchors.fill: parent
+        x:0; y:Global.toolBarHeight
+        width: parent.width;
+        height: parent.height - y
         initialItem: Item {
             Row {
                 height: 100
@@ -41,8 +93,7 @@ Window {
                     width: 100;height: 100
                     text: "create"
                     onClicked: {
-                        createProjectDialog.open();
-                        projectManager.create();
+                        stackView.push(createProject);
                     }
                 }
                 Button {
@@ -63,70 +114,73 @@ Window {
                     }
                 }
             }
+            C14.SplitView {
+                  y:100
+                  height: parent.height - 100
+                  width: parent.width
+                  orientation: Qt.Vertical
 
-            Item {
-                x:0;y:100
-                width:parent.width
-                height: 300
-                ResultList{
-                    id:resultList
-                }
+                  Item {
+                      Layout.minimumHeight: 300
+                      width:parent.width
+                      implicitHeight: 300
+                      ResultList{
+                          id:resultList
+                          onListViewItemClicked: {
+                              obj.codec = "gbk";
+                              provider.onListViewClicked(obj);
+                          }
+                      }
+                  }
+                  Flickable {
+                         id: flick
+                         Layout.maximumHeight: 400
+                         width: parent.width;
+                         contentWidth: edit.paintedWidth
+                         contentHeight: edit.paintedHeight
+                         clip: true
+
+                         function ensureVisible(r)
+                         {
+                             if (contentX >= r.x)
+                                 contentX = r.x;
+                             else if (contentX+width <= r.x+r.width)
+                                 contentX = r.x+r.width-width;
+                             if (contentY >= r.y)
+                                 contentY = r.y;
+                             else if (contentY+height <= r.y+r.height)
+                                 contentY = r.y+r.height-height;
+                         }
+
+                         TextEdit {
+                             id: edit
+                             property string fileName: ""
+                             width: flick.width
+                             focus: true
+                             wrapMode: TextEdit.NoWrap
+                             onCursorRectangleChanged: flick.ensureVisible(cursorRectangle)
+                             readOnly: true
+                             selectionColor: Material.color(Material.BlueGrey)
+                             selectedTextColor: Material.color(Material.Pink)
+                         }
+                         Component.onCompleted: {
+                             provider.document = edit.textDocument;
+                             provider.initDocument();
+                         }
+                     }
+
             }
-            Flickable {
-                   id: flick
-                   x:0;y:400
-                   width: 300; height: 200;
-                   contentWidth: edit.paintedWidth
-                   contentHeight: edit.paintedHeight
-                   clip: true
-
-                   function ensureVisible(r)
-                   {
-                       if (contentX >= r.x)
-                           contentX = r.x;
-                       else if (contentX+width <= r.x+r.width)
-                           contentX = r.x+r.width-width;
-                       if (contentY >= r.y)
-                           contentY = r.y;
-                       else if (contentY+height <= r.y+r.height)
-                           contentY = r.y+r.height-height;
-                   }
-
-                   TextEdit {
-                       id: edit
-                       width: flick.width
-                       focus: true
-                       wrapMode: TextEdit.Wrap
-                       onCursorRectangleChanged: flick.ensureVisible(cursorRectangle)
-                       readOnly: true
-                   }
-                   Component.onCompleted: {
-                       provider.document = edit.textDocument;
-                   }
-               }
-
-            CreateProjectDialog{
-                id:createProjectDialog;
-            }
-
-            Component.onCompleted: {
-                provider.sigSelectionPos.connect(textSelect);
-            }
-
         }
     }
 
     function textSelect(obj) {
+        edit.clear();
+        edit.append(obj["content"]);
         var start = obj["start"];
         var end = obj["end"];
-        edit.deselect();
-        edit.select(start, end);
+        edit.select(start>10?start-10:start, end>10?end-10:end);
     }
 
-    function onListViewClicked(obj) {
-        obj.codec = "utf8";
-        provider.onListViewClicked(obj);
-    }
 
 
 }
