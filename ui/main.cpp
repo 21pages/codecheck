@@ -65,7 +65,6 @@ int main(int argc, char *argv[])
     {
         QThreadPool::globalInstance()->setMaxThreadCount( QThreadPool::globalInstance()->maxThreadCount() - 1 );
     }
-    QQuickStyle::setStyle("Material");
     QQmlApplicationEngine engine;
     Manager *manager = Manager::instance();
     manager->setEngine(&engine);

@@ -19,6 +19,11 @@ namespace CC {
         Q_OBJECT
         Q_DISABLE_COPY(Project)
     public:
+        enum ProjType{
+            ProjTypeVS,
+            ProjTypeDIR,
+        };
+        Q_ENUM(ProjType)
         explicit Project(QObject *parent = nullptr);
         Q_INVOKABLE void open(const QString &filepath);
         Q_INVOKABLE void create();

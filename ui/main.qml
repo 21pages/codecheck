@@ -18,11 +18,19 @@ Window {
     objectName: "root"
     visible: true
     width: Global.screenWidth; height: Global.screenHeight
+    onFocusObjectChanged: console.log(activeFocusItem)
 
     property Component filePicker : FilePicker{
         onFileSelected: {
             stackView.pop();
-            projectManager.open(fileName);
+//            projectManager.open(fileName);
+        }
+    }
+
+    property Component folderPicker : FolderPicker{
+        onFolderSelected: {
+            stackView.pop();
+//            projectManager.open(fileName);
         }
     }
 
@@ -45,7 +53,6 @@ Window {
                     onClicked: {
                         if (stackView.depth > 1) {
                             stackView.pop()
-                            listView.currentIndex = -1
                         } else {
 //                            drawer.open()
                         }
