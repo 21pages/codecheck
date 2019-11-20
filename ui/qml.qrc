@@ -12,5 +12,6 @@
         <file>qml/FolderPicker.qml</file>
         <file>js/utils.js</file>
         <file>qml/FilePickerDialog.qml</file>
+        <file>qml/FFPicker.qml</file>
     </qresource>
 </RCC>

@@ -47,6 +47,14 @@ Item {
     property string basefolder: prepath + drive + ":/"
 	property string nameFilters: "*.*"
 
+    Component.onCompleted: {
+        retPath = "";
+        console.log("onCompleted")
+    }
+    Component.onDestruction: {
+        console.log("onDestruction")
+    }
+
 	function currentFolder() {
 		return folderListModel.folder;
 	}

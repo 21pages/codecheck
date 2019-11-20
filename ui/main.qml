@@ -18,7 +18,6 @@ Window {
     objectName: "root"
     visible: true
     width: Global.screenWidth; height: Global.screenHeight
-    onFocusObjectChanged: console.log(activeFocusItem)
 
     property Component filePicker : FilePicker{
         onFileSelected: {

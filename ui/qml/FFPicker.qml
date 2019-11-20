@@ -6,20 +6,17 @@ import QtQuick.Controls.Material 2.12
 import QtQuick.Window 2.12
 import "qrc:/js/utils.js" as Utils
 
-Dialog {
+Item {
     id:picker
-    width: 600;height: 500;
-    x: parent.width / 2 - width / 2
-    y: parent.height / 2 - height / 2
-    modal: true
-    title: getTitle()
-    standardButtons: Dialog.Ok | Dialog.Cancel
+    Layout.fillWidth: true
+    Layout.fillHeight: true
 
     enum PickerType{
-        ChooseFile,
-        ChooseDir,
-        SaveFile
+        File,
+        Dir
     }
+    signal ok(string reason,string path)
+    signal cancel(string reason)
     readonly property real textmargin: Utils.dp(Screen.pixelDensity, 8)
     readonly property real textSize: Utils.dp(Screen.pixelDensity, 15)
     readonly property real headerTextSize: Utils.dp(Screen.pixelDensity, 12)
@@ -27,44 +24,19 @@ Dialog {
     readonly property real rowHeight: Utils.dp(Screen.pixelDensity, 36)
     readonly property real toolbarHeight: Utils.dp(Screen.pixelDensity, 48)
     readonly property string prepath: "file:///"
-    property int pickerType: FilePickerDialog.PickerType.ChooseFile
+    property int pickerType: FFPicker.PickerType.File
     property bool showHidden: true
     property bool showDirsFirst: true
     property string drive: "C"
     property string basefolder: prepath + drive + ":/"
     property string nameFilters: "*.*"
-    property string retPath: ""
-
-
-    onAccepted: {
-        var folder = new String(folderListModel.folder);
-        if(folder.charAt(folder.length - 1) !== "/") {
-            folder += '/';
-        }
-        retPath = folder + field.text
-    }
-
-    onRejected: {
-
-    }
+    property string reason: ""
 
     Component.onCompleted: {
-        retPath = "";
         console.log("onCompleted")
     }
     Component.onDestruction: {
         console.log("onDestruction")
-    }
-
-    function getTitle()
-    {
-        if(pickerType === 0) {
-            return "选择文件"
-        } else if(pickerType === 1) {
-            return "选择目录"
-        } else if(pickerType === 2) {
-            return "保存文件"
-        }
     }
 
     function currentFolder() {
@@ -86,15 +58,6 @@ Dialog {
         return "";
     }
 
-    function emitFile(fileName){
-        var folder = new String(folderListModel.folder);
-        if(folder.charAt(folder.length - 1) !== "/") {
-            folder += '/';
-        }
-        folder += fileName;
-        fileSelected(folder);
-    }
-
     function onItemClicked(fileName,index) {
         field.text = fileName;
         view.currentIndex = index
@@ -114,8 +77,19 @@ Dialog {
         view.currentIndex = -1
     }
 
+    function onBackBtnClicked()
+    {
+        if(canMoveUp) {
+            folderListModel.folder = folderListModel.parentFolder
+            field.text = ""
+            view.currentIndex = -1
+        }
+    }
 
-    contentItem: ColumnLayout{
+
+    /*contentItem: */ColumnLayout{
+        width: parent.width
+        height: parent.height
         Rectangle {
             width: Layout.fillWidth
             height: toolbarHeight
@@ -197,9 +171,7 @@ Dialog {
                         enabled: canMoveUp()
                         flat: true
                         onClicked: {
-                            if(canMoveUp) {
-                                folderListModel.folder = folderListModel.parentFolder
-                            }
+                            onBackBtnClicked()
                         }
                     }
                 }
@@ -273,11 +245,38 @@ Dialog {
             }
         }
 
-        TextField {
-            id: field
-            Layout.fillWidth: true
-            placeholderText: ""
+        RowLayout {
+            TextField {
+                id: field
+                Layout.fillWidth: true
+                placeholderText: ""
+            }
+            Button {
+                id:okBtn
+                width: 50
+                text: "选择"
+                onClicked: {
+                    var folder = new String(folderListModel.folder);
+                    if(folder.charAt(folder.length - 1) !== "/") {
+                        folder += '/';
+                    }
+                    var path = folder + field.text;
+                    ok(reason,path)
+                    stackView.pop()
+                }
+            }
+            Button {
+                id:cancelBtn;
+                width: 50
+                text: "取消"
+                onClicked: {
+                    cancel(reason)
+                    stackView.pop()
+                }
+            }
         }
+
+
 
     }
 }
