@@ -1,19 +1,23 @@
-import QtQuick 2.0
-import QtQuick.Dialogs 1.2
-import QtQuick.Controls 2.5
-import QtQuick.Controls.Material 2.3
-import QtQuick.Layouts 1.3
-import QtQuick.Controls.Styles 1.4
+import QtQuick 2.12
+import QtQuick.Controls 2.12
+import QtQuick.Controls.Material 2.12
+import QtQuick.Layouts 1.12
+import CC 1.0
 
 
-Item {
+Page {
     id:createProjectRoot
+    signal ok(var obj)
+    signal cancel()
     Layout.fillWidth: true
     Layout.fillHeight: true
+    property string pickerReason: ""
     property Component ffPicker: FFPicker {
         onOk: {
-            if(reason === "btnSource") {
-                textInput.text = path
+            if(pickerReason === "source") {
+                textFieldSource.text = path
+            } else if(pickerReason == "destination") {
+                textFieldDestination.text = path
             }
 
         }
@@ -28,29 +32,59 @@ Item {
         }
     }
 
+    header: ToolBar {
+        height: 50
+        Label{
+            anchors.centerIn: parent
+            text: "新建项目"
+            font.pixelSize: 22
+            color:"#ffffff"
+        }
+    }
+
     ColumnLayout {
-        width: parent.width
-        Layout.fillHeight: true
-        ButtonGroup {
-            buttons: buttons.children
+        anchors.fill: parent
+        RowLayout {
+            Label {
+                text: "项目名称"
+            }
+            TextField {
+                id:projectNameTextField
+                Layout.fillWidth: true
+                height: 50
+                placeholderText: "请输入项目名称"
+            }
         }
-        ColumnLayout {
-            id:buttons
-          RadioButton {
-              id:raidoButtonProj
-              text: "vs项目文件(*.dsw,*.dsp,*.sln,*.vsxproj)"
-              checked: true
-          }
-          RadioButton {
-              id:radioButtonFolder
-              text: "任意文件夹"
-          }
+
+
+        RowLayout {
+            Label {
+                text: "源文件类型:"
+                width: 100
+                height: buttons.height
+            }
+            ButtonGroup {
+                buttons: buttons.children
+            }
+            ColumnLayout {
+                id:buttons
+              RadioButton {
+                  id:raidoButtonProj
+                  text: "vs项目文件(*.sln,*.vsxproj)"
+                  checked: true
+              }
+              RadioButton {
+                  id:radioButtonFolder
+                  text: "任意文件夹"
+              }
+            }
         }
+
         RowLayout {
             width: parent.width
             height: 50
             TextField {
-                id:textInput;
+                id:textFieldSource;
                 Layout.fillWidth: true
             }
             Button {
@@ -58,13 +92,45 @@ Item {
                 width: 100
                 text: "源码路径"
                 onClicked: {
-                    ffPicker.reason = "btnSource"
+                    pickerReason = "source"
                     stackView.push(ffPicker)
                 }
             }
         }
 
+        RowLayout {
+            width: parent.width
+            height: 50
+            TextField {
+                id:textFieldDestination;
+                Layout.fillWidth: true
+            }
+            Button {
+                id:buttonDestination
+                width: 100
+                text: "输出目录"
+                onClicked: {
+                    pickerReason = "destination"
+                    stackView.push(ffPicker)
+                }
+            }
+        }
     }
+    footer: DialogButtonBox{
+            standardButtons: DialogButtonBox.Ok | DialogButtonBox.Cancel
+            onAccepted:{
+                var obj = {}
+                obj.type = raidoButtonProj.checked ? Project.ProjTypeVS : Project.ProjTypeDIR
+                obj.source = textFieldSource.text
+                obj.destination = textFieldDestination.text
+                console.log(obj)
+                ok(obj)
+            }
+            onRejected: {
+
+            }
+    }
+
 
 
 }

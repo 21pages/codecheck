@@ -1,0 +1,38 @@
+<RCC>
+    <qresource prefix="/cfg">
+        <file>avr.cfg</file>
+        <file>boost.cfg</file>
+        <file>bsd.cfg</file>
+        <file>cairo.cfg</file>
+        <file>cppcheck-cfg.rng</file>
+        <file>cppcheck-lib.cfg</file>
+        <file>cppunit.cfg</file>
+        <file>daca.cfg</file>
+        <file>embedded_sql.cfg</file>
+        <file>gnu.cfg</file>
+        <file>googletest.cfg</file>
+        <file>gtk.cfg</file>
+        <file>libcerror.cfg</file>
+        <file>libcurl.cfg</file>
+        <file>lua.cfg</file>
+        <file>mfc.cfg</file>
+        <file>microsoft_atl.cfg</file>
+        <file>microsoft_sal.cfg</file>
+        <file>motif.cfg</file>
+        <file>nspr.cfg</file>
+        <file>opengl.cfg</file>
+        <file>openmp.cfg</file>
+        <file>posix.cfg</file>
+        <file>python.cfg</file>
+        <file>qt.cfg</file>
+        <file>ruby.cfg</file>
+        <file>sdl.cfg</file>
+        <file>sfml.cfg</file>
+        <file>sqlite3.cfg</file>
+        <file>std.cfg</file>
+        <file>tinyxml2.cfg</file>
+        <file>windows.cfg</file>
+        <file>wxwidgets.cfg</file>
+        <file>zlib.cfg</file>
+    </qresource>
+</RCC>

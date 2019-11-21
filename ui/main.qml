@@ -18,6 +18,7 @@ Window {
     objectName: "root"
     visible: true
     width: Global.screenWidth; height: Global.screenHeight
+    property alias stackView: stackView
 
     property Component filePicker : FilePicker{
         onFileSelected: {
@@ -34,7 +35,9 @@ Window {
     }
 
     property Component createProject: CreateProject {
-
+        onOk:{
+            projectManager.create(obj)
+        }
     }
 
     ToolBar {

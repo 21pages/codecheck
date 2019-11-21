@@ -155,7 +155,9 @@ public slots:
     void save();
 
     /** @brief Slot to create new project file */
-    void newProjectFile();
+    void newProjectFile(QString destination);
+
+    void setProjectFileWhenNew();
 
     /** @brief Slot to open project file and start analyzing contained paths. */
     void openProjectFile(const QString &filepath);

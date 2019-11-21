@@ -1515,28 +1515,29 @@ void MainWindow::analyzeProject(const ProjectFile *projectFile, const bool check
 #endif
 }
 
-void MainWindow::newProjectFile()
+void MainWindow::newProjectFile(QString destination)
 {
+#if WGT
     const QString filter = tr("Project files (*.cppcheck)");
     QString filepath = QFileDialog::getSaveFileName(nullptr,
                        tr("Select Project Filename"),
                        getPath(SETTINGS_LAST_PROJECT_PATH),
                        filter);
+#endif
 
-    if (filepath.isEmpty())
+    if (destination.isEmpty())
         return;
-    if (!filepath.endsWith(".cppcheck", Qt::CaseInsensitive))
-        filepath += ".cppcheck";
+    if (!destination.endsWith(".cppcheck", Qt::CaseInsensitive))
+        destination += ".cppcheck";
 
-    setPath(SETTINGS_LAST_PROJECT_PATH, filepath);
+    setPath(SETTINGS_LAST_PROJECT_PATH, destination);
 
-    QFileInfo inf(filepath);
+    QFileInfo inf(destination);
     const QString filename = inf.fileName();
-    formatAndSetTitle(tr("Project:") + QString(" ") + filename);
 
     delete mProjectFile;
     mProjectFile = new ProjectFile(this);
-    mProjectFile->setFilename(filepath);
+    mProjectFile->setFilename(destination);
     mProjectFile->setBuildDir(filename.left(filename.indexOf(".")) + "-cppcheck-build-dir");
 
 #if WGT
@@ -1548,6 +1549,10 @@ void MainWindow::newProjectFile()
         closeProjectFile();
     }
 #endif
+}
+
+void MainWindow::setProjectFileWhenNew()
+{
 }
 
 void MainWindow::closeProjectFile()

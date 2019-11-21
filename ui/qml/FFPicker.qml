@@ -15,8 +15,8 @@ Item {
         File,
         Dir
     }
-    signal ok(string reason,string path)
-    signal cancel(string reason)
+    signal ok(string path)
+    signal cancel()
     readonly property real textmargin: Utils.dp(Screen.pixelDensity, 8)
     readonly property real textSize: Utils.dp(Screen.pixelDensity, 15)
     readonly property real headerTextSize: Utils.dp(Screen.pixelDensity, 12)
@@ -30,7 +30,6 @@ Item {
     property string drive: "C"
     property string basefolder: prepath + drive + ":/"
     property string nameFilters: "*.*"
-    property string reason: ""
 
     Component.onCompleted: {
         console.log("onCompleted")
@@ -261,7 +260,11 @@ Item {
                         folder += '/';
                     }
                     var path = folder + field.text;
-                    ok(reason,path)
+                    var index = path.indexOf(prepath);
+                    if(index === 0) {
+                        path = path.substring(prepath.length)
+                    }
+                    ok(path)
                     stackView.pop()
                 }
             }
@@ -270,7 +273,7 @@ Item {
                 width: 50
                 text: "取消"
                 onClicked: {
-                    cancel(reason)
+                    cancel()
                     stackView.pop()
                 }
             }
