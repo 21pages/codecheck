@@ -33,7 +33,7 @@ Page {
     }
 
     header: ToolBar {
-        height: 50
+        height: Global.toolBarHeight
         Label{
             anchors.centerIn: parent
             text: "新建项目"
@@ -49,35 +49,48 @@ Page {
                 text: "项目名称"
             }
             TextField {
-                id:projectNameTextField
+                id:textFieldProjectName
                 Layout.fillWidth: true
                 height: 50
                 placeholderText: "请输入项目名称"
             }
         }
 
-
         RowLayout {
-            Label {
-                text: "源文件类型:"
-                width: 100
-                height: buttons.height
+            height: 80
+            RowLayout {
+                Label {
+                    text: "源文件类型:"
+                    width: 100
+                    height: buttons.height
+                }
+                ButtonGroup {
+                    buttons: buttons.children
+                }
+                ColumnLayout {
+                    id:buttons
+                  RadioButton {
+                      id:raidoButtonProj
+                      text: "vs项目文件(*.sln,*.vsxproj)"
+                      checked: true
+                  }
+                  RadioButton {
+                      id:radioButtonFolder
+                      text: "任意文件夹"
+                  }
+                }
             }
-            ButtonGroup {
-                buttons: buttons.children
+
+            RowLayout {
+                Label {
+                    text: "程序平台"
+                }
+                ComboBox {
+                    id:comboBoxPlatform
+                    model:["","native","win32Ansi","win32Unicode","win64","unix32","unix64"]
+                }
             }
-            ColumnLayout {
-                id:buttons
-              RadioButton {
-                  id:raidoButtonProj
-                  text: "vs项目文件(*.sln,*.vsxproj)"
-                  checked: true
-              }
-              RadioButton {
-                  id:radioButtonFolder
-                  text: "任意文件夹"
-              }
-            }
+
         }
 
         RowLayout {
@@ -115,19 +128,29 @@ Page {
                 }
             }
         }
+
     }
     footer: DialogButtonBox{
             standardButtons: DialogButtonBox.Ok | DialogButtonBox.Cancel
             onAccepted:{
-                var obj = {}
-                obj.type = raidoButtonProj.checked ? Project.ProjTypeVS : Project.ProjTypeDIR
-                obj.source = textFieldSource.text
-                obj.destination = textFieldDestination.text
+                var obj = {
+                    "name": textFieldProjectName.text,
+                    "type":raidoButtonProj.checked ? Project.ProjTypeVS : Project.ProjTypeDIR,
+                    "source":textFieldSource.text,
+                    "destination":textFieldDestination.text,
+                    "platform":comboBoxPlatform.currentIndex
+                }
+//                /*obj.name*/obj["name"] = textFieldProjectName.text
+//                /*obj.type*/obj["type"] = raidoButtonProj.checked ? Project.ProjTypeVS : Project.ProjTypeDIR
+//                /*obj.source*/obj["source"] = textFieldSource.text
+//                /*obj.destination*/obj["destination"] = textFieldDestination.text
                 console.log(obj)
                 ok(obj)
+                root.stackView.pop()
             }
             onRejected: {
-
+                cancel()
+                root.stackView.pop()
             }
     }
 

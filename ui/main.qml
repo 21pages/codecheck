@@ -30,7 +30,7 @@ Window {
     property Component folderPicker : FolderPicker{
         onFolderSelected: {
             stackView.pop();
-//            projectManager.open(fileName);
+            projectManager.open(fileName);
         }
     }
 

@@ -42,6 +42,7 @@
 #include "showtypes.h"
 #include "manager.h"
 #include "resultsview.h"
+#include "project.h"
 
 static const QString OnlineHelpURL("http://cppcheck.net/manual.html");
 static const QString compile_commands_json("compile_commands.json");
@@ -65,10 +66,10 @@ MainWindow::MainWindow(TranslationHandler* th, QSettings* settings) :
     mExiting(false),
     mIsLogfileLoaded(false)
 {
-#if WGT
-    mUI.setupUi(this);
+//    mUI.setupUi(this);
     mThread = new ThreadHandler(this);
     mThread->setDataDir(getDataDir(settings));
+#if WGT
     mUI.mResults->initialize(mSettings, mApplications, mThread);
 
     // Filter timer to delay filtering results slightly while typing
@@ -393,9 +394,6 @@ void MainWindow::saveSettings() const
 
 void MainWindow::doAnalyzeProject(ImportProject p, const bool checkLibrary, const bool checkConfiguration)
 {
-#if WGT
-    clearResults();
-
     mIsLogfileLoaded = false;
     if (mProjectFile) {
         std::vector<std::string> v;
@@ -408,22 +406,14 @@ void MainWindow::doAnalyzeProject(ImportProject p, const bool checkLibrary, cons
             Settings::PlatformType platform = (Settings::PlatformType) mSettings->value(SETTINGS_CHECKED_PLATFORM, 0).toInt();
             p.selectOneVsConfig(platform);
         }
-    } else {
-        enableProjectActions(false);
     }
-
-    mUI.mResults->clear(true);
     mThread->clearFiles();
-
-    mUI.mResults->checkingStarted(p.fileSettings.size());
-
     QDir inf(mCurrentDirectory);
     const QString checkPath = inf.canonicalPath();
     setPath(SETTINGS_LAST_CHECK_PATH, checkPath);
 
-    checkLockDownUI(); // lock UI while checking
+//    checkLockDownUI(); // lock UI while checking
 
-    mUI.mResults->setCheckDirectory(checkPath);
     Settings checkSettings = getCppcheckSettings();
     checkSettings.force = false;
     checkSettings.checkLibrary = checkLibrary;
@@ -446,17 +436,13 @@ void MainWindow::doAnalyzeProject(ImportProject p, const bool checkLibrary, cons
     }
     mThread->setProject(p);
     mThread->check(checkSettings);
-#endif
 }
 
 void MainWindow::doAnalyzeFiles(const QStringList &files, const bool checkLibrary, const bool checkConfiguration)
 {
-#if WGT
     if (files.isEmpty()) {
         return;
     }
-    clearResults();
-
     mIsLogfileLoaded = false;
     FileList pathList;
     pathList.addPathList(files);
@@ -467,21 +453,11 @@ void MainWindow::doAnalyzeFiles(const QStringList &files, const bool checkLibrar
     }
     QStringList fileNames = pathList.getFileList();
 
-    mUI.mResults->clear(true);
     mThread->clearFiles();
 
     if (fileNames.isEmpty()) {
-        QMessageBox msg(QMessageBox::Warning,
-                        tr("Cppcheck"),
-                        tr("No suitable files found to analyze!"),
-                        QMessageBox::Ok,
-                        this);
-        msg.exec();
         return;
     }
-
-    mUI.mResults->checkingStarted(fileNames.count());
-
     mThread->setFiles(fileNames);
     if (mProjectFile && !checkConfiguration)
         mThread->setAddonsAndTools(mProjectFile->getAddonsAndTools(), mSettings->value(SETTINGS_MISRA_FILE).toString());
@@ -492,7 +468,6 @@ void MainWindow::doAnalyzeFiles(const QStringList &files, const bool checkLibrar
 
     checkLockDownUI(); // lock UI while checking
 
-    mUI.mResults->setCheckDirectory(checkPath);
     Settings checkSettings = getCppcheckSettings();
     checkSettings.checkLibrary = checkLibrary;
     checkSettings.checkConfiguration = checkConfiguration;
@@ -509,7 +484,6 @@ void MainWindow::doAnalyzeFiles(const QStringList &files, const bool checkLibrar
 
     mThread->setCheckFiles(true);
     mThread->check(checkSettings);
-#endif
 }
 
 void MainWindow::analyzeCode(const QString& code, const QString& filename)
@@ -715,6 +689,14 @@ Library::Error MainWindow::loadLibrary(Library *library, const QString &filename
 {
     Library::Error ret;
 
+    //尝试从qrc加载
+    if(mProjectFile) {
+        ret = library->load(nullptr,QString(":/cfg/" + filename).toLatin1());
+        if (ret.errorcode != Library::ErrorCode::FILE_NOT_FOUND)
+            return ret;
+    }
+
+#if 0
     // Try to load the library from the project folder..
     if (mProjectFile) {
         QString path = QFileInfo(mProjectFile->getFilename()).canonicalPath();
@@ -756,6 +738,7 @@ Library::Error MainWindow::loadLibrary(Library *library, const QString &filename
             return ret;
     }
 
+#endif
     return ret;
 }
 
@@ -1414,7 +1397,7 @@ void MainWindow::loadProjectFile(const QString &filePath)
     mUI.mActionEditProjectFile->setEnabled(true);
 #endif
     delete mProjectFile;
-    mProjectFile = new ProjectFile(filePath, this);
+    mProjectFile = new ProjectFile(filePath, nullptr);
     if (!loadLastResults())
         analyzeProject(mProjectFile);
 }
@@ -1442,7 +1425,6 @@ bool MainWindow::loadLastResults()
 
 void MainWindow::analyzeProject(const ProjectFile *projectFile, const bool checkLibrary, const bool checkConfiguration)
 {
-#if WGT
     Settings::terminate(false);
 
     QFileInfo inf(projectFile->getFilename());
@@ -1451,7 +1433,7 @@ void MainWindow::analyzeProject(const ProjectFile *projectFile, const bool check
     QDir::setCurrent(inf.absolutePath());
 
     mThread->setAddonsAndTools(projectFile->getAddonsAndTools(), mSettings->value(SETTINGS_MISRA_FILE).toString());
-    mUI.mResults->setTags(projectFile->getTags());
+//    mUI.mResults->setTags(projectFile->getTags());
 
     // If the root path is not given or is not "current dir", use project
     // file's location directory as root path
@@ -1467,14 +1449,7 @@ void MainWindow::analyzeProject(const ProjectFile *projectFile, const bool check
         if (!QDir::isAbsolutePath(buildDir))
             buildDir = inf.canonicalPath() + '/' + buildDir;
         if (!QDir(buildDir).exists()) {
-            QMessageBox msg(QMessageBox::Critical,
-                            tr("Cppcheck"),
-                            tr("Build dir '%1' does not exist, create it?").arg(buildDir),
-                            QMessageBox::Yes | QMessageBox::No,
-                            this);
-            if (msg.exec() == QMessageBox::Yes) {
                 QDir().mkpath(buildDir);
-            }
         }
     }
 
@@ -1487,17 +1462,7 @@ void MainWindow::analyzeProject(const ProjectFile *projectFile, const bool check
         } else {
             prjfile = inf.canonicalPath() + '/' + projectFile->getImportProject();
         }
-        try {
-            p.import(prjfile.toStdString());
-        } catch (InternalError &e) {
-            QMessageBox msg(QMessageBox::Critical,
-                            tr("Cppcheck"),
-                            tr("Failed to import '%1', analysis is stopped").arg(prjfile),
-                            QMessageBox::Ok,
-                            this);
-            msg.exec();
-            return;
-        }
+        p.import(prjfile.toStdString());
         doAnalyzeProject(p, checkLibrary, checkConfiguration);
         return;
     }
@@ -1512,10 +1477,9 @@ void MainWindow::analyzeProject(const ProjectFile *projectFile, const bool check
         paths << mCurrentDirectory;
     }
     doAnalyzeFiles(paths, checkLibrary, checkConfiguration);
-#endif
 }
 
-void MainWindow::newProjectFile(QString destination)
+void MainWindow::newProjectFile(QString filePath)
 {
 #if WGT
     const QString filter = tr("Project files (*.cppcheck)");
@@ -1523,21 +1487,26 @@ void MainWindow::newProjectFile(QString destination)
                        tr("Select Project Filename"),
                        getPath(SETTINGS_LAST_PROJECT_PATH),
                        filter);
+#else
+    QDir dir = QFileInfo(filePath).dir();
+    if(!dir.exists()) {
+        dir.mkpath(dir.canonicalPath());
+    }
 #endif
 
-    if (destination.isEmpty())
+    if (filePath.isEmpty())
         return;
-    if (!destination.endsWith(".cppcheck", Qt::CaseInsensitive))
-        destination += ".cppcheck";
+    if (!filePath.endsWith(".cppcheck", Qt::CaseInsensitive))
+        filePath += ".cppcheck";
 
-    setPath(SETTINGS_LAST_PROJECT_PATH, destination);
+    setPath(SETTINGS_LAST_PROJECT_PATH, filePath);
 
-    QFileInfo inf(destination);
+    QFileInfo inf(filePath);
     const QString filename = inf.fileName();
 
     delete mProjectFile;
-    mProjectFile = new ProjectFile(this);
-    mProjectFile->setFilename(destination);
+    mProjectFile = new ProjectFile(nullptr);
+    mProjectFile->setFilename(filePath);
     mProjectFile->setBuildDir(filename.left(filename.indexOf(".")) + "-cppcheck-build-dir");
 
 #if WGT
@@ -1548,6 +1517,7 @@ void MainWindow::newProjectFile(QString destination)
     } else {
         closeProjectFile();
     }
+#else
 #endif
 }
 

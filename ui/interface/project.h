@@ -31,10 +31,10 @@ namespace CC {
 //        Q_INVOKABLE ProjType type(){return m_type;}
 //        Q_INVOKABLE void setType(ProjType type) { m_type = type;}
         static Project* instance();
+        void setProjectFile(ProjectFile *projectFile, const QJsonObject &obj);
     private:
         void watcher_open_finished();
         void watcher_create_finished();
-        void setProjectFile(ProjectFile *projectFile);
     private:
         static Project *Instance;
         QFutureWatcher<void> *m_watcher_open;

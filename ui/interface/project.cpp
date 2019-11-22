@@ -6,6 +6,7 @@
 #include <QFuture>
 #include <QJsonValue>
 #include <QFileInfo>
+#include <QDir>
 #include "manager.h"
 #include "mainwindow.h"
 #include "provider.h"
@@ -37,14 +38,19 @@ void CC::Project::open(const QString& filepath)
 
 void Project::create(const QJsonObject& obj)
 {
-    QFuture<bool> future = QtConcurrent::run(QThreadPool::globalInstance(), [obj](){
+    QFuture<bool> future = QtConcurrent::run(QThreadPool::globalInstance(), [this,obj](){
+        qDebug()<<"create";
         int type = obj.value("type").toInt();
+        QString name = obj.value("name").toString();
         QString source = obj.value("source").toString();
         QString destination = obj.value("destination").toString();
-        if(type == ProjTypeVS) {
-            Manager::instance()->mainWindow->newProjectFile(destination);
+        if(destination.at(destination.size() - 1) != "/") {
+            destination += "/";
         }
-
+        QString projectPath = destination + name;
+        Manager::instance()->mainWindow->newProjectFile(projectPath);
+        setProjectFile(Manager::instance()->mainWindow->mProjectFile,obj);
+        Manager::instance()->mainWindow->analyzeProject(Manager::instance()->mainWindow->mProjectFile);
 
         return true;
     });
@@ -74,26 +80,28 @@ void Project::watcher_create_finished()
 
 }
 
-void Project::setProjectFile(ProjectFile *projectFile)
+void Project::setProjectFile(ProjectFile *projectFile, const QJsonObject& obj)
 {
-    QString stdLibraryFilename = "qrc:/cfg/std.cfg";
-    QStringList libs;
-//    QDir dir("qrc:/cfg/");
-//    dir.setSorting(QDir::Name);
-//    dir.setNameFilters(QStringList("*.cfg"));
-//    dir.setFilter(QDir::Files | QDir::NoDotAndDotDot);
-//    foreach (QFileInfo item, dir.entryInfoList()) {
-//        QString library = item.fileName();
-//        if (library.compare("std.cfg", Qt::CaseInsensitive) != 0)
-//            continue;
-//        Library lib;
-//        const QString fullfilename = "qrc:/cfg/" + library;
-//        const Library::Error err = lib.load(nullptr, fullfilename.toLatin1());
-//        if (err.errorcode != Library::OK)
-//            continue;
-//        // Working std.cfg found
-//        stdLibraryFilename = fullfilename;
-//        break;
-//    }
+    projectFile->setBuildDir(obj.value("name").toString() + "-cppcheck-build-dir");
+    QStringList libraryList;
+    libraryList<<"avr"<<"boost"<<"bsd"<<"cairo"<<"cppcheck-lib"<<"cppunit"<<"daca"<<"embedded_sql" \
+              <<"gnu"<<"googletest"<<"gtk"<<"libcerror"<<"libcurl"<<"lua"<<"mfc"<<"microsoft_atl"<<"microsoft_sal" \
+             <<"motif"<<"nspr"<<"opengl"<<"openmp"<<"posix"<<"python"<<"qt"<<"ruby"<<"sdl"<<"sfml"<<"sqlite3"<<"std" \
+            <<"tinyxml2"<<"windows"<<"wxwidgets"<<"zlib";
+    projectFile->setLibraries(libraryList);
+    projectFile->setCheckHeaders(true);
+    int type = obj.value("type").toInt();
+    QString source = obj.value("source").toString();
+    if(type == ProjTypeVS) {
+        projectFile->setImportProject(source);
+        projectFile->setAnalyzeAllVsConfigs(true);
+    } else {
+        projectFile->setCheckPaths(QStringList()<<source);
+    }
 
+    QStringList list;
+    list << "threadsafety"<<"y2038"<<"cert"<<"misra";
+    projectFile->setAddons(list);
+    projectFile->setClangAnalyzer(false);
+    projectFile->setClangTidy(true);
 }

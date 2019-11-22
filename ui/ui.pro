@@ -80,7 +80,9 @@ include(../gui/gui.pri)
 include(tool/tool.pri)
 
 RESOURCES += qml.qrc  \
+    ../addons/addons.qrc \
     ../cfg/cfg.qrc \
+    ../platforms/platforms.qrc \
              image/demo.qrc \
             image/icons/icons.qrc
 #RESOURCES = ../gui/gui.qrc

@@ -155,7 +155,7 @@ public slots:
     void save();
 
     /** @brief Slot to create new project file */
-    void newProjectFile(QString destination);
+    void newProjectFile(QString filePath);
 
     void setProjectFileWhenNew();
 

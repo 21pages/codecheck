@@ -23,6 +23,7 @@
 #include <QString>
 #include <QStringList>
 #include <QXmlStreamReader>
+#include <QDir>
 
 #include "suppressions.h"
 
@@ -526,6 +527,11 @@ private:
     SafeChecks mSafeChecks;
 
     QStringList mCheckUnknownFunctionReturn;
+
+    QString getRelativePath(const QString& filePath) {
+        QDir dir(mFilename);
+        return dir.relativeFilePath(filePath);
+    }
 
 };
 /// @}

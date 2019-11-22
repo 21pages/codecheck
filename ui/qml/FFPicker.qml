@@ -31,12 +31,12 @@ Item {
     property string basefolder: prepath + drive + ":/"
     property string nameFilters: "*.*"
 
-    Component.onCompleted: {
-        console.log("onCompleted")
-    }
-    Component.onDestruction: {
-        console.log("onDestruction")
-    }
+//    Component.onCompleted: {
+//        console.log("onCompleted")
+//    }
+//    Component.onDestruction: {
+//        console.log("onDestruction")
+//    }
 
     function currentFolder() {
         return folderListModel.folder;
@@ -63,9 +63,9 @@ Item {
     }
 
     function onItemDoubleClicked(fileName,index) {
-        field.text = fileName;
         if(!isFolder(fileName)) {
             view.currentIndex = index
+            field.text = fileName;
             return;
         }
         if(folderListModel.folder.toString() === basefolder) {
@@ -73,6 +73,7 @@ Item {
         } else {
             folderListModel.folder += "/" + fileName
         }
+        field.text = ""
         view.currentIndex = -1
     }
 

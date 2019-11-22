@@ -1,0 +1,15 @@
+<RCC>
+    <qresource prefix="/platforms">
+        <file>aix_ppc64.xml</file>
+        <file>arm32-wchar_t2.xml</file>
+        <file>arm32-wchar_t4.xml</file>
+        <file>arm64-wchar_t2.xml</file>
+        <file>arm64-wchar_t4.xml</file>
+        <file>avr8.xml</file>
+        <file>cppcheck-platforms.rng</file>
+        <file>cray_sv1.xml</file>
+        <file>msp430_eabi_large_datamodel.xml</file>
+        <file>unix32-unsigned.xml</file>
+        <file>unix64-unsigned.xml</file>
+    </qresource>
+</RCC>
