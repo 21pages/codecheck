@@ -5,8 +5,9 @@ import Qt.labs.folderlistmodel 2.12
 import QtQuick.Controls.Material 2.12
 import QtQuick.Window 2.12
 import "qrc:/js/utils.js" as Utils
+import "qrc:/qc/"
 
-Item {
+Page {
     id:picker
     Layout.fillWidth: true
     Layout.fillHeight: true
@@ -31,12 +32,12 @@ Item {
     property string basefolder: prepath + drive + ":/"
     property string nameFilters: "*.*"
 
-//    Component.onCompleted: {
-//        console.log("onCompleted")
-//    }
-//    Component.onDestruction: {
-//        console.log("onDestruction")
-//    }
+    Component.onCompleted: {
+        console.log("onCompleted")
+    }
+    Component.onDestruction: {
+        console.log("onDestruction")
+    }
 
     function currentFolder() {
         return folderListModel.folder;
@@ -86,95 +87,58 @@ Item {
         }
     }
 
+    header:MyToolBar {
+        title:"选择文件"
+        leftButton.icon.source:"qrc:/icons/navigation/back.svg"
+        onLeftClicked:{
+            cancel()
+            stackView.pop()
+        }
+    }
 
-    /*contentItem: */ColumnLayout{
+    ColumnLayout{
         width: parent.width
         height: parent.height
         Rectangle {
-            width: Layout.fillWidth
+            width: parent.width
             height: toolbarHeight
-            RowLayout {
-                    id: toolbar
-                    width: parent.width
-                    height: parent.height
-                    spacing: 5
-                    ComboBox {
-                        id:driveCombo
-                        model: driveModel
-                        width: 100
-                        height: parent.height
-                        indicator: Canvas {
-                                  id: canvas
-                                  x: driveCombo.width - width - driveCombo.rightPadding
-                                  y: driveCombo.topPadding + (driveCombo.availableHeight - height) / 2
-                                  width: 12
-                                  height: 8
-                                  contextType: "2d"
-                                  Connections {
-                                      target: driveCombo
-                                      onPressedChanged: canvas.requestPaint()
-                                  }
-                                  onPaint: {
-                                      var context = getContext("2d")
-                                      context.reset();
-                                      context.moveTo(0, 0);
-                                      context.lineTo(width, 0);
-                                      context.lineTo(width / 2, height);
-                                      context.closePath();
-                                      context.fillStyle = driveCombo.pressed ? Material.accent : Material.foreground;
-                                      context.fill();
-                                  }
-                              }
-                        popup: Popup {
-                                  y: driveCombo.height - 1
-                                  width: driveCombo.width
-                                  implicitHeight: contentItem.implicitHeight
-                                  padding: 1
-                                  contentItem: ListView {
-                                      clip: true
-                                      implicitHeight: contentHeight
-                                      model: driveCombo.popup.visible ? driveCombo.delegateModel : null
-                                      currentIndex: driveCombo.highlightedIndex
+            QcComboBox {
+                id:driveCombo
+                model: driveModel
+                width: 100
+                height: parent.height
+                anchors.left:parent.left
+                anchors.leftMargin:10
 
-                                      ScrollIndicator.vertical: ScrollIndicator { }
-                                  }
-                                  background: Rectangle {
-                                      border.color: Material.color(Material.Green)
-                                      radius: 2
-                                  }
-                              }
-
-                        onCurrentTextChanged: {
-                            drive = currentText.charAt(0);
-                            folderListModel.folder = picker.basefolder
-                        }
-                    }
-                    Container {
-                        contentItem: Text {
-                            id: filePath
-                            Layout.maximumWidth: 400
-                            Layout.minimumWidth: 400
-                            text: folderListModel.folder.toString().replace(prepath, "►").replace(new RegExp("/",'g'), "►")
-                            renderType: Text.NativeRendering
-                            elide: Text.ElideLeft
-                            font.bold: true
-                            verticalAlignment: Text.AlignVCenter
-                            font.pixelSize: textSize
-                        }
-
-                    }
-                    Button {
-                        id: button
-                        width: 50
-                        Layout.alignment: Qt.AlignRight
-                        icon.source: "qrc:/icons/navigation/back2.svg"
-                        enabled: canMoveUp()
-                        flat: true
-                        onClicked: {
-                            onBackBtnClicked()
-                        }
-                    }
+                onCurrentTextChanged: {
+                    drive = currentText.charAt(0);
+                    folderListModel.folder = picker.basefolder
                 }
+            }
+            Label {
+                id: filePath
+                anchors.left:driveCombo.right
+                anchors.leftMargin:10
+                anchors.right:button.left
+                text: folderListModel.folder.toString().replace(prepath, "►").replace(new RegExp("/",'g'), "►")
+                renderType: Text.NativeRendering
+                elide: Text.ElideLeft
+                font.bold: true
+                verticalAlignment: Text.AlignVCenter
+                font.pixelSize: textSize
+            }
+            Button {
+                id: button
+                width: 50
+                anchors.right:parent.right
+                anchors.rightMargin:10
+                icon.source: "qrc:/icons/navigation/back2.svg"
+                enabled: canMoveUp()
+                flat: true
+                onClicked: {
+                    onBackBtnClicked()
+                }
+            }
         }
 
 
@@ -244,43 +208,41 @@ Item {
                 view.currentIndex = -1
             }
         }
+    }
 
-        RowLayout {
-            TextField {
-                id: field
-                Layout.fillWidth: true
-                placeholderText: ""
-            }
-            Button {
-                id:okBtn
-                width: 50
-                text: "选择"
-                onClicked: {
-                    var folder = new String(folderListModel.folder);
-                    if(folder.charAt(folder.length - 1) !== "/") {
-                        folder += '/';
-                    }
-                    var path = folder + field.text;
-                    var index = path.indexOf(prepath);
-                    if(index === 0) {
-                        path = path.substring(prepath.length)
-                    }
-                    ok(path)
-                    stackView.pop()
+    footer: RowLayout {
+        TextField {
+            id: field
+            Layout.fillWidth: true
+            placeholderText: ""
+        }
+        Button {
+            id:okBtn
+            width: 50
+            text: "选择"
+            onClicked: {
+                var folder = new String(folderListModel.folder);
+                if(folder.charAt(folder.length - 1) !== "/") {
+                    folder += '/';
                 }
-            }
-            Button {
-                id:cancelBtn;
-                width: 50
-                text: "取消"
-                onClicked: {
-                    cancel()
-                    stackView.pop()
+                var path = folder + field.text;
+                var index = path.indexOf(prepath);
+                if(index === 0) {
+                    path = path.substring(prepath.length)
                 }
+                ok(path)
+                stackView.pop()
             }
         }
-
-
-
+        Button {
+            id:cancelBtn;
+            width: 50
+            text: "取消"
+            onClicked: {
+                cancel()
+                stackView.pop()
+            }
+        }
     }
+
 }

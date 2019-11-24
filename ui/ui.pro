@@ -75,6 +75,7 @@ QML_DESIGNER_IMPORT_PATH =
 
 #include(material/material.pri)
 #OPTIONS += roboto
+include(MaterialUI/MaterialUI.pri)
 include(interface/interface.pri)
 include(../gui/gui.pri)
 include(tool/tool.pri)

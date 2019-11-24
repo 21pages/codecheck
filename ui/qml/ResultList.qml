@@ -6,9 +6,8 @@ import "qrc:/qml/"
 
 ListView {
     id: listView
-    anchors.fill: parent
+//    anchors.fill: parent
     anchors.bottomMargin: 10
-    boundsBehavior: Flickable.DragOverBounds
     clip: true
     cacheBuffer: 9999
     signal listViewItemClicked(var obj)

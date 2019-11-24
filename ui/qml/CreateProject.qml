@@ -32,13 +32,13 @@ Page {
         }
     }
 
-    header: ToolBar {
-        height: Global.toolBarHeight
-        Label{
-            anchors.centerIn: parent
-            text: "新建项目"
-            font.pixelSize: 22
-            color:"#ffffff"
+    header: MyToolBar {
+        title:"新建项目"
+        leftButton.icon.source:"qrc:/icons/navigation/back.svg"
+        rightButton.enabled:false
+        onLeftClicked:{
+            cancel()
+            root.stackView.pop()
         }
     }
 

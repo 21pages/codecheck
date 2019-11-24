@@ -8,10 +8,12 @@
         <file>qml/qmldir</file>
         <file>qml/CreateProject.qml</file>
         <file>qtquickcontrols2.conf</file>
-        <file>qml/FilePicker.qml</file>
-        <file>qml/FolderPicker.qml</file>
         <file>js/utils.js</file>
-        <file>qml/FilePickerDialog.qml</file>
         <file>qml/FFPicker.qml</file>
+        <file>qml/MyToolBar.qml</file>
+        <file>js/awesome.js</file>
+        <file>qc/QcButton.qml</file>
+        <file>qc/QcComboBox.qml</file>
+        <file>qc/QcPieMenuStyle.qml</file>
     </qresource>
 </RCC>

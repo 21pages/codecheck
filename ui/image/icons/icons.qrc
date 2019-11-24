@@ -34,6 +34,7 @@
         <file alias="delete.svg">action_delete.svg</file>
         <file alias="language.svg">action_language.svg</file>
         <file alias="settings.svg">action_settings.svg</file>
+        <file>edit.svg</file>
     </qresource>
     <qresource prefix="/icons/navigation">
         <file alias="arrow_drop_down.svg">navigation_arrow_drop_down.svg</file>

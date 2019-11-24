@@ -40,16 +40,23 @@ void Project::create(const QJsonObject& obj)
 {
     QFuture<bool> future = QtConcurrent::run(QThreadPool::globalInstance(), [this,obj](){
         qDebug()<<"create";
-        int type = obj.value("type").toInt();
-        QString name = obj.value("name").toString();
-        QString source = obj.value("source").toString();
-        QString destination = obj.value("destination").toString();
+
+        QJsonObject obj2 = obj;
+        obj2["type"] = 0;
+        obj2["name"] = "hello";
+        obj2["source"] = "/home/sun/learn/Qt/cppcheck";
+        obj2["destination"] = "/home/sun/learn/Qt/test";
+
+        int type = obj2.value("type").toInt();
+        QString name = obj2.value("name").toString();
+        QString source = obj2.value("source").toString();
+        QString destination = obj2.value("destination").toString();
         if(destination.at(destination.size() - 1) != "/") {
             destination += "/";
         }
         QString projectPath = destination + name;
         Manager::instance()->mainWindow->newProjectFile(projectPath);
-        setProjectFile(Manager::instance()->mainWindow->mProjectFile,obj);
+        setProjectFile(Manager::instance()->mainWindow->mProjectFile,obj2);
         Manager::instance()->mainWindow->analyzeProject(Manager::instance()->mainWindow->mProjectFile);
 
         return true;
