@@ -36,10 +36,13 @@
 #include "manager.h"
 #include "interface.h"
 #include "cppcheck.h"
+#include "dlog.h"
+
 using namespace CC;
 
 int main(int argc, char *argv[])
 {
+    qInstallMessageHandler(myMsgOutput);
 #ifdef Q_OS_WIN
     qputenv( "QSG_RENDER_LOOP", "basic" ); // threaded
 #endif

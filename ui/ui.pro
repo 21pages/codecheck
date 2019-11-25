@@ -9,7 +9,7 @@ TARGET = codecheck
 QT +=  quick-private gui gui-private core core-private qml qml-private quickcontrols2 widgets concurrent
 LIBS += -L$$PWD/../externals
 #LIBS += -lopengl32.dll
-
+DEFINES += QT_MESSAGELOGCONTEXT
 DESTDIR = .
 RCC_DIR = temp
 MOC_DIR = temp

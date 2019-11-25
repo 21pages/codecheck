@@ -16,6 +16,7 @@ Manager *Manager::sInstance = new Manager(nullptr);
 Manager::Manager(QObject *parent) : QObject(parent)
 {
     QCoreApplication *app = QApplication::instance();
+    qRegisterMetaType<ErrorItem>("ErrorItem");
     settings = new QSettings("WSD", "codecheck", app);
     settings->setValue("DATADIR", "DATADIR");
     mainWindow = new MainWindow(new TranslationHandler(this), settings);
