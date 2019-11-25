@@ -69,6 +69,10 @@ MainWindow::MainWindow(TranslationHandler* th, QSettings* settings) :
 //    mUI.setupUi(this);
     mThread = new ThreadHandler(this);
     mThread->setDataDir(getDataDir(settings));
+    connect(mThread, &ThreadHandler::done, this, &MainWindow::analysisDone);
+//    connect(mThread, &ThreadHandler::log, mUI.mResults, &ResultsView::log);
+//    connect(mThread, &ThreadHandler::debugError, mUI.mResults, &ResultsView::debugError);
+
 #if WGT
     mUI.mResults->initialize(mSettings, mApplications, mThread);
 
@@ -122,10 +126,6 @@ MainWindow::MainWindow(TranslationHandler* th, QSettings* settings) :
     connect(mUI.mActionToolBarMain, SIGNAL(toggled(bool)), this, SLOT(toggleMainToolBar()));
     connect(mUI.mActionToolBarView, SIGNAL(toggled(bool)), this, SLOT(toggleViewToolBar()));
     connect(mUI.mActionToolBarFilter, SIGNAL(toggled(bool)), this, SLOT(toggleFilterToolBar()));
-
-    connect(mThread, &ThreadHandler::done, this, &MainWindow::analysisDone);
-    connect(mThread, &ThreadHandler::log, mUI.mResults, &ResultsView::log);
-    connect(mThread, &ThreadHandler::debugError, mUI.mResults, &ResultsView::debugError);
     connect(mUI.mResults, &ResultsView::gotResults, this, &MainWindow::resultsAdded);
     connect(mUI.mResults, &ResultsView::resultsHidden, mUI.mActionShowHidden, &QAction::setEnabled);
     connect(mUI.mResults, &ResultsView::checkSelected, this, &MainWindow::performSelectedFilesCheck);
@@ -143,7 +143,6 @@ MainWindow::MainWindow(TranslationHandler* th, QSettings* settings) :
 
     loadSettings();
 
-    mThread->initialize(mUI.mResults);
     if (mProjectFile)
         formatAndSetTitle(tr("Project:") + ' ' + mProjectFile->getFilename());
     else
@@ -938,17 +937,17 @@ void MainWindow::analysisDone()
     mSelectLanguageActions->setEnabled(true);
     mUI.mActionPosix->setEnabled(true);
     mUI.mActionViewStats->setEnabled(true);
-
+#endif
     if (mProjectFile && !mProjectFile->getBuildDir().isEmpty()) {
         const QString prjpath = QFileInfo(mProjectFile->getFilename()).absolutePath();
         const QString buildDir = prjpath + '/' + mProjectFile->getBuildDir();
         if (QDir(buildDir).exists()) {
-            mUI.mResults->saveStatistics(buildDir + "/statistics.txt");
-            mUI.mResults->updateFromOldReport(buildDir + "/lastResults.xml");
-            mUI.mResults->save(buildDir + "/lastResults.xml", Report::XMLV2);
+            Manager::instance()->resultView->saveStatistics(buildDir + "/statistics.txt");
+            Manager::instance()->resultView->updateFromOldReport(buildDir + "/lastResults.xml");
+            Manager::instance()->resultView->save(buildDir + "/lastResults.xml", Report::XMLV2);
         }
     }
-
+#if WGT
     enableResultsButtons();
 
     for (int i = 0; i < MaxRecentProjects + 1; i++) {

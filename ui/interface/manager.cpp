@@ -8,6 +8,8 @@
 #include "provider.h"
 #include "helper.h"
 #include "iglobal.h"
+#include "projectfile.h"
+#include "report.h"
 
 Manager *Manager::sInstance = new Manager(nullptr);
 
@@ -19,6 +21,7 @@ Manager::Manager(QObject *parent) : QObject(parent)
     mainWindow = new MainWindow(new TranslationHandler(this), settings);
     resultView = new ResultsView(this);
     resultsTree = new ResultsTree(this);
+    mainWindow->mThread->initialize(resultView);
 }
 
 Manager *Manager::instance()
@@ -101,4 +104,12 @@ QQmlApplicationEngine *Manager::engine()
 QObject *Manager::findQuick(QString objname)
 {
     return reinterpret_cast<QObject*>(Engine->rootObjects().first()->findChild<QObject*>(objname)) ;
+}
+
+void Manager::saveResult(Report *report)
+{
+    for(auto item:errorItemList) {
+        report->writeError(*item);
+    }
+
 }

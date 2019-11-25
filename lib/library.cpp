@@ -31,6 +31,7 @@
 #include <cstdlib>
 #include <cstring>
 #include <list>
+#include <QFile>
 
 static std::vector<std::string> getnames(const char *names)
 {
@@ -80,7 +81,9 @@ Library::Error Library::load(const char exename[], const char path[])
     std::string absolute_path;
     // open file..
     tinyxml2::XMLDocument doc;
-    tinyxml2::XMLError error = doc.LoadFile(path);
+//    tinyxml2::XMLError error = doc.LoadFile(path);
+    QFile file(path);
+    tinyxml2::XMLError error = doc.LoadFile(file);
     if (error == tinyxml2::XML_ERROR_FILE_READ_ERROR && Path::getFilenameExtension(path).empty())
         // Reading file failed, try again...
         error = tinyxml2::XML_ERROR_FILE_NOT_FOUND;

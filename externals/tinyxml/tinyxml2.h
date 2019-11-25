@@ -41,6 +41,7 @@ distribution.
 #   include <cstring>
 #endif
 #include <stdint.h>
+#include <QFile>
 
 /*
    TODO: intern strings instead of allocation.
@@ -1702,6 +1703,8 @@ public:
     	an errorID.
     */
     XMLError LoadFile( FILE* );
+
+    XMLError LoadFile(QFile &file);
 
     /**
     	Save the XML file to disk.

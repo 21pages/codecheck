@@ -42,46 +42,6 @@ ApplicationWindow {
         width: parent.width;
         height: parent.height - y
         initialItem: Page {
-//            header:ToolBar {
-//                    width: parent.width;
-//                    height: Global.toolBarHeight
-//                    Material.foreground: "white"
-
-//                    RowLayout {
-//                        spacing: 20
-//                        anchors.fill: parent
-
-//                        ToolButton {
-//                            icon.source: stackView.depth > 1 ? "qrc:/icons/navigation/back.svg" : "qrc:/icons/navigation/menu.svg"
-//                            onClicked: {
-//                                if (stackView.depth > 1) {
-//                                    stackView.pop()
-//                                } else {
-//        //                            drawer.open()
-//                                }
-//                            }
-//                        }
-
-//                        Label {
-//                            id: titleLabel
-//                            text: "CodeCheck"
-//                            font.pixelSize: 20
-//                            elide: Label.ElideRight
-//                            horizontalAlignment: Qt.AlignHCenter
-//                            verticalAlignment: Qt.AlignVCenter
-//                            Layout.fillWidth: true
-//                        }
-
-//                        ToolButton {
-//                            icon.source: "qrc:/icons/navigation/menu2.svg"
-//                            onClicked: optionsMenu.open()
-
-//                            Menu {
-//                                id: optionsMenu
-//                            }
-//                        }
-//                    }
-//                }
             header:MyToolBar {
                 leftButton.icon.source:"qrc:/icons/navigation/menu.svg"
                 rightButton.icon.source:"qrc:/icons/navigation/menu2.svg"
@@ -95,7 +55,6 @@ ApplicationWindow {
                     id: optionsMenu
                 }
             }
-
 
             C14.SplitView {
                   id:splitViewResult
@@ -190,7 +149,7 @@ ApplicationWindow {
                     drag.maximumX:dropArea.width - width - pieMenu.width/2
                     drag.minimumY:pieMenu.height/2
                     drag.maximumY:splitViewResult.height - buttonFloating.height
-                    cursorShape:entered?Qt.DragMoveCursor:Qt.ArrowCursor
+                    cursorShape:entered?Qt.PointingHandCursor:Qt.ArrowCursor
                     onPressed:{
                         if(buttonFloating.state !== "noAnchored") {
                             buttonFloating.state = "noAnchored"

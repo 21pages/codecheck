@@ -134,6 +134,7 @@ void ResultsView::error(const ErrorItem &item)
         mStatistics->addItem(item.tool(), ShowTypes::SeverityToShowType(item.severity));
     }
 #endif
+    Manager::instance()->addErrorItem(item);
 }
 
 void ResultsView::filterResults(const QString& filter)
@@ -177,7 +178,7 @@ void ResultsView::save(const QString &filename, Report::Type type) const
         msgBox.setIcon(QMessageBox::Critical);
         msgBox.exec();
     }
-
+#endif
     Report *report = nullptr;
 
     switch (type) {
@@ -191,7 +192,14 @@ void ResultsView::save(const QString &filename, Report::Type type) const
         report = new XmlReportV2(filename);
         break;
     }
-
+    if(report) {
+        if(report->create()) {
+            Manager::instance()->resultsTree->saveResults(report);
+        }
+        delete report;
+        report = nullptr;
+    }
+#if WGT
     if (report) {
         if (report->create())
             mUI.mTree->saveResults(report);

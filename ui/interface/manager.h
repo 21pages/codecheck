@@ -10,6 +10,8 @@ class MainWindow;
 class ResultsView;
 class ResultsTree;
 class ErrorItem;
+class ProjectFile;
+class Report;
 
 class Manager : public QObject
 {
@@ -22,6 +24,7 @@ public:
     void setEngine(QQmlApplicationEngine *engine);
     QQmlApplicationEngine * engine();
     QObject* findQuick(QString objname);
+    void saveResult(Report *report);
 public:
     QSettings* settings;
     MainWindow* mainWindow;

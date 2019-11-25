@@ -42,10 +42,10 @@ void Project::create(const QJsonObject& obj)
         qDebug()<<"create";
 
         QJsonObject obj2 = obj;
-        obj2["type"] = 0;
+        obj2["type"] = 1;
         obj2["name"] = "hello";
-        obj2["source"] = "/home/sun/learn/Qt/cppcheck";
-        obj2["destination"] = "/home/sun/learn/Qt/test";
+        obj2["source"] = "C:/wisdom/done/56/codecheck/samples/memleak2";
+        obj2["destination"] = "C:/wisdom/done/56/test";
 
         int type = obj2.value("type").toInt();
         QString name = obj2.value("name").toString();
@@ -111,4 +111,5 @@ void Project::setProjectFile(ProjectFile *projectFile, const QJsonObject& obj)
     projectFile->setAddons(list);
     projectFile->setClangAnalyzer(false);
     projectFile->setClangTidy(true);
+    projectFile->write();
 }

@@ -47,6 +47,7 @@
 #include "threadhandler.h"
 #include "path.h"
 #include "xmlreportv2.h"
+#include "manager.h"
 
 // These must match column headers given in ResultsTree::translate()
 static const unsigned int COLUMN_SINCE_DATE = 6;
@@ -1097,10 +1098,11 @@ void ResultsTree::saveResults(Report *report) const
 {
     report->writeHeader();
 
-    for (int i = 0; i < mModel.rowCount(); i++) {
+//    for (int i = 0; i < mModel.rowCount(); i++) {
 //        if (mSaveAllErrors || !isRowHidden(i, QModelIndex()))
 //            saveErrors(report, mModel.item(i, 0));
-    }
+//    }
+    Manager::instance()->saveResult(report);
 
     report->writeFooter();
 }

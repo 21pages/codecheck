@@ -2236,6 +2236,48 @@ XMLError XMLDocument::LoadFile( FILE* fp )
     return _errorID;
 }
 
+XMLError XMLDocument::LoadFile(QFile &file)
+{
+    if(!file.open(QIODevice::ReadOnly)) {
+        TIXMLASSERT( false );
+        SetError( XML_ERROR_FILE_COULD_NOT_BE_OPENED, 0, "filename=<null>" );
+        return _errorID;
+    }
+    Clear();
+    const long filelength = file.size();
+
+    if ( filelength == 0 ) {
+        SetError( XML_ERROR_EMPTY_DOCUMENT, 0, 0 );
+        file.close();
+        return _errorID;
+    }
+
+    if ( !LongFitsIntoSizeTMinusOne<>::Fits( filelength ) ) {
+        // Cannot handle files which won't fit in buffer together with null terminator
+        SetError( XML_ERROR_FILE_READ_ERROR, 0, 0 );
+        file.close();
+        return _errorID;
+    }
+
+    const size_t size = filelength;
+    TIXMLASSERT( _charBuffer == 0 );
+    _charBuffer = new char[size+1];
+    file.seek(0);
+    size_t read = file.read(_charBuffer,filelength);
+//    size_t read = fread( _charBuffer, 1, size, fp );
+    if ( read != size ) {
+        SetError( XML_ERROR_FILE_READ_ERROR, 0, 0 );
+        file.close();
+        return _errorID;
+    }
+    _charBuffer[size] = 0;
+
+    Parse();
+    file.close();
+    return _errorID;
+
+}
+
 
 XMLError XMLDocument::SaveFile( const char* filename, bool compact )
 {
