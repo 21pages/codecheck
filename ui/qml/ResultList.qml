@@ -39,7 +39,7 @@ ListView {
             }
         }
     }
-//    section.property: modelData.file
+    section.property: "modelData.file"
     section.criteria: ViewSection.FullString
     section.delegate: sectionHeader
 

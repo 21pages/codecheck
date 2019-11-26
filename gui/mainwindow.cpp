@@ -1480,7 +1480,7 @@ void MainWindow::newProjectFile(QString filePath)
 #else
     QDir dir = QFileInfo(filePath).dir();
     if(!dir.exists()) {
-        dir.mkpath(dir.canonicalPath());
+        dir.mkpath(dir.absolutePath());
     }
 #endif
 
