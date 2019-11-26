@@ -41,18 +41,18 @@ Rectangle {
         MouseArea {
             anchors.fill: parent
             onClicked: {
-                console.log(d);
                 if(modelData.array.length !== 0) {
                     var visible =  listView2.visible;
                     listView2.visible = !visible;
                     listView2.height = (!visible) ? Global.subListHeight * modelData.array.length: 0;
                 }
                 var obj = {"file":modelData.file,"line":modelData.line}
-//                root.onListViewClicked(obj);
                 listViewItemClicked(obj);
             }
         }
     }
+
+
     ListView {
         y:Global.listHeight
         id:listView2

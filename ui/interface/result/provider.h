@@ -39,6 +39,7 @@ public:
     Q_INVOKABLE void addItem(const QString& file, const QString& severity,
                              const QString& id, int line, const QString& summary, const QJsonArray &array);
     Q_INVOKABLE void removeItem(DataItemRO *item);
+    Q_INVOKABLE void clearItem();
     Q_INVOKABLE void initDocument();
     Q_INVOKABLE void onListViewClicked(const QJsonObject &obj);
     static Provider* instance();
@@ -47,7 +48,6 @@ private:
     void watchFinished_listClick();
 signals:
     void documentChanged();
-//    void sigSelectionPos(QVariant obj);
 private:
     // Since this getter is not safe (ownership remains to c++)
     // and it is used for QML only it'd better to make it private.

@@ -28,7 +28,6 @@ void Provider::watchFinished_listClick()
     if(root) {
         QMetaObject::invokeMethod(root,"textSelect",Qt::QueuedConnection,Q_ARG(QVariant,m_watcher_listClick->result()));
     }
-//    emit sigSelectionPos();
 }
 
 Provider *Provider::instance()
@@ -51,6 +50,11 @@ void Provider::removeItem(DataItemRO *item) {
     }
 }
 
+void Provider::clearItem()
+{
+    m_items.clear();
+}
+
 void Provider::initDocument()
 {
     QTextDocument *doc = m_document->textDocument();
@@ -61,18 +65,12 @@ void Provider::initDocument()
 void Provider::onListViewClicked(const QJsonObject& obj)
 {
     auto  future = QtConcurrent::run(QThreadPool::globalInstance(),[obj](){
-        qDebug()<<"onListViewClicked-threadid:"<<QThread::currentThread();
         QString fileName = obj.value("file").toString();
         int line = obj.value("line").toInt();
         QString codec = obj.value("codec").toString();
-        qDebug()<<"fileName:"<<fileName;
-        QString tmp = fileName;
-        tmp.replace("\\","/");
-    //    QString fullFileName = Manager::instance()->resultView->getCheckDirectory() + "/" + tmp;
-        QString fullFileName = QString("C:/wisdom/done/56/codecheck")/*QString("D:/learn/Qt/cppcheck-master/cfg")*/ + "/" +tmp;
-        qDebug()<<fullFileName;
-        QJsonObject retobj = Helper::getFileContent(fullFileName,codec,line);
+        QJsonObject retobj = Helper::getShowContent(fileName,codec,line);
         return QVariant::fromValue<QJsonObject>(retobj);
+
     });
     m_watcher_listClick->setFuture(future);
 }

@@ -42,7 +42,7 @@ using namespace CC;
 
 int main(int argc, char *argv[])
 {
-    qInstallMessageHandler(myMsgOutput);
+//    qInstallMessageHandler(myMsgOutput);
 #ifdef Q_OS_WIN
     qputenv( "QSG_RENDER_LOOP", "basic" ); // threaded
 #endif

@@ -13,5 +13,4 @@ Button {
       border.width: 1
   }
 
-
 }

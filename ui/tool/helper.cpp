@@ -1,6 +1,7 @@
 #include "helper.h"
 #include <QDir>
 #include <QTextStream>
+#include <QtDebug>
 
 
 QString Helper::GetStripPath(const QString &fullFilePath)
@@ -74,8 +75,7 @@ static int getPos(const QString &fileData, int lineNumber)
     return fileData.size();
 }
 
-
-QJsonObject Helper::getFileContent(const QString& fileName, const QString& codec,int line)
+QJsonObject Helper::getShowContent(const QString &fileName, const QString &codec, int line)
 {
     QFile file(fileName);
     if(!file.open(QIODevice::ReadOnly)) {
@@ -87,13 +87,18 @@ QJsonObject Helper::getFileContent(const QString& fileName, const QString& codec
         return obj;
     }
     QString fileContent;
-    if(QString::compare(codec,"gbk",Qt::CaseInsensitive)) {
+    if(QString::compare(codec,"gbk",Qt::CaseInsensitive) == 0) {
         fileContent = QString::fromLocal8Bit(file.readAll());
     } else {
         fileContent = QString::fromUtf8(file.readAll());
     }
-    int lineNumAll = getFileLineNum(fileContent);
-    if(line > lineNumAll) {
+    QTextStream stream(&fileContent);
+    QStringList contentList;
+    while(!stream.atEnd()) {
+        contentList.append(stream.readLine());
+    }
+    int lineNumAll = contentList.size();
+    if(line > lineNumAll || line < 1) {
         QJsonObject obj;
         obj.insert("fileName","");
         obj.insert("start",0);
@@ -102,18 +107,26 @@ QJsonObject Helper::getFileContent(const QString& fileName, const QString& codec
         return obj;
     }
     int startLine,endLine;
-    startLine = line>10?line-10:0;
+    startLine = line>10?line-10:1;
     endLine = (lineNumAll - line > 10) ? line + 10 :lineNumAll;
-    int startPos = getPos(fileContent,startLine);
-    int endPos = getPos(fileContent,endLine+1);
-    QString showContent = fileContent.mid(startPos,endPos-startPos);
-    int cursorPosStart = getPos(showContent,line - startLine + 1);
-    int cursorPosEnd = getPos(showContent,line - startLine + 2);
-    if(cursorPosEnd > 0) cursorPosEnd -=1;
+    QStringList showList = contentList.mid(startLine-1,endLine-startLine + 1);
+    QString showString;
+    int startPos = 0;
+    int endPos = 0;
+    for(int i = 0; i< showList.size(); i++) {
+        if(startLine + i == line) {
+            startPos = showString.size();
+        }
+        showString.append(showList.at(i));
+        if(startLine + i == line) {
+            endPos = showString.size();
+        }
+        showString.append("\n");
+    }
     QJsonObject obj;
     obj.insert("fileName",fileName);
-    obj.insert("start",cursorPosStart);
-    obj.insert("end",cursorPosEnd);
-    obj.insert("content",showContent);
+    obj.insert("start",startPos);
+    obj.insert("end",endPos);
+    obj.insert("content",showString);
     return obj;
 }

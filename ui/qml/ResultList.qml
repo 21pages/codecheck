@@ -6,7 +6,6 @@ import "qrc:/qml/"
 
 ListView {
     id: listView
-//    anchors.fill: parent
     anchors.bottomMargin: 10
     clip: true
     cacheBuffer: 9999
@@ -26,5 +25,23 @@ ListView {
     removeDisplaced: Transition {
         NumberAnimation { properties: "x,y"; duration: 100; easing.type: Easing.InOutQuad }
     }
+
+    Component{
+        id: sectionHeader
+        Rectangle{
+            width: 100
+            height: 50
+            color: "lightsteelblue"
+            Text{
+                text: section
+                font.bold: true
+                font.pointSize: 20
+            }
+        }
+    }
+//    section.property: modelData.file
+    section.criteria: ViewSection.FullString
+    section.delegate: sectionHeader
+
 }
 

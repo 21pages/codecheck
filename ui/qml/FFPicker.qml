@@ -32,13 +32,6 @@ Page {
     property string basefolder: prepath + drive + ":/"
     property string nameFilters: "*.*"
 
-    Component.onCompleted: {
-        console.log("onCompleted")
-    }
-    Component.onDestruction: {
-        console.log("onDestruction")
-    }
-
     function currentFolder() {
         return folderListModel.folder;
     }
@@ -120,6 +113,8 @@ Page {
                 anchors.left:driveCombo.right
                 anchors.leftMargin:10
                 anchors.right:button.left
+                anchors.top: parent.top
+                anchors.bottom: parent.bottom
                 text: folderListModel.folder.toString().replace(prepath, "►").replace(new RegExp("/",'g'), "►")
                 renderType: Text.NativeRendering
                 elide: Text.ElideLeft

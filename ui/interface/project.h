@@ -25,19 +25,21 @@ namespace CC {
         };
         Q_ENUM(ProjType)
         explicit Project(QObject *parent = nullptr);
-//        Q_PROPERTY(ProjType type READ )
         Q_INVOKABLE void open(const QString &filepath);
         Q_INVOKABLE void create(const QJsonObject& obj);
-//        Q_INVOKABLE ProjType type(){return m_type;}
-//        Q_INVOKABLE void setType(ProjType type) { m_type = type;}
+        Q_INVOKABLE void close();
         static Project* instance();
         void setProjectFile(ProjectFile *projectFile, const QJsonObject &obj);
+        void data2ui();
+    signals:
+        void openFinished(bool ret);
+        void createFinished(bool ret);
     private:
         void watcher_open_finished();
         void watcher_create_finished();
     private:
         static Project *Instance;
-        QFutureWatcher<void> *m_watcher_open;
+        QFutureWatcher<bool> *m_watcher_open;
         QFutureWatcher<bool> *m_watcher_create;
     };
 }

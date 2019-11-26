@@ -43,6 +43,7 @@
 #include "manager.h"
 #include "resultsview.h"
 #include "project.h"
+#include "provider.h"
 
 static const QString OnlineHelpURL("http://cppcheck.net/manual.html");
 static const QString compile_commands_json("compile_commands.json");
@@ -914,6 +915,7 @@ Settings MainWindow::getCppcheckSettings()
 
 void MainWindow::analysisDone()
 {
+    Manager::instance()->analysisDone();
 #if WGT
     if (mExiting) {
         close();
@@ -937,17 +939,6 @@ void MainWindow::analysisDone()
     mSelectLanguageActions->setEnabled(true);
     mUI.mActionPosix->setEnabled(true);
     mUI.mActionViewStats->setEnabled(true);
-#endif
-    if (mProjectFile && !mProjectFile->getBuildDir().isEmpty()) {
-        const QString prjpath = QFileInfo(mProjectFile->getFilename()).absolutePath();
-        const QString buildDir = prjpath + '/' + mProjectFile->getBuildDir();
-        if (QDir(buildDir).exists()) {
-            Manager::instance()->resultView->saveStatistics(buildDir + "/statistics.txt");
-            Manager::instance()->resultView->updateFromOldReport(buildDir + "/lastResults.xml");
-            Manager::instance()->resultView->save(buildDir + "/lastResults.xml", Report::XMLV2);
-        }
-    }
-#if WGT
     enableResultsButtons();
 
     for (int i = 0; i < MaxRecentProjects + 1; i++) {

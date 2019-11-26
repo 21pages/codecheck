@@ -21,10 +21,12 @@ public:
     static Manager *instance();
     void addErrorItem(const ErrorItem& item);
     bool listAddErrorItem(const ErrorItem &item);
+    void clearErrorData();
     void setEngine(QQmlApplicationEngine *engine);
     QQmlApplicationEngine * engine();
     QObject* findQuick(QString objname);
     void saveResult(Report *report);
+    void analysisDone();
 public:
     QSettings* settings;
     MainWindow* mainWindow;

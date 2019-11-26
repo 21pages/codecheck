@@ -32,7 +32,19 @@ ApplicationWindow {
 
     property Component createProject: CreateProject {
         onOk:{
+            materialUI.showLoading( "正在分析源码,请稍等,50% ");
             projectManager.create(obj)
+        }
+    }
+
+
+    Connections {
+        target:projectManager
+        onOpenFinished:{
+
+        }
+        onCreateFinished:{
+            materialUI.hideLoading()
         }
     }
 
@@ -46,15 +58,24 @@ ApplicationWindow {
                 leftButton.icon.source:"qrc:/icons/navigation/menu.svg"
                 rightButton.icon.source:"qrc:/icons/navigation/menu2.svg"
                 onLeftClicked:{
-                   // drawer.open()
+                    drawer.open()
                 }
                 onRightClicked:{
+                    optionsMenu.x = rightButton.x
+                    optionsMenu.y = rightButton.y + rightButton.height
                     optionsMenu.open()
                 }
                 Menu {
                     id: optionsMenu
+                    MenuItem {
+                        text:"显示工具栏"
+                        onTriggered: {
+                            toolBarFooter.visible = true
+                        }
+                    }
                 }
             }
+
 
             C14.SplitView {
                   id:splitViewResult
@@ -67,7 +88,7 @@ ApplicationWindow {
                       implicitHeight: 300
                       Layout.minimumHeight: 100
                       onListViewItemClicked: {
-                          obj.codec = "gbk";
+                          obj.codec = switchDelegateCodec.checked?"gbk":"utf8";
                           provider.onListViewClicked(obj);
                       }
                   }
@@ -100,8 +121,9 @@ ApplicationWindow {
                              wrapMode: TextEdit.NoWrap
                              onCursorRectangleChanged: flick.ensureVisible(cursorRectangle)
                              readOnly: true
-                             selectionColor: Material.color(Material.BlueGrey)
-                             selectedTextColor: Material.color(Material.Pink)
+                             textFormat:TextEdit.PlainText
+                             selectionColor: Material.color(Material.Yellow)
+                             selectedTextColor: Qt.rgba(0,0,0,1)
                          }
                          Component.onCompleted: {
                              provider.document = edit.textDocument;
@@ -164,6 +186,7 @@ ApplicationWindow {
 
             E14.PieMenu {
                 id:pieMenu
+                width: 200;height: 200
                 C14.MenuItem {
                     text: "打开"
                     onTriggered: {
@@ -179,12 +202,41 @@ ApplicationWindow {
                 C14.MenuItem {
                     text: "关闭"
                     onTriggered: {
+                        projectManager.close()
+                        edit.text = ""
                     }
                 }
                 style:QcPieMenuStyle{}
             }
 
+            Drawer {
+                id:drawer
+                width: 0.66 * root.width; height: root.height
+                ColumnLayout{
+                    width: parent.width
+                    CheckDelegate {
+                        width: parent.width
+                        Layout.alignment: Qt.AlignLeft
+                        id:switchDelegateCodec
+                        text:"使用GBK编码浏览"
+                        checked: false
+                    }
+                    Button {
+                        text:"btn"
+                    }
+                }
+            }
 
+            footer: ToolBar {
+                id:toolBarFooter
+                visible: false
+                RowLayout {
+                    ToolButton {
+                        text: "统计"
+                        id:toolButtonShowStatistics
+                    }
+                }
+            }
         }
     }
 
@@ -197,13 +249,10 @@ ApplicationWindow {
     }
 
     function textSelect(obj) {
-        edit.clear();
-        edit.append(obj["content"]);
+        edit.text = obj["content"]
         var start = obj["start"];
         var end = obj["end"];
-        edit.select(start>10?start-10:start, end>10?end-10:end);
+        edit.select(start, end);
     }
-
-
 
 }

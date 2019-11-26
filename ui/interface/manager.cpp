@@ -10,6 +10,7 @@
 #include "iglobal.h"
 #include "projectfile.h"
 #include "report.h"
+#include "project.h"
 
 Manager *Manager::sInstance = new Manager(nullptr);
 
@@ -92,6 +93,12 @@ bool Manager::listAddErrorItem(const ErrorItem &item)
     return true;
 }
 
+void Manager::clearErrorData()
+{
+    errorJsonList.clear();
+    errorItemList.clear();
+}
+
 void Manager::setEngine(QQmlApplicationEngine *engine)
 {
     Engine = engine;
@@ -113,4 +120,19 @@ void Manager::saveResult(Report *report)
         report->writeError(*item);
     }
 
+}
+
+void Manager::analysisDone()
+{
+    ProjectFile *pf = mainWindow->mProjectFile;
+    if (pf && !pf->getBuildDir().isEmpty()) {
+        const QString prjpath = QFileInfo(pf->getFilename()).absolutePath();
+        const QString buildDir = prjpath + '/' + pf->getBuildDir();
+        if (QDir(buildDir).exists()) {
+            resultView->saveStatistics(buildDir + "/statistics.txt");
+            resultView->updateFromOldReport(buildDir + "/lastResults.xml");
+            resultView->save(buildDir + "/lastResults.xml", Report::XMLV2);
+            CC::Project::instance()->data2ui();
+        }
+    }
 }

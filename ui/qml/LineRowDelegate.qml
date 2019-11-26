@@ -31,7 +31,6 @@ Rectangle {
         enabled: true
         onClicked: {
             var obj = {"file":modelData.file,"line":modelData.line}
-//            root.onListViewClicked(obj);
             subListDelegate.listViewItemClicked(obj);
         }
     }

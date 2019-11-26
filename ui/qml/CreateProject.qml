@@ -140,11 +140,6 @@ Page {
                     "destination":textFieldDestination.text,
                     "platform":comboBoxPlatform.currentIndex
                 }
-//                /*obj.name*/obj["name"] = textFieldProjectName.text
-//                /*obj.type*/obj["type"] = raidoButtonProj.checked ? Project.ProjTypeVS : Project.ProjTypeDIR
-//                /*obj.source*/obj["source"] = textFieldSource.text
-//                /*obj.destination*/obj["destination"] = textFieldDestination.text
-                console.log(obj)
                 ok(obj)
                 root.stackView.pop()
             }
