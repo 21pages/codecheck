@@ -82,6 +82,7 @@ include(tool/tool.pri)
 
 RESOURCES += qml.qrc  \
     ../addons/addons.qrc \
+    ../assets.qrc \
     ../cfg/cfg.qrc \
     ../platforms/platforms.qrc \
              image/demo.qrc \

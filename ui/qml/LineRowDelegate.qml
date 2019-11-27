@@ -1,7 +1,9 @@
 import QtQuick 2.7
 import QtQuick.Layouts 1.3
 import QtQuick.Controls 1.4
-
+import QtQuick.Controls.Material 2.12
+import "qrc:/qc/"
+import "qrc:/MaterialUI/Interface/"
 
 Rectangle {
     id:subListDelegate
@@ -10,22 +12,23 @@ Rectangle {
     width: listView.width
     signal listViewItemClicked(var obj)
 
-    Column {
-        id:column
-        width: parent.width;height: parent.width
-
+    MaterialCard {
+        anchors.margins: 5
+        height: Global.subListHeight - anchors.margins * 2
+        width: parent.width - anchors.margins * 2
+        elevation:2
         Text {
-            text: modelData.file + "\t行号:" +modelData.line
-            height: Global.subListHeight * 0.5
+            text: "行号:" +modelData.line+"\t"+modelData.info
+            height: Global.subListHeight
             padding: 10
         }
         Text {
-            text: modelData.column + ":" + modelData.info
-            height: Global.subListHeight * 0.5
-            padding: 10
+            anchors.right: parent.right
+            color: Material.color(Material.Purple)
+            text: index + 1
         }
-
     }
+
     MouseArea {
         anchors.fill: parent
         enabled: true

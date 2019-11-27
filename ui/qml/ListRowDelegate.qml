@@ -1,8 +1,12 @@
 import QtQuick 2.7
 import QtQuick.Layouts 1.3
 import QtQuick.Controls.Styles 1.4
+import QtQuick.Controls.Material 2.12
+import QtQuick.Controls 2.12
+import "qrc:/qc/"
+import "qrc:/MaterialUI/Interface/"
 
-Rectangle {
+Control {
     id:listViewDelegate
     property var d
     Layout.fillWidth: true
@@ -10,30 +14,63 @@ Rectangle {
     height:Global.listHeight + listView2.height
     signal listViewItemClicked(var obj)
 
-    Rectangle {
-        id:column
-        height: Global.listHeight
-        width: parent.width
-        border.width: 1;border.color: Global.severityColorMap[modelData.severity] !== undefined ? Global.severityColorMap[modelData.severity]:"#fefefe";
-        RowLayout {
+    MaterialCard{
+        id:card
+        anchors.margins: 5
+        height: Global.listHeight - anchors.margins * 2
+        width: parent.width - anchors.margins * 2
+        elevation:2
+
+        Control {
+            id:flickable
+            width: parent.width
             height: parent.height
-            Rectangle {
-                id:rect
-                width: 50;height: parent.height
-                visible: modelData.array.length !== 0
-            }
-            ColumnLayout {
-                Text {
-                    y:0
-                    text: modelData.file + "\t行号:" +modelData.line
-                    height: Global.listHeight * 0.5
-                    padding: 10
+            Column {
+                id:layout1
+                height: parent.height
+                width: parent.width
+                Row {
+                    id:layout2
+                    height: parent.height * 0.8
+                    width: parent.width
+                    QcColoredImage {
+                        id:severityImage
+                        height: parent.height
+                        width: height
+                        source:"qrc:/icons/alert/"+ modelData.severity+ ".svg"
+                        overlayColor:Global.severityColorMap[modelData.severity] !== undefined ? Global.severityColorMap[modelData.severity]:"#fefefe";
+                    }
+                    Column {
+                        width: parent.width - severityImage.width
+                        height: parent.height
+                        RowLayout {
+                            height: parent.height * 0.6
+                            Text {
+                                text: modelData.id
+                                padding: 10
+                            }
+                            Text {
+                                text:(modelData.array.length === 0) ? ("行号:" + modelData.line) : ("相关行数:" + modelData.array.length)
+                                padding: 10
+                                fontSizeMode: Text.Fit
+                            }
+                        }
+                        Text {
+                            height: parent.height * 0.4
+                            text: modelData.summary
+                            padding: 10
+                            font.weight: Font.Light
+                        }
+                    }
                 }
-                Text {
-                    y:50
-                    text: modelData.id + ":" + modelData.summary
-                    height: Global.listHeight * 0.5
-                    padding: 10
+                Rectangle {
+                    height: parent.height * 0.2
+                    width: parent.width
+                    Label {
+                        anchors.right: parent.right
+                        height: parent.height
+                        text: index + 1
+                    }
                 }
             }
         }
@@ -48,6 +85,16 @@ Rectangle {
                 }
                 var obj = {"file":modelData.file,"line":modelData.line}
                 listViewItemClicked(obj);
+//                console.log("1:",listViewDelegate.width,listViewDelegate.height, "2:",)
+//                var array = [listViewDelegate,card,flickable,layout1,layout2,severityImage]
+
+                console.log("1:",listViewDelegate.parent,listViewDelegate.width,listViewDelegate.height);
+                console.log("2:",card.parent,card.width,card.height);
+                console.log("3:",flickable.parent,flickable.width,flickable.height);
+                console.log("4:",layout1.parent,layout1.width,layout1.height);
+                console.log("5:",layout2.parent,layout2.width,layout2.height);
+                console.log("6:",severityImage.parent,severityImage.width,severityImage.height);
+
             }
         }
     }

@@ -10,8 +10,12 @@
         <file alias="edit.svg">image_edit.svg</file>
     </qresource>
     <qresource prefix="/icons/alert">
-        <file alias="warning.svg">alert_warning.svg</file>
-        <file>alert_error.svg</file>
+        <file>warning.svg</file>
+        <file>error.svg</file>
+        <file>information.svg</file>
+        <file>portability.svg</file>
+        <file>performance.svg</file>
+        <file>style.svg</file>
     </qresource>
     <qresource prefix="/icons/content">
         <file alias="add.svg">content_add.svg</file>

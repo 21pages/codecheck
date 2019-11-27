@@ -15,5 +15,6 @@
         <file>qc/QcButton.qml</file>
         <file>qc/QcComboBox.qml</file>
         <file>qc/QcPieMenuStyle.qml</file>
+        <file>qc/QcColoredImage.qml</file>
     </qresource>
 </RCC>

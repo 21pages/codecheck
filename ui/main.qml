@@ -23,6 +23,7 @@ ApplicationWindow {
     width: Global.screenWidth; height: Global.screenHeight
     property alias stackView: stackView
     property alias materialUI:materialUI
+    property alias sectionIsInline: raidoButtonSectionInline.checked
 
     property Component ffPickerOpenProject : FFPicker{
         onOk: {
@@ -88,7 +89,7 @@ ApplicationWindow {
                       implicitHeight: 300
                       Layout.minimumHeight: 100
                       onListViewItemClicked: {
-                          obj.codec = switchDelegateCodec.checked?"gbk":"utf8";
+                          obj.codec = radioButtonGBK.checked?"gbk":"utf8";
                           provider.onListViewClicked(obj);
                       }
                   }
@@ -214,15 +215,39 @@ ApplicationWindow {
                 width: 0.66 * root.width; height: root.height
                 ColumnLayout{
                     width: parent.width
-                    CheckDelegate {
-                        width: parent.width
-                        Layout.alignment: Qt.AlignLeft
-                        id:switchDelegateCodec
-                        text:"使用GBK编码浏览"
-                        checked: false
+                    ButtonGroup {
+                        buttons: [raidoButtonSectionInline,radioButtonSectionHead]
                     }
-                    Button {
-                        text:"btn"
+                    RowLayout {
+                        Label {
+                            text: "表头样式:"
+                        }
+                        RadioButton {
+                            id:raidoButtonSectionInline
+                            text: "inline"
+                            checked: true
+                        }
+                        RadioButton {
+                            id:radioButtonSectionHead
+                            text:"head"
+                        }
+                    }
+                    ButtonGroup {
+                        buttons: [raidoButtonUTF8,radioButtonGBK]
+                    }
+                    RowLayout {
+                        Label {
+                            text: "浏览编码:"
+                        }
+                        RadioButton {
+                            id:raidoButtonUTF8
+                            text: "UTF8"
+                            checked: true
+                        }
+                        RadioButton {
+                            id:radioButtonGBK
+                            text:"GBK"
+                        }
                     }
                 }
             }

@@ -84,7 +84,5 @@ int main(int argc, char *argv[])
     }, Qt::QueuedConnection);
     engine.load(url);
 
-    qDebug()<<"main-threadid:"<<QThread::currentThread();
-
     return app.exec();
 }

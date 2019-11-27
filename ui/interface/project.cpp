@@ -87,12 +87,12 @@ Project *Project::instance()
 void Project::watcher_open_finished()
 {
     data2ui();
-    emit openFinished(m_watcher_open->result());
+//    emit openFinished(m_watcher_open->result());
 }
 
 void Project::watcher_create_finished()
 {
-    emit createFinished(m_watcher_create->result());
+//    emit createFinished(m_watcher_create->result());
 }
 
 void Project::data2ui()
