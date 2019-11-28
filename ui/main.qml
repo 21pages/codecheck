@@ -3,11 +3,11 @@ import QtQuick.Controls 2.12
 import QtQuick.Controls 1.4 as C14
 import QtQuick.Extras 1.4 as E14
 import QtQuick.Window 2.12
-import QtQuick.Layouts 1.0
 import QtGraphicalEffects 1.0
-//import Qt.labs.platform 1.1
 import QtQuick.Controls.Styles 1.4
 import QtQuick.Controls.Material 2.12
+import Qt.labs.settings 1.0
+import QtQuick.Layouts 1.12
 import CC 1.0 as CC
 import "qrc:/qml/"
 import "qrc:/qc/"
@@ -23,29 +23,44 @@ ApplicationWindow {
     width: Global.screenWidth; height: Global.screenHeight
     property alias stackView: stackView
     property alias materialUI:materialUI
-    property alias sectionIsInline: raidoButtonSectionInline.checked
 
     property Component ffPickerOpenProject : FFPicker{
         onOk: {
+            materialUI.showLoading( "正在打开项目,请稍等...",loadingClickCallBack);
             projectManager.open(path);
         }
     }
 
     property Component createProject: CreateProject {
         onOk:{
-            materialUI.showLoading( "正在分析源码,请稍等,50% ");
+            materialUI.showLoading( "正在分析源码,请稍等...");
             projectManager.create(obj)
         }
     }
 
+    Component.onCompleted: {
+        provider.document = edit.textDocument;
+        var obj = {
+            "typeShow":getTypeShow()
+        };
+        provider.initProviderFromUI(obj);
+    }
 
     Connections {
         target:projectManager
         onOpenFinished:{
-
+            materialUI.hideLoading()
         }
         onCreateFinished:{
             materialUI.hideLoading()
+        }
+
+        onProgress:{
+            if(materialUI.loadingVisible) {
+                var str = Math.round(value * 1.0  / 1024 * 100).toFixed(0) + "%\t" + description;
+                console.log(str);
+                materialUI.showLoading(str)
+            }
         }
     }
 
@@ -125,10 +140,6 @@ ApplicationWindow {
                              textFormat:TextEdit.PlainText
                              selectionColor: Material.color(Material.Yellow)
                              selectedTextColor: Qt.rgba(0,0,0,1)
-                         }
-                         Component.onCompleted: {
-                             provider.document = edit.textDocument;
-                             provider.initDocument();
                          }
                      }
 
@@ -213,41 +224,81 @@ ApplicationWindow {
             Drawer {
                 id:drawer
                 width: 0.66 * root.width; height: root.height
-                ColumnLayout{
+                onAboutToHide: {
+                    provider.typeShow = getTypeShow();
+                }
+                Column{
                     width: parent.width
                     ButtonGroup {
-                        buttons: [raidoButtonSectionInline,radioButtonSectionHead]
+                        buttons: [radioButtonUTF8,radioButtonGBK]
                     }
-                    RowLayout {
-                        Label {
-                            text: "表头样式:"
-                        }
-                        RadioButton {
-                            id:raidoButtonSectionInline
-                            text: "inline"
-                            checked: true
-                        }
-                        RadioButton {
-                            id:radioButtonSectionHead
-                            text:"head"
-                        }
-                    }
-                    ButtonGroup {
-                        buttons: [raidoButtonUTF8,radioButtonGBK]
-                    }
-                    RowLayout {
+                    Row {
                         Label {
                             text: "浏览编码:"
-                        }
-                        RadioButton {
-                            id:raidoButtonUTF8
-                            text: "UTF8"
-                            checked: true
+
                         }
                         RadioButton {
                             id:radioButtonGBK
                             text:"GBK"
+                            checked: true
                         }
+                        RadioButton {
+                            id:radioButtonUTF8
+                            text: "UTF8"
+                        }
+                    }
+                    ButtonGroup {
+                        buttons: [checkBoxError,checkBoxWarning,checkBoxStyle,checkBoxPerformance,checkBoxPortability,checkBoxInformation]
+                        exclusive:false
+                    }
+                    Row {
+                        Label {
+                            text: "问题显示:"
+                        }
+                        QcCheckBox {
+                                id:checkBoxError
+                                text: "错误"
+                                checked: true
+                                source:"qrc:/icons/alert/error.svg"
+                                color: checkBoxError.checked?Global.severityColorMap["error"]:"#33000000"
+                        }
+                        QcCheckBox {
+                                id:checkBoxWarning
+                                text: "警告"
+                                checked: true
+                                source:"qrc:/icons/alert/warning.svg"
+                                color: checkBoxWarning.checked?Global.severityColorMap["warning"]:"#33000000"
+                        }
+                        QcCheckBox {
+                                id:checkBoxStyle
+                                text: "风格"
+                                checked: true
+                                source:"qrc:/icons/alert/style.svg"
+                                color: checkBoxStyle.checked?Global.severityColorMap["style"]:"#33000000"
+                        }
+                        QcCheckBox {
+                                id:checkBoxPerformance
+                                text: "性能"
+                                checked: true
+                                source:"qrc:/icons/alert/performance.svg"
+                                color: checkBoxPerformance.checked?Global.severityColorMap["performance"]:"#33000000"
+                        }
+                        QcCheckBox {
+                                id:checkBoxPortability
+                                text: "移植"
+                                checked: true
+                                source:"qrc:/icons/alert/portability.svg"
+                                color: checkBoxPortability.checked?Global.severityColorMap["portability"]:"#33000000"
+                        }
+                        QcCheckBox {
+                                id:checkBoxInformation
+                                text: "提示"
+                                checked: true
+                                source:"qrc:/icons/alert/information.svg"
+                                color: checkBoxInformation.checked?Global.severityColorMap["information"]:"#33000000"
+                        }
+                    }
+                    QcSearchBar{
                     }
                 }
             }
@@ -255,7 +306,7 @@ ApplicationWindow {
             footer: ToolBar {
                 id:toolBarFooter
                 visible: false
-                RowLayout {
+                Row {
                     ToolButton {
                         text: "统计"
                         id:toolButtonShowStatistics
@@ -273,6 +324,19 @@ ApplicationWindow {
         dialogOKText: "确定"
     }
 
+    Settings{
+        fileName: "app.ini"
+        category:"drawer"
+        property alias setting_radioButtonGBK_checked: radioButtonGBK.checked
+        property alias setting_radioButtonUTF8_checked: radioButtonUTF8.checked
+        property alias setting_checkBoxError_checked: checkBoxError.checked
+        property alias setting_checkBoxWarning_checked:checkBoxWarning.checked
+        property alias setting_checkBoxStyle_checked: checkBoxStyle.checked
+        property alias setting_checkBoxPerformance_checked: checkBoxPerformance.checked
+        property alias setting_checkBoxPortability_checked: checkBoxPortability.checked
+        property alias setting_checkBoxInformation_checked: checkBoxInformation.checked
+    }
+
     function textSelect(obj) {
         edit.text = obj["content"]
         var start = obj["start"];
@@ -280,4 +344,18 @@ ApplicationWindow {
         edit.select(start, end);
     }
 
+    function getTypeShow() {
+        var typeShow = 0;
+        if(checkBoxError.checked)typeShow+=1;
+        if(checkBoxWarning.checked)typeShow+=2;
+        if(checkBoxStyle.checked)typeShow+=4;
+        if(checkBoxPerformance.checked)typeShow+=8;
+        if(checkBoxPortability.checked)typeShow+=16;
+        if(checkBoxInformation.checked)typeShow+=32;
+        return typeShow;
+    }
+
+    function loadingClickCallBack() {
+        materialUI.hideLoading()
+    }
 }

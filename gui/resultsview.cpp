@@ -124,6 +124,7 @@ void ResultsView::progress(int value, const QString& description)
     mUI.mProgress->setValue(value);
     mUI.mProgress->setFormat(QString("%p% (%1)").arg(description));
 #endif
+    emit sig_progress(value, description);
 }
 
 void ResultsView::error(const ErrorItem &item)
@@ -386,22 +387,6 @@ void ResultsView::disableProgressbar()
 
 void ResultsView::readErrorsXml(const QString &filename)
 {
-    const int version = XmlReport::determineVersion(filename);
-    if (version == 0) {
-        QMessageBox msgBox;
-        msgBox.setText(tr("Failed to read the report."));
-        msgBox.setIcon(QMessageBox::Critical);
-        msgBox.exec();
-        return;
-    }
-    if (version == 1) {
-        QMessageBox msgBox;
-        msgBox.setText(tr("XML format version 1 is no longer supported."));
-        msgBox.setIcon(QMessageBox::Critical);
-        msgBox.exec();
-        return;
-    }
-
     XmlReportV2 report(filename);
     QList<ErrorItem> errors;
     if (report.open()) {
@@ -417,6 +402,7 @@ void ResultsView::readErrorsXml(const QString &filename)
     foreach (item, errors) {
             Manager::instance()->addErrorItem(item);
     }
+    emit open_finished(true);
     QString dir;
     if (!errors.isEmpty() && !errors[0].errorPath.isEmpty()) {
         QString relativePath = QFileInfo(filename).canonicalPath();

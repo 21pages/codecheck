@@ -46,5 +46,6 @@
         <file>back2.svg</file>
         <file>menu.svg</file>
         <file>menu2.svg</file>
+        <file>search.svg</file>
     </qresource>
 </RCC>

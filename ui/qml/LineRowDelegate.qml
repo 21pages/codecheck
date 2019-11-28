@@ -24,6 +24,7 @@ Rectangle {
         }
         Text {
             anchors.right: parent.right
+            anchors.bottom: parent.bottom
             color: Material.color(Material.Purple)
             text: index + 1
         }

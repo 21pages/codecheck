@@ -20,5 +20,12 @@ const QString CONST_sinceDate("sinceDate");
 const QString CONST_tags("tags");
 const QString CONST_array("array");
 
+const QString CONST_error("error");
+const QString CONST_warning("warning");
+const QString CONST_style("style");
+const QString CONST_performance("performance");
+const QString CONST_portability("portability");
+const QString CONST_information("information");
+
 
 #endif // IGLOBAL_H

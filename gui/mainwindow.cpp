@@ -1358,18 +1358,9 @@ void MainWindow::openOnlineHelp()
 
 void MainWindow::openProjectFile(const QString& filepath)
 {
-//    const QString filter = tr("Project files (*.cppcheck);;All files(*.*)");
-//    const QString filepath = QFileDialog::getOpenFileName(nullptr,
-//                             tr("Select Project File"),
-//                             getPath(SETTINGS_LAST_PROJECT_PATH),
-//                             filter);
-//    const QString filepath = "D:/learn/Qt/cppcheck-master/cfg/tmp2.cppcheck";
-//    const QString filepath = QFileDialog::getOpenFileName( nullptr, "\u8BF7\u9009\u62E9\u56FE\u6807\u6587\u4EF6", QStandardPaths::writableLocation( QStandardPaths::DesktopLocation ), "*.png" );
-
     if (!filepath.isEmpty()) {
         const QFileInfo fi(filepath);
         if (fi.exists() && fi.isFile() && fi.isReadable()) {
-            setPath(SETTINGS_LAST_PROJECT_PATH, filepath);
             loadProjectFile(filepath);
         }
     }
@@ -1382,10 +1373,6 @@ void MainWindow::loadProjectFile(const QString &filePath)
     formatAndSetTitle(tr("Project:") + ' ' + filename);
 
     mIsLogfileLoaded = false;
-#if WGT
-    mUI.mActionCloseProjectFile->setEnabled(true);
-    mUI.mActionEditProjectFile->setEnabled(true);
-#endif
     delete mProjectFile;
     mProjectFile = new ProjectFile(filePath, nullptr);
     if (!loadLastResults())

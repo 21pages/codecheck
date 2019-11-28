@@ -11,16 +11,16 @@
 #include "mainwindow.h"
 #include "provider.h"
 #include "iglobal.h"
+#include "resultsview.h"
 
 using namespace CC;
 
-Project* Project::Instance = new Project();
+Project* Project::Instance = nullptr;
 Project::Project(QObject *parent) : QObject(parent)
 {
-    m_watcher_open = new QFutureWatcher<bool>(this);
-    connect(m_watcher_open, &QFutureWatcher<void>::finished, this, &Project::watcher_open_finished);
-    m_watcher_create = new QFutureWatcher<bool>(this);
-    connect(m_watcher_create, &QFutureWatcher<bool>::finished, this, &Project::watcher_create_finished);
+    connect(Manager::instance()->resultView,&ResultsView::sig_progress,this,&Project::progress,Qt::QueuedConnection);
+    connect(Manager::instance(),&Manager::sig_analysisDone,this, &Project::on_create_finished,Qt::QueuedConnection);
+    connect(Manager::instance()->resultView,&ResultsView::open_finished,this,&Project::on_open_finished,Qt::QueuedConnection);
 }
 
 void CC::Project::open(const QString& filepath)
@@ -35,27 +35,13 @@ void CC::Project::open(const QString& filepath)
         Manager::instance()->mainWindow->openProjectFile(filepath2);
         return true;
     });
-    m_watcher_open->setFuture(future);
 }
 
 void Project::create(const QJsonObject& obj)
 {
     close();
     QFuture<bool> future = QtConcurrent::run(QThreadPool::globalInstance(), [this,obj](){
-        qDebug()<<"create";
-
         QJsonObject obj2 = obj;
-//        obj2["type"] = 1;
-//        obj2["name"] = "hello";
-//#if defined (Q_OS_WIN32)
-//        obj2["source"] = "C:/wisdom/done/56/codecheck/samples/memleak2";
-//        obj2["destination"] = "C:/wisdom/done/56/test";
-//#endif
-//#if defined (Q_OS_LINUX)
-//        obj2["source"] = "/home/sun/learn/Qt/codecheck/samples/memleak2";
-//        obj2["destination"] = "/home/sun/learn/Qt/test";
-//#endif
-
         int type = obj2.value("type").toInt();
         QString name = obj2.value("name").toString();
         QString source = obj2.value("source").toString();
@@ -70,7 +56,6 @@ void Project::create(const QJsonObject& obj)
 
         return true;
     });
-    m_watcher_create->setFuture(future);
 }
 
 void Project::close()
@@ -81,30 +66,21 @@ void Project::close()
 
 Project *Project::instance()
 {
+    if(!Instance) {
+        Instance = new Project();
+    }
     return Instance;
 }
 
-void Project::watcher_open_finished()
+void Project::on_open_finished(bool ret)
 {
-    data2ui();
-//    emit openFinished(m_watcher_open->result());
+     CC::Provider::instance()->data2ui();
+    emit openFinished(ret);
 }
 
-void Project::watcher_create_finished()
+void Project::on_create_finished(bool ret)
 {
-//    emit createFinished(m_watcher_create->result());
-}
-
-void Project::data2ui()
-{
-    for(auto i : Manager::instance()->errorJsonList) {
-        Provider::instance()->addItem(i->value(CONST_file).toString(),
-                                      i->value(CONST_severityStr).toString(),
-                                      i->value(CONST_id).toString(),
-                                      i->value(CONST_line).toInt(),
-                                      i->value(CONST_summary).toString(),
-                                      i->value(CONST_array).toArray());
-    }
+    emit createFinished(ret);
 }
 
 void Project::setProjectFile(ProjectFile *projectFile, const QJsonObject& obj)

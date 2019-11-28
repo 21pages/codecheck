@@ -11,4 +11,6 @@ Provider_Register;\
 }
 
 
+//生成顺序:Manager,Project,Provider
+
 #endif // INTERFACE_H

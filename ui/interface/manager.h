@@ -27,6 +27,8 @@ public:
     QObject* findQuick(QString objname);
     void saveResult(Report *report);
     void analysisDone();
+signals:
+    void sig_analysisDone(bool ret);
 public:
     QSettings* settings;
     MainWindow* mainWindow;

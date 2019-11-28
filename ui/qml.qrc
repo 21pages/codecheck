@@ -16,5 +16,7 @@
         <file>qc/QcComboBox.qml</file>
         <file>qc/QcPieMenuStyle.qml</file>
         <file>qc/QcColoredImage.qml</file>
+        <file>qc/QcCheckBox.qml</file>
+        <file>qc/QcSearchBar.qml</file>
     </qresource>
 </RCC>

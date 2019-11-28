@@ -85,16 +85,6 @@ Control {
                 }
                 var obj = {"file":modelData.file,"line":modelData.line}
                 listViewItemClicked(obj);
-//                console.log("1:",listViewDelegate.width,listViewDelegate.height, "2:",)
-//                var array = [listViewDelegate,card,flickable,layout1,layout2,severityImage]
-
-                console.log("1:",listViewDelegate.parent,listViewDelegate.width,listViewDelegate.height);
-                console.log("2:",card.parent,card.width,card.height);
-                console.log("3:",flickable.parent,flickable.width,flickable.height);
-                console.log("4:",layout1.parent,layout1.width,layout1.height);
-                console.log("5:",layout2.parent,layout2.width,layout2.height);
-                console.log("6:",severityImage.parent,severityImage.width,severityImage.height);
-
             }
         }
     }

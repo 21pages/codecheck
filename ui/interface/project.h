@@ -30,17 +30,15 @@ namespace CC {
         Q_INVOKABLE void close();
         static Project* instance();
         void setProjectFile(ProjectFile *projectFile, const QJsonObject &obj);
-        void data2ui();
     signals:
         void openFinished(bool ret);
         void createFinished(bool ret);
-    private:
-        void watcher_open_finished();
-        void watcher_create_finished();
+        void progress(int value,QString description);
+    public slots:
+        void on_open_finished(bool ret);
+        void on_create_finished(bool ret);
     private:
         static Project *Instance;
-        QFutureWatcher<bool> *m_watcher_open;
-        QFutureWatcher<bool> *m_watcher_create;
     };
 }
 

@@ -40,14 +40,20 @@ public:
                              const QString& id, int line, const QString& summary, const QJsonArray &array);
     Q_INVOKABLE void removeItem(DataItemRO *item);
     Q_INVOKABLE void clearItem();
-    Q_INVOKABLE void initDocument();
+    Q_INVOKABLE void initProviderFromUI(QJsonObject obj);
     Q_INVOKABLE void onListViewClicked(const QJsonObject &obj);
+    Q_PROPERTY(int typeShow READ typeShow WRITE setTypeShow NOTIFY typeShowChanged)
+    Q_INVOKABLE int typeShow() {return m_type_show;}
+    Q_INVOKABLE void setTypeShow(int typeShow) {if(m_type_show != typeShow) {m_type_show = typeShow; emit typeShowChanged();}}
     static Provider* instance();
+    void data2ui();
 private:
     explicit Provider( QObject* parent = Q_NULLPTR );
     void watchFinished_listClick();
+    void onTypeShowChanged();
 signals:
     void documentChanged();
+    void typeShowChanged();
 private:
     // Since this getter is not safe (ownership remains to c++)
     // and it is used for QML only it'd better to make it private.
@@ -58,5 +64,6 @@ private:
     QQuickTextDocument *m_document;
     static Provider *Instance;
     QFutureWatcher<QVariant> *m_watcher_listClick;
+    int m_type_show = 0x3F;
 };
 }

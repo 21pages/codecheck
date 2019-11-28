@@ -12,7 +12,7 @@
 #include "report.h"
 #include "project.h"
 
-Manager *Manager::sInstance = new Manager(nullptr);
+Manager *Manager::sInstance = nullptr;
 
 Manager::Manager(QObject *parent) : QObject(parent)
 {
@@ -28,6 +28,9 @@ Manager::Manager(QObject *parent) : QObject(parent)
 
 Manager *Manager::instance()
 {
+    if(!sInstance) {
+        sInstance = new Manager(nullptr);
+    }
     return sInstance;
 }
 
@@ -132,7 +135,8 @@ void Manager::analysisDone()
             resultView->saveStatistics(buildDir + "/statistics.txt");
             resultView->updateFromOldReport(buildDir + "/lastResults.xml");
             resultView->save(buildDir + "/lastResults.xml", Report::XMLV2);
-            CC::Project::instance()->data2ui();
+            CC::Provider::instance()->data2ui();
         }
     }
+    emit sig_analysisDone(true);
 }

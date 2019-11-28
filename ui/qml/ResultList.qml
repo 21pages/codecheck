@@ -48,7 +48,10 @@ ListView {
     section.property: "modelData.file"
     section.criteria: ViewSection.FullString
     section.delegate: sectionHeader
-    section.labelPositioning:root.sectionIsInline? ViewSection.InlineLabels:ViewSection.CurrentLabelAtStart
+    section.labelPositioning:ViewSection.InlineLabels|ViewSection.CurrentLabelAtStart
 
+
+    ScrollBar.vertical: ScrollBar {active: true}
+    ScrollBar.horizontal: ScrollBar { }
 }
 

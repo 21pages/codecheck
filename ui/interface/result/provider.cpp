@@ -11,15 +11,17 @@
 #include "codeeditorstyle.h"
 #include "resultsview.h"
 #include "helper.h"
+#include "iglobal.h"
 
 namespace CC {
 
-Provider *Provider::Instance = new Provider;
+Provider *Provider::Instance = nullptr;
 
 Provider::Provider( QObject* parent )
     : QObject( parent ) {
     m_watcher_listClick = new QFutureWatcher<QVariant>(this);
     connect(m_watcher_listClick,&QFutureWatcher<QVariant>::finished,this,&Provider::watchFinished_listClick);
+    connect(this, &Provider::typeShowChanged, this, &Provider::data2ui);
 }
 
 void Provider::watchFinished_listClick()
@@ -32,7 +34,32 @@ void Provider::watchFinished_listClick()
 
 Provider *Provider::instance()
 {
+    if(!Instance) {
+        Instance = new Provider;
+    }
     return Instance;
+}
+
+void Provider::data2ui()
+{
+    clearItem();
+    QStringList list;
+    if(m_type_show & (0x01 << 0))list<<CONST_error;
+    if(m_type_show & (0x01 << 1))list<<CONST_warning;
+    if(m_type_show & (0x01 << 2))list<<CONST_style;
+    if(m_type_show & (0x01 << 3))list<<CONST_performance;
+    if(m_type_show & (0x01 << 4))list<<CONST_portability;
+    if(m_type_show & (0x01 << 5))list<<CONST_information;
+    for(auto i : Manager::instance()->errorJsonList) {
+        if(list.indexOf(i->value(CONST_severityStr).toString()) != -1) {
+            addItem(i->value(CONST_file).toString(),
+                          i->value(CONST_severityStr).toString(),
+                          i->value(CONST_id).toString(),
+                          i->value(CONST_line).toInt(),
+                          i->value(CONST_summary).toString(),
+                          i->value(CONST_array).toArray());
+        }
+    }
 }
 void Provider::addItem(const QString& file, const QString& severity,
                        const QString& id, int line, const QString& summary,const QJsonArray &array) {
@@ -55,11 +82,16 @@ void Provider::clearItem()
     m_items.clear();
 }
 
-void Provider::initDocument()
+void Provider::initProviderFromUI(QJsonObject obj)
 {
     QTextDocument *doc = m_document->textDocument();
     Highlighter *highLighter = new Highlighter(doc,new CodeEditorStyle(defaultStyleLight));
     Q_UNUSED(highLighter)
+
+    if(obj.contains("typeShow")) {
+        int typeShow = obj.value("typeShow").toInt();
+        if(typeShow <= 0x3F) {setTypeShow(typeShow);}
+    }
 }
 
 void Provider::onListViewClicked(const QJsonObject& obj)

@@ -362,6 +362,9 @@ private slots:
      * @param pos Mouse click position
      */
     void on_mListLog_customContextMenuRequested(const QPoint &pos);
+signals:
+    void open_finished(bool ret);
+    void sig_progress(int value, QString description);
 };
 /// @}
 #endif // RESULTSVIEW_H
