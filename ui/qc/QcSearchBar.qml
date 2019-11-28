@@ -1,11 +1,16 @@
 import QtQuick 2.12
 import QtQuick.Controls 2.12
 import QtQuick.Controls.Material 2.12
+import "qrc:/js/utils.js" as Util
 
-Control {
+FocusScope {
+    signal search(var string)
     id:control
     implicitHeight: 50
     implicitWidth: parent.width * 0.9
+    onFocusChanged:{
+        console.log(focus)
+    }
     TextField {
         id:field
         leftPadding: 10;rightPadding: btn.width
@@ -16,10 +21,15 @@ Control {
         background: Rectangle{
             width: parent.width
             height: parent.height
-            color: field.focus ? "transparent" : "#353637"
-            border.color: field.focus ? "#21be2b" : "transparent"
+            color: field.focus ? "#33333333":"#88eeeeee"
+            border.color:"transparent"
             radius: height * 0.5
         }
+        visible:false
+        Keys.onEnterPressed:{
+            func()
+        }
+        color:"blue"
     }
     ToolButton {
         id:btn
@@ -28,6 +38,20 @@ Control {
         anchors.rightMargin: 5
         anchors.verticalCenter: parent.verticalCenter
         icon.source: "qrc:/icons/navigation/search.svg"
-        icon.color:  hovered ? Material.color(Material.blue):Material.color(Material.Grey)
+        icon.color:  hovered ? "pink":"grey"
+        onClicked:{
+            if(field.visible) {
+                func()
+            }
+            field.visible = !field.visible
+        }
+    }
+
+    function func() {
+        var str = field.text;
+        str = Util.trim(str);
+        if(str.length > 0) {
+            control.search(str);
+        }
     }
 }

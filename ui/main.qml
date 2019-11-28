@@ -235,7 +235,8 @@ ApplicationWindow {
                     Row {
                         Label {
                             text: "浏览编码:"
-
+                            height:parent.height
+                            verticalAlignment:Text.AlignVCenter
                         }
                         RadioButton {
                             id:radioButtonGBK
@@ -254,6 +255,8 @@ ApplicationWindow {
                     Row {
                         Label {
                             text: "问题显示:"
+                            height:parent.height
+                            verticalAlignment:Text.AlignVCenter
                         }
                         QcCheckBox {
                                 id:checkBoxError
@@ -298,9 +301,15 @@ ApplicationWindow {
                                 color: checkBoxInformation.checked?Global.severityColorMap["information"]:"#33000000"
                         }
                     }
-                    QcSearchBar{
-                    }
+                    QcSearchBar{}
                 }
+            }
+
+            QcSearchBar{
+                anchors.top:splitViewResult.top
+                anchors.topMargin:10
+                anchors.horizontalCenter: splitViewResult.horizontalCenter
+                width:splitViewResult.width * 0.9
             }
 
             footer: ToolBar {
