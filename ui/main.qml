@@ -38,6 +38,10 @@ ApplicationWindow {
         }
     }
 
+    property Component statisticsPage: Statistics {
+
+    }
+
     Component.onCompleted: {
         provider.document = edit.textDocument;
         var obj = {
@@ -62,6 +66,24 @@ ApplicationWindow {
                 materialUI.showLoading(str)
             }
         }
+
+        onProjectInfoChanged:{
+            var name = projectManager.projectInfo["name"];
+            if(name === "") {
+                titleBar.title = "CodeCheck"
+            } else {
+                titleBar.title = name
+            }
+            var dir = projectManager.projectInfo["dir"]
+            textDir.text = dir
+        }
+    }
+
+    Connections {
+        target: provider
+        onStatistics:{
+
+        }
     }
 
     StackView {
@@ -71,6 +93,8 @@ ApplicationWindow {
         height: parent.height - y
         initialItem: Page {
             header:MyToolBar {
+                id:titleBar
+                title:"CodeCheck"
                 leftButton.icon.source:"qrc:/icons/navigation/menu.svg"
                 rightButton.icon.source:"qrc:/icons/navigation/menu2.svg"
                 onLeftClicked:{
@@ -84,9 +108,10 @@ ApplicationWindow {
                 Menu {
                     id: optionsMenu
                     MenuItem {
-                        text:"显示工具栏"
+                        text:"显示统计"
+                        enabled: true/*titleBar.title != "CodeCheck"*/
                         onTriggered: {
-                            toolBarFooter.visible = true
+                            stackView.push(statisticsPage)
                         }
                     }
                 }
@@ -301,7 +326,6 @@ ApplicationWindow {
                                 color: checkBoxInformation.checked?Global.severityColorMap["information"]:"#33000000"
                         }
                     }
-                    QcSearchBar{}
                 }
             }
 
@@ -310,15 +334,24 @@ ApplicationWindow {
                 anchors.topMargin:10
                 anchors.horizontalCenter: splitViewResult.horizontalCenter
                 width:splitViewResult.width * 0.9
+                onSearch:{
+                    provider.search = str;
+                }
             }
 
             footer: ToolBar {
                 id:toolBarFooter
-                visible: false
+                visible: true
+                height: 30
                 Row {
-                    ToolButton {
-                        text: "统计"
-                        id:toolButtonShowStatistics
+                    Text {
+                        id:textDir
+                        elide: Text.ElideLeft
+                        font.pixelSize: 14
+                        anchors.horizontalCenter: parent.horizontalCenter
+                        horizontalAlignment: Qt.AlignHCenter
+                        verticalAlignment: Qt.AlignVCenter
+                        color: "white"
                     }
                 }
             }

@@ -154,10 +154,10 @@ contains(QMAKE_CXX, clang++) {
     QMAKE_CXXFLAGS += -std=c++11
 }
 
-contains(HAVE_QCHART, [yY][eE][sS]) {
-    QT += charts
-    DEFINES += HAVE_QCHART
-} else {
-    message("Charts disabled - to enable it pass HAVE_QCHART=yes to qmake.")
-}
+#contains(HAVE_QCHART, [yY][eE][sS]) {
+#    QT += charts
+#    DEFINES += HAVE_QCHART
+#} else {
+#    message("Charts disabled - to enable it pass HAVE_QCHART=yes to qmake.")
+#}
 

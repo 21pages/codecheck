@@ -4,7 +4,7 @@ import QtQuick.Controls.Material 2.12
 import "qrc:/js/utils.js" as Util
 
 FocusScope {
-    signal search(var string)
+    signal search(var str)
     id:control
     implicitHeight: 50
     implicitWidth: parent.width * 0.9

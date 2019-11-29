@@ -37,7 +37,7 @@
 #include "interface.h"
 #include "cppcheck.h"
 #include "dlog.h"
-
+#include <QtPlugin>
 using namespace CC;
 
 int main(int argc, char *argv[])

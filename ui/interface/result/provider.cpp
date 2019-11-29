@@ -20,8 +20,11 @@ Provider *Provider::Instance = nullptr;
 Provider::Provider( QObject* parent )
     : QObject( parent ) {
     m_watcher_listClick = new QFutureWatcher<QVariant>(this);
+    m_watcher_statistics = new QFutureWatcher<QJsonObject>(this);
     connect(m_watcher_listClick,&QFutureWatcher<QVariant>::finished,this,&Provider::watchFinished_listClick);
+    connect(m_watcher_statistics,&QFutureWatcher<QJsonObject>::finished, this, &Provider::watchFinished_statistics,Qt::QueuedConnection);
     connect(this, &Provider::typeShowChanged, this, &Provider::data2ui);
+    connect(this, &Provider::searchChanged,this,&Provider::data2ui);
 }
 
 void Provider::watchFinished_listClick()
@@ -30,6 +33,11 @@ void Provider::watchFinished_listClick()
     if(root) {
         QMetaObject::invokeMethod(root,"textSelect",Qt::QueuedConnection,Q_ARG(QVariant,m_watcher_listClick->result()));
     }
+}
+
+void Provider::watchFinished_statistics()
+{
+    emit statistics(m_watcher_statistics->result());
 }
 
 Provider *Provider::instance()
@@ -51,14 +59,26 @@ void Provider::data2ui()
     if(m_type_show & (0x01 << 4))list<<CONST_portability;
     if(m_type_show & (0x01 << 5))list<<CONST_information;
     for(auto i : Manager::instance()->errorJsonList) {
-        if(list.indexOf(i->value(CONST_severityStr).toString()) != -1) {
-            addItem(i->value(CONST_file).toString(),
-                          i->value(CONST_severityStr).toString(),
-                          i->value(CONST_id).toString(),
-                          i->value(CONST_line).toInt(),
-                          i->value(CONST_summary).toString(),
-                          i->value(CONST_array).toArray());
+        const QString file = i->value(CONST_file).toString();
+        const QString severityStr = i->value(CONST_severityStr).toString();
+        const QString id =  i->value(CONST_id).toString();
+        const int line =  i->value(CONST_line).toInt();
+        const QString summary = i->value(CONST_summary).toString();
+        const QJsonArray array =  i->value(CONST_array).toArray();
+        if(list.indexOf(severityStr) == -1) {
+            continue;
         }
+        if(m_search != "") {
+            if(file.contains(m_search,Qt::CaseInsensitive)
+                    || severityStr.contains(m_search,Qt::CaseInsensitive)
+                    || id.contains(m_search,Qt::CaseInsensitive)
+                    || summary.contains(m_search,Qt::CaseInsensitive)) {
+                //do nothing
+            } else {
+                continue;
+            }
+        }
+        addItem(file,severityStr,id,line,summary,array);
     }
 }
 void Provider::addItem(const QString& file, const QString& severity,
@@ -105,6 +125,42 @@ void Provider::onListViewClicked(const QJsonObject& obj)
 
     });
     m_watcher_listClick->setFuture(future);
+}
+
+void Provider::getStatistic()
+{
+    auto future = QtConcurrent::run(QThreadPool::globalInstance(),[](){
+        QHash<QString,int> severity;
+        QHash<QString,int> id;
+         for(auto i : Manager::instance()->errorJsonList) {
+             const QString severityStr = i->value(CONST_severityStr).toString();
+             const QString idStr =  i->value(CONST_id).toString();
+             if(severity.keys().contains(severityStr)) {
+                severity[severityStr]++;
+             } else {
+                 severity.insert(severityStr,1);
+             }
+             if(id.keys().contains(idStr)) {
+                 id[idStr]++;
+             } else {
+                 id.insert(idStr,1);
+             }
+         }
+         QJsonObject severityObj;
+         for(auto it = severity.constBegin(); it != severity.constEnd(); it++) {
+             severityObj.insert(it.key(),it.value());
+         }
+         QJsonObject idObj;
+         for(auto it = id.constBegin(); it != id.constEnd();it++) {
+             idObj.insert(it.key(),it.value());
+         }
+         QJsonObject obj;
+         obj.insert("severity",severityObj);
+         obj.insert("id",idObj);
+
+         return obj;
+    });
+    m_watcher_statistics->setFuture(future);
 }
 
 }

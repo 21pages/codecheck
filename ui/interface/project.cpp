@@ -30,7 +30,17 @@ void CC::Project::open(const QString& filepath)
         filepath2.replace("file:///","");
     }
     qDebug()<<filepath2;
+    QFileInfo info(filepath2);
+    if(!info.exists() || !filepath2.endsWith(".cppcheck")) {
+        emit openFinished(false);
+    }
     close();
+    QString name = info.baseName();
+    QString dir = info.absoluteDir().path();
+    QJsonObject obj;
+    obj.insert("name",name);
+    obj.insert("dir",dir);
+    setProjectInfo(obj);
     auto future = QtConcurrent::run(QThreadPool::globalInstance(),[this,filepath2](){
         Manager::instance()->mainWindow->openProjectFile(filepath2);
         return true;
@@ -41,17 +51,20 @@ void Project::create(const QJsonObject& obj)
 {
     close();
     QFuture<bool> future = QtConcurrent::run(QThreadPool::globalInstance(), [this,obj](){
-        QJsonObject obj2 = obj;
-        int type = obj2.value("type").toInt();
-        QString name = obj2.value("name").toString();
-        QString source = obj2.value("source").toString();
-        QString destination = obj2.value("destination").toString();
+        int type = obj.value("type").toInt();
+        QString name = obj.value("name").toString();
+        QString source = obj.value("source").toString();
+        QString destination = obj.value("destination").toString();
         if(destination.at(destination.size() - 1) != "/") {
             destination += "/";
         }
+        QJsonObject projobj;
+        projobj.insert("name",name);
+        projobj.insert("dir",destination);
+        setProjectInfo(projobj);
         QString projectPath = destination + name;
         Manager::instance()->mainWindow->newProjectFile(projectPath);
-        setProjectFile(Manager::instance()->mainWindow->mProjectFile,obj2);
+        setProjectFile(Manager::instance()->mainWindow->mProjectFile,obj);
         Manager::instance()->mainWindow->analyzeProject(Manager::instance()->mainWindow->mProjectFile);
 
         return true;
@@ -62,6 +75,10 @@ void Project::close()
 {
     Manager::instance()->clearErrorData();
     CC::Provider::instance()->clearItem();
+    QJsonObject projobj;
+    projobj.insert("name","");
+    projobj.insert("dir","");
+    setProjectInfo(projobj);
 }
 
 Project *Project::instance()
@@ -108,4 +125,28 @@ void Project::setProjectFile(ProjectFile *projectFile, const QJsonObject& obj)
     projectFile->setClangAnalyzer(false);
     projectFile->setClangTidy(true);
     projectFile->write();
+}
+
+void Project::setProjectInfo(const QJsonObject &obj)
+{
+    bool changed = false;
+    if(obj.contains("name")) {
+        QString old_name = m_projectInfo.value("name").toString();
+        QString new_name = obj.value("name").toString();
+        if(old_name != new_name) {
+            m_projectInfo["name"] = new_name;
+            changed = true;
+        }
+    }
+    if(obj.contains("dir")) {
+        QString old_dir = m_projectInfo.value("dir").toString();
+        QString new_dir = obj.value("dir").toString();
+        if(old_dir != new_dir) {
+            m_projectInfo["dir"] = new_dir;
+            changed = true;
+        }
+    }
+    if(changed) {
+        emit projectInfoChanged();
+    }
 }

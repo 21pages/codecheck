@@ -42,18 +42,26 @@ public:
     Q_INVOKABLE void clearItem();
     Q_INVOKABLE void initProviderFromUI(QJsonObject obj);
     Q_INVOKABLE void onListViewClicked(const QJsonObject &obj);
+    Q_INVOKABLE void getStatistic();
     Q_PROPERTY(int typeShow READ typeShow WRITE setTypeShow NOTIFY typeShowChanged)
-    Q_INVOKABLE int typeShow() {return m_type_show;}
-    Q_INVOKABLE void setTypeShow(int typeShow) {if(m_type_show != typeShow) {m_type_show = typeShow; emit typeShowChanged();}}
+    Q_PROPERTY(QString search READ search WRITE setSearch NOTIFY searchChanged)
+public:
+    int typeShow() {return m_type_show;}
+    void setTypeShow(int typeShow) {if(m_type_show != typeShow) {m_type_show = typeShow; emit typeShowChanged();}}
+    QString search(){return m_search;}
+    void setSearch(QString search) {search = search.trimmed(); if(m_search != search){m_search = search; emit searchChanged();}}
     static Provider* instance();
     void data2ui();
 private:
     explicit Provider( QObject* parent = Q_NULLPTR );
     void watchFinished_listClick();
+    void watchFinished_statistics();
     void onTypeShowChanged();
 signals:
     void documentChanged();
     void typeShowChanged();
+    void searchChanged();
+    void statistics(QJsonObject obj);
 private:
     // Since this getter is not safe (ownership remains to c++)
     // and it is used for QML only it'd better to make it private.
@@ -64,6 +72,8 @@ private:
     QQuickTextDocument *m_document;
     static Provider *Instance;
     QFutureWatcher<QVariant> *m_watcher_listClick;
+    QFutureWatcher<QJsonObject> *m_watcher_statistics;
     int m_type_show = 0x3F;
+    QString m_search = "";
 };
 }

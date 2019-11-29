@@ -18,5 +18,6 @@
         <file>qc/QcColoredImage.qml</file>
         <file>qc/QcCheckBox.qml</file>
         <file>qc/QcSearchBar.qml</file>
+        <file>qml/Statistics.qml</file>
     </qresource>
 </RCC>

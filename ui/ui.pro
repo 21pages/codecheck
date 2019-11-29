@@ -6,7 +6,7 @@ TARGET = codecheck
 #    ../lib
 #INCLUDEPATH += . \
 #    ../lib
-QT +=  quick-private gui gui-private core core-private qml qml-private quickcontrols2 widgets concurrent
+QT +=  quick-private gui gui-private core core-private qml qml-private quickcontrols2 widgets concurrent #charts
 LIBS += -L$$PWD/../externals
 #LIBS += -lopengl32.dll
 DEFINES += QT_MESSAGELOGCONTEXT
@@ -89,5 +89,5 @@ RESOURCES += qml.qrc  \
             image/icons/icons.qrc
 #RESOURCES = ../gui/gui.qrc
 
-
+#QTPLUGIN += qsvg
 
