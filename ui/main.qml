@@ -158,6 +158,11 @@ ApplicationWindow {
                   y:100
                   anchors.fill:parent
                   orientation: Qt.Vertical
+                  handleDelegate:Rectangle {
+                    color:Material.foreground/*Material.color(Material.Green)*/
+                    width: parent.width
+                    height: 2
+                  }
                   ResultList{
                       id:resultList
                       width:parent.width

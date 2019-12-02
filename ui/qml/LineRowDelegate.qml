@@ -20,11 +20,13 @@ Rectangle {
         Text {
             text: "行号:" +modelData.line+"\t"+modelData.info
             height: Global.subListHeight
-            padding: 10
+            padding: 5
         }
         Text {
             anchors.right: parent.right
+            anchors.rightMargin: 10
             anchors.bottom: parent.bottom
+            verticalAlignment: Text.AlignBottom
             color: Material.color(Material.Purple)
             text: index + 1
         }

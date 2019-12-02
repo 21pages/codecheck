@@ -35,8 +35,9 @@ Control {
                     width: parent.width
                     QcColoredImage {
                         id:severityImage
-                        height: parent.height
+                        height: parent.height * 0.8
                         width: height
+                        Layout.margins: parent.height * 0.1
                         source:"qrc:/icons/alert/"+ modelData.severity+ ".svg"
                         overlayColor:Global.severityColorMap[modelData.severity] !== undefined ? Global.severityColorMap[modelData.severity]:"#fefefe";
                     }
@@ -47,18 +48,18 @@ Control {
                             height: parent.height * 0.6
                             Text {
                                 text: modelData.id
-                                padding: 10
+                                padding: 5
                             }
                             Text {
                                 text:(modelData.array.length === 0) ? ("行号:" + modelData.line) : ("相关行数:" + modelData.array.length)
-                                padding: 10
+                                padding: 5
                                 fontSizeMode: Text.Fit
                             }
                         }
                         Text {
                             height: parent.height * 0.4
                             text: modelData.summary
-                            padding: 10
+                            padding: 5
                             font.weight: Font.Light
                         }
                     }
@@ -66,9 +67,11 @@ Control {
                 Rectangle {
                     height: parent.height * 0.2
                     width: parent.width
-                    Label {
+                    Text {
                         anchors.right: parent.right
+                        anchors.rightMargin: 10
                         height: parent.height
+                        verticalAlignment: Text.AlignTop
                         text: index + 1
                     }
                 }

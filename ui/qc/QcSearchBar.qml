@@ -27,10 +27,8 @@ FocusScope {
         focus: true
         horizontalAlignment: Text.AlignHCenter
         verticalAlignment: Text.AlignBottom
-        Keys.onEnterPressed:{
-            func()
-        }
         color:"#FF5722"
+        cursorVisible: field.visible
     }
     ToolButton {
         id:btn

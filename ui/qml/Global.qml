@@ -6,8 +6,8 @@ QtObject {
     readonly property int screenHeight: 600
     readonly property int screenWidth: 800
      readonly property int toolBarHeight: 50
-    readonly property int listHeight: 90
-    readonly property int subListHeight: 40
+    readonly property int listHeight: 60
+    readonly property int subListHeight: 30
     readonly property var severityColorMap: {
         "error":Material.color(Material.Red),
         "warning":Material.color(Material.Orange),

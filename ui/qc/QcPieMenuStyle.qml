@@ -12,7 +12,7 @@ PieMenuStyle {
           Rectangle {
               width: parent.height * 0.25
               height: width
-              color: "darkorange"
+              color: "#4CAF50"
               radius: width / 2
               anchors.right: parent.right
               anchors.verticalCenter: parent.verticalCenter
@@ -20,15 +20,15 @@ PieMenuStyle {
               gradient: Gradient {
                         GradientStop {
                             position: 0.0
-                            color: "orange"
+                            color: "#4CAF50"
                         }
                         GradientStop {
                             position: 0.5
-                            color: "darkorange"
+                            color: "#8BC34A"
                         }
                         GradientStop {
                             position: 1.0
-                            color: "yellow"
+                            color: "#8BC34A"
                         }
                     }
 
