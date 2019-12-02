@@ -43,6 +43,7 @@ win32 {
 CONFIG += embed_manifest_exe
 
 win32 {
+    RC_FILE = $$PWD/codecheck.rc
     contains(LINKCORE, [yY][eE][sS]) {
     } else {
         LIBS += -lshlwapi

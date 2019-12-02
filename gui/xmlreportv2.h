@@ -71,6 +71,9 @@ public:
     */
     virtual QList<ErrorItem> read() override;
 
+    bool file2Bytes();
+    bool bytes2File();
+
 protected:
     /**
     * @brief Read and parse error item from XML stream.
@@ -88,6 +91,7 @@ private:
     * @brief XML stream writer for writing the report in XML format.
     */
     QXmlStreamWriter *mXmlWriter;
+    QByteArray bytes;
 };
 /// @}
 #endif // XML_REPORTV2_H

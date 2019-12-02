@@ -1473,8 +1473,8 @@ void MainWindow::newProjectFile(QString filePath)
 
     if (filePath.isEmpty())
         return;
-    if (!filePath.endsWith(".cppcheck", Qt::CaseInsensitive))
-        filePath += ".cppcheck";
+    if (!filePath.endsWith(".codecheck", Qt::CaseInsensitive))
+        filePath += ".codecheck";
 
     setPath(SETTINGS_LAST_PROJECT_PATH, filePath);
 
@@ -1484,7 +1484,7 @@ void MainWindow::newProjectFile(QString filePath)
     delete mProjectFile;
     mProjectFile = new ProjectFile(nullptr);
     mProjectFile->setFilename(filePath);
-    mProjectFile->setBuildDir(filename.left(filename.indexOf(".")) + "-cppcheck-build-dir");
+    mProjectFile->setBuildDir(filename.left(filename.indexOf(".")) + "-build");
 
 #if WGT
     ProjectFileDialog dlg(mProjectFile, this);

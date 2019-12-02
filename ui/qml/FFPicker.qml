@@ -4,6 +4,7 @@ import QtQuick.Controls 2.12
 import Qt.labs.folderlistmodel 2.12
 import QtQuick.Controls.Material 2.12
 import QtQuick.Window 2.12
+import Qt.labs.settings 1.0
 import "qrc:/js/utils.js" as Utils
 import "qrc:/qc/"
 

@@ -1713,6 +1713,10 @@ public:
     */
     XMLError SaveFile( const char* filename, bool compact = false );
 
+    XMLError LoadFileEncrypt( const char* filename );
+    XMLError SaveFileEncrypt( const char* filename, bool compact = false );
+
+
     /**
     	Save the XML file to disk. You are responsible
     	for providing and closing the FILE*.

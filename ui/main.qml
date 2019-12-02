@@ -70,12 +70,12 @@ ApplicationWindow {
         }
 
         onProjectInfoChanged:{
-            var name = projectManager.projectInfo["name"];
-            if(name === "") {
-                titleBar.title = "CodeCheck"
-            } else {
-                titleBar.title = name
-            }
+//            var name = projectManager.projectInfo["name"];
+//            if(name === "") {
+//                titleBar.title = "CodeCheck"
+//            } else {
+//                titleBar.title = name
+//            }
             var dir = projectManager.projectInfo["dir"]
             textDir.text = dir
         }
@@ -95,30 +95,61 @@ ApplicationWindow {
         width: parent.width;
         height: parent.height - y
         initialItem: Page {
-            header:MyToolBar {
-                id:titleBar
-                title:"CodeCheck"
-                leftButton.icon.source:"qrc:/icons/navigation/menu.svg"
-                rightButton.icon.source:"qrc:/icons/navigation/menu2.svg"
-                onLeftClicked:{
-                    drawer.open()
-                }
-                onRightClicked:{
-                    optionsMenu.x = rightButton.x
-                    optionsMenu.y = rightButton.y + rightButton.height
-                    optionsMenu.open()
-                }
-                Menu {
-                    id: optionsMenu
-                    MenuItem {
-                        text:"显示统计"
-                        enabled: true/*titleBar.title != "CodeCheck"*/
-                        onTriggered: {
-                            stackView.push(statisticsPage)
-                            provider.getStatistic()
+            header:ToolBar {
+                    id:titleBar
+                    width: parent.width;
+                    height: Global.toolBarHeight
+                    Material.foreground: "white"
+                    QcButton{
+                        id:leftButton
+                        icon.source:"qrc:/icons/navigation/menu.svg"
+                        anchors.left: parent.left
+                        onClicked: {
+                            drawer.open()
                         }
                     }
-                }
+                    Label {
+                        id:titleLable
+                        text:"代码质量检测软件"
+                        anchors.left: leftButton.right
+                        height: parent.height
+                        font.pixelSize: 20
+                        elide: Label.ElideRight
+                        horizontalAlignment: Qt.AlignHCenter
+                        verticalAlignment: Qt.AlignVCenter
+                    }
+                    QcSearchBar{
+                        height: parent.height
+                        anchors.verticalCenter: parent.verticalCenter
+                        anchors.left:titleLable.right
+                        anchors.leftMargin: 50
+                        anchors.right: rightButton.left
+                        onSearch:{
+                            provider.search = str;
+                        }
+                    }
+                    QcButton{
+                            id:rightButton
+                            anchors.right: parent.right
+                            icon.source:"qrc:/icons/navigation/menu2.svg"
+                            onClicked:{
+                                optionsMenu.x = rightButton.x
+                                optionsMenu.y = rightButton.y + rightButton.height
+                                optionsMenu.open()
+                            }
+                    }
+                    Menu {
+                        id: optionsMenu
+                        MenuItem {
+                            text:"显示统计"
+                            enabled: textDir.text !== ""
+                            onTriggered: {
+                                stackView.push(statisticsPage)
+                                provider.getStatistic()
+                            }
+                        }
+                    }
+
             }
 
 
@@ -333,15 +364,15 @@ ApplicationWindow {
                 }
             }
 
-            QcSearchBar{
-                anchors.top:splitViewResult.top
-                anchors.topMargin:10
-                anchors.horizontalCenter: splitViewResult.horizontalCenter
-                width:splitViewResult.width * 0.9
-                onSearch:{
-                    provider.search = str;
-                }
-            }
+//            QcSearchBar{
+//                anchors.top:splitViewResult.top
+//                anchors.topMargin:10
+//                anchors.horizontalCenter: splitViewResult.horizontalCenter
+//                width:splitViewResult.width * 0.9
+//                onSearch:{
+//                    provider.search = str;
+//                }
+//            }
 
             footer: ToolBar {
                 id:toolBarFooter

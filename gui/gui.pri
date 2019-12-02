@@ -138,7 +138,6 @@ SOURCES += \
            $$PWD/cppchecklibrarydata.cpp
 
 win32 {
-    RC_FILE = $$PWD/cppcheck-gui.rc
     HEADERS += $$PWD/../lib/version.h
     contains(LINKCORE, [yY][eE][sS]) {
     } else {

@@ -41,7 +41,7 @@ void CC::Project::open(const QString& filepath)
     obj.insert("name",name);
     obj.insert("dir",dir);
     setProjectInfo(obj);
-    auto future = QtConcurrent::run(QThreadPool::globalInstance(),[this,filepath2](){
+    auto future = QtConcurrent::run(QThreadPool::globalInstance(),[filepath2](){
         Manager::instance()->mainWindow->openProjectFile(filepath2);
         return true;
     });
@@ -102,7 +102,6 @@ void Project::on_create_finished(bool ret)
 
 void Project::setProjectFile(ProjectFile *projectFile, const QJsonObject& obj)
 {
-    projectFile->setBuildDir(obj.value("name").toString() + "-cppcheck-build-dir");
     QStringList libraryList;
     libraryList<<"avr"<<"boost"<<"bsd"<<"cairo"<<"cppcheck-lib"<<"cppunit"<<"daca"<<"embedded_sql" \
               <<"gnu"<<"googletest"<<"gtk"<<"libcerror"<<"libcurl"<<"lua"<<"mfc"<<"microsoft_atl"<<"microsoft_sal" \

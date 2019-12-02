@@ -63,17 +63,26 @@ XmlReportV2::~XmlReportV2()
 
 bool XmlReportV2::create()
 {
-    if (Report::create()) {
-        mXmlWriter = new QXmlStreamWriter(Report::getFile());
-        return true;
-    }
-    return false;
+//    if (Report::create()) {
+//        mXmlWriter = new QXmlStreamWriter(Report::getFile());
+//        return true;
+//    }
+//    return false;
+
+    bytes.clear();
+    mXmlWriter = new QXmlStreamWriter(&bytes);
+    return true;
 }
 
 bool XmlReportV2::open()
 {
-    if (Report::open()) {
-        mXmlReader = new QXmlStreamReader(Report::getFile());
+//    if (Report::open()) {
+//        mXmlReader = new QXmlStreamReader(Report::getFile());
+//        return true;
+//    }
+//    return false;
+    if(file2Bytes()){
+        mXmlReader = new QXmlStreamReader(bytes);
         return true;
     }
     return false;
@@ -187,6 +196,30 @@ QList<ErrorItem> XmlReportV2::read()
         }
     }
     return errors;
+}
+
+bool XmlReportV2::file2Bytes()
+{
+    QFile file(getFileName());
+    if(file.open(QIODevice::ReadOnly)) {
+        QByteArray tmp = file.readAll();
+        bytes = qUncompress(tmp);
+        file.close();
+        return true;
+    }
+    return false;
+}
+
+bool XmlReportV2::bytes2File()
+{
+    QFile file(getFileName());
+    if(file.open(QIODevice::WriteOnly | QIODevice::Truncate)) {
+        QByteArray tmp = qCompress(bytes);
+        file.write(tmp);
+        file.close();
+        return true;
+    }
+    return false;
 }
 
 ErrorItem XmlReportV2::readError(QXmlStreamReader *reader)

@@ -6,8 +6,6 @@ import "qrc:/js/utils.js" as Util
 FocusScope {
     signal search(var str)
     id:control
-    implicitHeight: 50
-    implicitWidth: parent.width * 0.9
     onFocusChanged:{
         console.log(focus)
     }
@@ -21,15 +19,18 @@ FocusScope {
         background: Rectangle{
             width: parent.width
             height: parent.height
-            color: field.focus ? "#33333333":"#88eeeeee"
+            color: field.focus ? "#88ffffff":"#88aaaaaa"
             border.color:"transparent"
             radius: height * 0.5
         }
         visible:false
+        focus: true
+        horizontalAlignment: Text.AlignHCenter
+        verticalAlignment: Text.AlignBottom
         Keys.onEnterPressed:{
             func()
         }
-        color:"blue"
+        color:"#FF5722"
     }
     ToolButton {
         id:btn
@@ -38,7 +39,7 @@ FocusScope {
         anchors.rightMargin: 5
         anchors.verticalCenter: parent.verticalCenter
         icon.source: "qrc:/icons/navigation/search.svg"
-        icon.color:  hovered ? "pink":"grey"
+        icon.color:  hovered ? "#FF5722":"white"
         onClicked:{
             if(field.visible) {
                 func()
@@ -50,8 +51,6 @@ FocusScope {
     function func() {
         var str = field.text;
         str = Util.trim(str);
-        if(str.length > 0) {
-            control.search(str);
-        }
+        control.search(str);
     }
 }

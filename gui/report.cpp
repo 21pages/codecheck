@@ -61,3 +61,17 @@ QFile* Report::getFile()
 {
     return &mFile;
 }
+
+QString Report::getFileName()
+{
+    return mFilename;
+}
+
+//QByteArray Report::getByteArray()
+//{
+//    if(mFile.exists()) {
+//        if(mFile.isOpen()) {
+//            mFile.open(QIODevice::Text |)
+//        }
+//    }
+//}

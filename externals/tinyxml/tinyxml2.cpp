@@ -2297,6 +2297,66 @@ XMLError XMLDocument::SaveFile( const char* filename, bool compact )
     return _errorID;
 }
 
+XMLError XMLDocument::LoadFileEncrypt(const char *filename)
+{
+    QFile file(filename);
+    if(!file.open(QIODevice::ReadOnly)) {
+        TIXMLASSERT( false );
+        SetError( XML_ERROR_FILE_COULD_NOT_BE_OPENED, 0, "filename=<null>" );
+        return _errorID;
+    }
+    Clear();
+    const long filelength = file.size();
+
+    if ( filelength == 0 ) {
+        SetError( XML_ERROR_EMPTY_DOCUMENT, 0, 0 );
+        file.close();
+        return _errorID;
+    }
+
+    if ( !LongFitsIntoSizeTMinusOne<>::Fits( filelength ) ) {
+        // Cannot handle files which won't fit in buffer together with null terminator
+        SetError( XML_ERROR_FILE_READ_ERROR, 0, 0 );
+        file.close();
+        return _errorID;
+    }
+
+    const size_t size = filelength;
+    TIXMLASSERT( _charBuffer == 0 );
+    file.seek(0);
+    QByteArray tmp = file.readAll();
+    QByteArray bytes = qUncompress(tmp);
+
+
+    _charBuffer = new char[bytes.size()+1];
+    memcpy(_charBuffer,bytes.data(),bytes.size());
+    _charBuffer[size] = 0;
+
+    Parse();
+    file.close();
+    return _errorID;
+}
+
+XMLError XMLDocument::SaveFileEncrypt(const char *filename, bool compact)
+{
+    if ( !filename ) {
+        TIXMLASSERT( false );
+        SetError( XML_ERROR_FILE_COULD_NOT_BE_OPENED, 0, "filename=<null>" );
+        return _errorID;
+    }
+
+    FILE* fp = callfopen( filename, "w" );
+    if ( !fp ) {
+        SetError( XML_ERROR_FILE_COULD_NOT_BE_OPENED, 0, "filename=%s", filename );
+        return _errorID;
+    }
+    ClearError();
+    XMLPrinter stream( fp, compact );
+    Print( &stream );
+    fclose( fp );
+    return _errorID;
+}
+
 
 XMLError XMLDocument::SaveFile( FILE* fp, bool compact )
 {

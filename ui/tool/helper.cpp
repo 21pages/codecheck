@@ -107,8 +107,8 @@ QJsonObject Helper::getShowContent(const QString &fileName, const QString &codec
         return obj;
     }
     int startLine,endLine;
-    startLine = line>10?line-10:1;
-    endLine = (lineNumAll - line > 10) ? line + 10 :lineNumAll;
+    startLine = line>20?line-20:1;
+    endLine = (lineNumAll - line > 20) ? line + 20 :lineNumAll;
     QStringList showList = contentList.mid(startLine-1,endLine-startLine + 1);
     QString showString;
     int startPos = 0;

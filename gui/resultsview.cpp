@@ -196,6 +196,8 @@ void ResultsView::save(const QString &filename, Report::Type type) const
     if(report) {
         if(report->create()) {
             Manager::instance()->resultsTree->saveResults(report);
+            XmlReportV2 *reportV2 = reinterpret_cast<XmlReportV2*>(report);
+            reportV2->bytes2File();
         }
         delete report;
         report = nullptr;

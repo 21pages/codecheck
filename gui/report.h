@@ -80,6 +80,7 @@ protected:
     * @brief Get the file object where the report is written to.
     */
     QFile* getFile();
+    QString getFileName();
 
 private:
 
