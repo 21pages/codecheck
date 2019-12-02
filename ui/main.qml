@@ -42,6 +42,8 @@ ApplicationWindow {
 
     }
 
+    property var testvar: undefined
+
     Component.onCompleted: {
         provider.document = edit.textDocument;
         var obj = {
@@ -82,7 +84,8 @@ ApplicationWindow {
     Connections {
         target: provider
         onStatistics:{
-
+            testvar = obj
+//            statisticsPage.setStatistics(obj)
         }
     }
 
@@ -112,6 +115,7 @@ ApplicationWindow {
                         enabled: true/*titleBar.title != "CodeCheck"*/
                         onTriggered: {
                             stackView.push(statisticsPage)
+                            provider.getStatistic()
                         }
                     }
                 }
@@ -288,42 +292,42 @@ ApplicationWindow {
                                 text: "错误"
                                 checked: true
                                 source:"qrc:/icons/alert/error.svg"
-                                color: checkBoxError.checked?Global.severityColorMap["error"]:"#33000000"
+                                color: checkBoxError.checked?Global.severityColorMap["error"]:"#88888888"
                         }
                         QcCheckBox {
                                 id:checkBoxWarning
                                 text: "警告"
                                 checked: true
                                 source:"qrc:/icons/alert/warning.svg"
-                                color: checkBoxWarning.checked?Global.severityColorMap["warning"]:"#33000000"
+                                color: checkBoxWarning.checked?Global.severityColorMap["warning"]:"#88888888"
                         }
                         QcCheckBox {
                                 id:checkBoxStyle
                                 text: "风格"
                                 checked: true
                                 source:"qrc:/icons/alert/style.svg"
-                                color: checkBoxStyle.checked?Global.severityColorMap["style"]:"#33000000"
+                                color: checkBoxStyle.checked?Global.severityColorMap["style"]:"#88888888"
                         }
                         QcCheckBox {
                                 id:checkBoxPerformance
                                 text: "性能"
                                 checked: true
                                 source:"qrc:/icons/alert/performance.svg"
-                                color: checkBoxPerformance.checked?Global.severityColorMap["performance"]:"#33000000"
+                                color: checkBoxPerformance.checked?Global.severityColorMap["performance"]:"#88888888"
                         }
                         QcCheckBox {
                                 id:checkBoxPortability
                                 text: "移植"
                                 checked: true
                                 source:"qrc:/icons/alert/portability.svg"
-                                color: checkBoxPortability.checked?Global.severityColorMap["portability"]:"#33000000"
+                                color: checkBoxPortability.checked?Global.severityColorMap["portability"]:"#88888888"
                         }
                         QcCheckBox {
                                 id:checkBoxInformation
                                 text: "提示"
                                 checked: true
                                 source:"qrc:/icons/alert/information.svg"
-                                color: checkBoxInformation.checked?Global.severityColorMap["information"]:"#33000000"
+                                color: checkBoxInformation.checked?Global.severityColorMap["information"]:"#88888888"
                         }
                     }
                 }
@@ -344,11 +348,12 @@ ApplicationWindow {
                 visible: true
                 height: 30
                 Row {
+                    width: parent.width;height: parent.height
                     Text {
                         id:textDir
+                        height: parent.height
                         elide: Text.ElideLeft
                         font.pixelSize: 14
-                        anchors.horizontalCenter: parent.horizontalCenter
                         horizontalAlignment: Qt.AlignHCenter
                         verticalAlignment: Qt.AlignVCenter
                         color: "white"

@@ -60,29 +60,6 @@ Page {
             height: 80
             RowLayout {
                 Label {
-                    text: "源文件类型:"
-                    width: 100
-                    height: buttons.height
-                }
-                ButtonGroup {
-                    buttons: buttons.children
-                }
-                ColumnLayout {
-                    id:buttons
-                  RadioButton {
-                      id:raidoButtonProj
-                      text: "vs项目文件(*.sln,*.vsxproj)"
-                      checked: true
-                  }
-                  RadioButton {
-                      id:radioButtonFolder
-                      text: "任意文件夹"
-                  }
-                }
-            }
-
-            RowLayout {
-                Label {
                     text: "程序平台"
                 }
                 ComboBox {
@@ -90,15 +67,39 @@ Page {
                     model:["","native","win32Ansi","win32Unicode","win64","unix32","unix64"]
                 }
             }
+            RowLayout {
+                Layout.leftMargin: 50
+                Label {
+                    text: "源文件类型:"
+                    width: 100
+                    height: buttons.height
+                }
+                ButtonGroup {
+                    buttons: [raidoButtonProj,radioButtonFolder]
+                }
+                Row{
+                     id:buttons
+                    RadioButton {
+                      id:raidoButtonProj
+                      text: "vs项目文件(*.sln,*.vsxproj)"
+                      checked: true
+                    }
+                    RadioButton {
+                      id:radioButtonFolder
+                      text: "任意文件夹"
+                    }
+                }
+            }
+
 
         }
 
-        RowLayout {
+        Row {
             width: parent.width
             height: 50
             TextField {
                 id:textFieldSource;
-                Layout.fillWidth: true
+                width: parent.width - btnSource.width
             }
             Button {
                 id:btnSource
@@ -111,12 +112,12 @@ Page {
             }
         }
 
-        RowLayout {
+        Row {
             width: parent.width
             height: 50
             TextField {
                 id:textFieldDestination;
-                Layout.fillWidth: true
+                width: parent.width - buttonDestination.width
             }
             Button {
                 id:buttonDestination

@@ -89,5 +89,5 @@ RESOURCES += qml.qrc  \
             image/icons/icons.qrc
 #RESOURCES = ../gui/gui.qrc
 
-#QTPLUGIN += qsvg
+QTPLUGIN += qsvg
 
