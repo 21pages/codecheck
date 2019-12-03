@@ -73,6 +73,7 @@ Control {
                         height: parent.height
                         verticalAlignment: Text.AlignTop
                         text: index + 1
+                        color: Material.color(Material.Teal)
                     }
                 }
             }

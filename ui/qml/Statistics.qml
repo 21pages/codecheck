@@ -14,6 +14,7 @@ Page {
     }
     SwipeView {
         id: view
+        objectName: "statistics_view"
         currentIndex: 0
         anchors.fill: parent
 
@@ -67,6 +68,15 @@ Page {
     Component.onCompleted: {
         timer.start()
     }
+
+//    function toImage(dir)
+//    {
+//        for(var i = 0; i < view.count; i++) {
+//            view.currentIndex = i;
+//            var result = view.grabToImage();
+//            result.saveToFile(dir + "/" + )
+//        }
+//    }
 
     function setStatistics(obj) {
         severityPie.clear()

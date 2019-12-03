@@ -132,11 +132,23 @@ void Manager::analysisDone()
         const QString prjpath = QFileInfo(pf->getFilename()).absolutePath();
         const QString buildDir = prjpath + '/' + pf->getBuildDir();
         if (QDir(buildDir).exists()) {
-            resultView->saveStatistics(buildDir + "/statistics.txt");
+//            resultView->saveStatistics(buildDir + "/statistics.txt");
             resultView->updateFromOldReport(buildDir + "/lastResults.xml");
             resultView->save(buildDir + "/lastResults.xml", Report::XMLV2);
             CC::Provider::instance()->data2ui();
         }
+        QDir dir(buildDir);
+        QFileInfoList infoList = dir.entryInfoList();
+//        QRegExp exp("^[\S\s]+.a\d+$");
+        for(const QFileInfo& info:infoList) {
+            QString fileName = info.fileName();
+//            if(exp.exactMatch(fileName)) {
+//                QFile::remove(info.absolutePath());
+//            }
+            if(fileName.endsWith(".a1")) {
+                QFile::remove(info.filePath());
+            }
+        }
+        emit sig_analysisDone(true);
     }
-    emit sig_analysisDone(true);
 }

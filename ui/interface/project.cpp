@@ -111,6 +111,14 @@ void Project::setProjectFile(ProjectFile *projectFile, const QJsonObject& obj)
     projectFile->setCheckHeaders(true);
     int type = obj.value("type").toInt();
     QString source = obj.value("source").toString();
+    int platform = obj.value("platform").toInt();
+    QStringList platformList;
+    platformList<<"Unspecified"<<"win32W"<<"win64"<<"unix32"<<"unix64";
+    if(platform < platformList.size()) {
+        projectFile->setPlatform(platformList.at(platform));
+    } else {
+        projectFile->setPlatform(platformList.at(0));
+    }
     if(type == ProjTypeVS) {
         projectFile->setImportProject(source);
         projectFile->setAnalyzeAllVsConfigs(true);

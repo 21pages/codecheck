@@ -70,14 +70,12 @@ ApplicationWindow {
         }
 
         onProjectInfoChanged:{
-//            var name = projectManager.projectInfo["name"];
-//            if(name === "") {
-//                titleBar.title = "CodeCheck"
-//            } else {
-//                titleBar.title = name
-//            }
-            var dir = projectManager.projectInfo["dir"]
-            textDir.text = dir
+            var name = projectManager.projectInfo["name"];
+            var dir = projectManager.projectInfo["dir"];
+            if(dir.charAt(dir.length - 1) !== "/") {
+                dir += "/";
+            }
+            textDir.text = dir + name + ".codecheck"
         }
     }
 
@@ -86,6 +84,10 @@ ApplicationWindow {
         onStatistics:{
             testvar = obj
 //            statisticsPage.setStatistics(obj)
+        }
+        onPrint_finished:{
+            materialUI.hideLoading();
+            materialUI.showSnackbarMessage("PDF报告生成到" + projectManager.projectInfo["dir"]);
         }
     }
 
@@ -146,6 +148,14 @@ ApplicationWindow {
                             onTriggered: {
                                 stackView.push(statisticsPage)
                                 provider.getStatistic()
+                            }
+                        }
+                        MenuItem {
+                            text: "生成报告"
+                            enabled: textDir.text !== ""
+                            onTriggered:  {
+                                provider.print()
+                                materialUI.showLoading("正在生成PDF报告...",loadingClickCallBack)
                             }
                         }
                     }
@@ -353,7 +363,7 @@ ApplicationWindow {
                         }
                         QcCheckBox {
                                 id:checkBoxPortability
-                                text: "移植"
+                                text: "平台"
                                 checked: true
                                 source:"qrc:/icons/alert/portability.svg"
                                 color: checkBoxPortability.checked?Global.severityColorMap["portability"]:"#88888888"
@@ -368,16 +378,6 @@ ApplicationWindow {
                     }
                 }
             }
-
-//            QcSearchBar{
-//                anchors.top:splitViewResult.top
-//                anchors.topMargin:10
-//                anchors.horizontalCenter: splitViewResult.horizontalCenter
-//                width:splitViewResult.width * 0.9
-//                onSearch:{
-//                    provider.search = str;
-//                }
-//            }
 
             footer: ToolBar {
                 id:toolBarFooter
@@ -408,7 +408,7 @@ ApplicationWindow {
     }
 
     Settings{
-        fileName: "app.ini"
+        fileName: provider.exeDir + "/app.ini"
         category:"drawer"
         property alias setting_radioButtonGBK_checked: radioButtonGBK.checked
         property alias setting_radioButtonUTF8_checked: radioButtonUTF8.checked

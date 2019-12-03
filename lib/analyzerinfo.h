@@ -53,6 +53,7 @@ public:
 
     /** Close current TU.analyzerinfo file */
     void close();
+    void closeEncrypt();
     bool analyzeFile(const std::string &buildDir, const std::string &sourcefile, const std::string &cfg, unsigned long long checksum, std::list<ErrorLogger::ErrorMessage> *errors);
     void reportErr(const ErrorLogger::ErrorMessage &msg, bool verbose);
     void setFileInfo(const std::string &check, const std::string &fileInfo);

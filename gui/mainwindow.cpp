@@ -888,11 +888,11 @@ Settings MainWindow::getCppcheckSettings()
     result.addEnabled("portability");
     result.addEnabled("information");
     result.addEnabled("missingInclude");
-    if (!result.buildDir.empty())
-        result.addEnabled("unusedFunction");
+//    if (!result.buildDir.empty())
+//        result.addEnabled("unusedFunction");
     result.debugwarnings = mSettings->value(SETTINGS_SHOW_DEBUG_WARNINGS, false).toBool();
     result.quiet = false;
-    result.verbose = true;
+    result.verbose = false;
     result.force = mSettings->value(SETTINGS_CHECK_FORCE, 1).toBool();
     result.xml = false;
     result.jobs = mSettings->value(SETTINGS_CHECK_THREADS, 1).toInt();

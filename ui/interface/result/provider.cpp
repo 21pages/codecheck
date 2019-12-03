@@ -5,6 +5,7 @@
 #include <QTextCodec>
 #include <QtConcurrent>
 #include <QMetaObject>
+#include <QApplication>
 #include <QQmlApplicationEngine>
 #include "manager.h"
 #include "codeeditor.h"
@@ -12,19 +13,25 @@
 #include "resultsview.h"
 #include "helper.h"
 #include "iglobal.h"
+#include "printreport.h"
+#include "project.h"
 
 namespace CC {
 
 Provider *Provider::Instance = nullptr;
 
 Provider::Provider( QObject* parent )
-    : QObject( parent ) {
+    : QObject( parent )
+      ,m_printReport(new PrintReport(this))
+    ,m_exeDir(QApplication::applicationDirPath())
+{
     m_watcher_listClick = new QFutureWatcher<QVariant>(this);
     m_watcher_statistics = new QFutureWatcher<QJsonObject>(this);
     connect(m_watcher_listClick,&QFutureWatcher<QVariant>::finished,this,&Provider::watchFinished_listClick);
     connect(m_watcher_statistics,&QFutureWatcher<QJsonObject>::finished, this, &Provider::watchFinished_statistics,Qt::QueuedConnection);
     connect(this, &Provider::typeShowChanged, this, &Provider::data2ui);
     connect(this, &Provider::searchChanged,this,&Provider::data2ui);
+    connect(m_printReport,&PrintReport::print_finished, this, &Provider::print_finished,Qt::QueuedConnection);
 }
 
 void Provider::watchFinished_listClick()
@@ -161,6 +168,18 @@ void Provider::getStatistic()
          return obj;
     });
     m_watcher_statistics->setFuture(future);
+}
+
+void Provider::print()
+{
+    QJsonObject obj = Project::instance()->projectInfo();
+    QString dir = obj.value("dir").toString();
+    if(!dir.endsWith("/")) {
+        dir += "/";
+    }
+    QString fileName = dir + obj.value("name").toString() + "-report.pdf";
+    m_printReport->setFile(fileName);
+    m_printReport->startPrint();
 }
 
 }

@@ -24,10 +24,12 @@
 
 // "app" namespace is defined on purpose to show the case of using
 // list model within namespaces
+
 namespace CC {
 
 //    DECLARE_Q_OBJECT_LIST_MODEL( DataItem )
 DECLARE_Q_OBJECT_LIST_MODEL( DataItemRO)
+class PrintReport;
 
 // Provider is an example of class with some business logic that
 // needs to expose some collection of items of class DataItem
@@ -35,6 +37,7 @@ class Provider : public QObject {
     Q_OBJECT
     Q_PROPERTY( QObjectListModel_DataItemRO* items READ items CONSTANT )
     Q_PROPERTY(QQuickTextDocument* document READ document WRITE setDocument NOTIFY documentChanged)
+    Q_PROPERTY(QString exeDir READ exeDir CONSTANT)
 public:
     Q_INVOKABLE void addItem(const QString& file, const QString& severity,
                              const QString& id, int line, const QString& summary, const QJsonArray &array);
@@ -43,6 +46,7 @@ public:
     Q_INVOKABLE void initProviderFromUI(QJsonObject obj);
     Q_INVOKABLE void onListViewClicked(const QJsonObject &obj);
     Q_INVOKABLE void getStatistic();
+    Q_INVOKABLE void print();
     Q_PROPERTY(int typeShow READ typeShow WRITE setTypeShow NOTIFY typeShowChanged)
     Q_PROPERTY(QString search READ search WRITE setSearch NOTIFY searchChanged)
 public:
@@ -52,6 +56,8 @@ public:
     void setSearch(QString search) {search = search.trimmed(); if(m_search != search){m_search = search; emit searchChanged();}}
     static Provider* instance();
     void data2ui();
+    QString exeDir(){return m_exeDir;}
+    friend class PrintReport;
 private:
     explicit Provider( QObject* parent = Q_NULLPTR );
     void watchFinished_listClick();
@@ -62,6 +68,7 @@ signals:
     void typeShowChanged();
     void searchChanged();
     void statistics(QJsonObject obj);
+    void print_finished();
 private:
     // Since this getter is not safe (ownership remains to c++)
     // and it is used for QML only it'd better to make it private.
@@ -75,5 +82,7 @@ private:
     QFutureWatcher<QJsonObject> *m_watcher_statistics;
     int m_type_show = 0x3F;
     QString m_search = "";
+    PrintReport *m_printReport;
+    QString m_exeDir;
 };
 }

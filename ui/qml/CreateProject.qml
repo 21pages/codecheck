@@ -2,6 +2,7 @@ import QtQuick 2.12
 import QtQuick.Controls 2.12
 import QtQuick.Controls.Material 2.12
 import QtQuick.Layouts 1.12
+import Qt.labs.settings 1.0
 import CC 1.0
 
 
@@ -64,7 +65,7 @@ Page {
                 }
                 ComboBox {
                     id:comboBoxPlatform
-                    model:["","native","win32Ansi","win32Unicode","win64","unix32","unix64"]
+                    model:["通用","win32","win64","unix32","unix64"]
                 }
             }
             RowLayout {
@@ -79,15 +80,16 @@ Page {
                 }
                 Row{
                      id:buttons
+                     RadioButton {
+                       id:radioButtonFolder
+                       text: "任意文件夹"
+                       checked: true
+                     }
                     RadioButton {
                       id:raidoButtonProj
                       text: "vs项目文件(*.sln,*.vsxproj)"
-                      checked: true
                     }
-                    RadioButton {
-                      id:radioButtonFolder
-                      text: "任意文件夹"
-                    }
+
                 }
             }
 
@@ -150,6 +152,15 @@ Page {
             }
     }
 
-
+    Settings {
+        fileName: provider.exeDir + "/app.ini"
+        category:"createProject"
+        property alias setting_textFieldProjectName_text: textFieldProjectName.text
+        property alias setting_comboBoxPlatform_currentIndex: comboBoxPlatform.currentIndex
+        property alias setting_radioButtonFolder_checked: radioButtonFolder.checked
+        property alias setting_radioButtonProj_checked: raidoButtonProj.checked
+        property alias setting_textFieldSource_text: textFieldSource.text
+        property alias setting_textFieldDestination_text: textFieldDestination.text
+    }
 
 }

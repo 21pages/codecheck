@@ -67,6 +67,27 @@ void AnalyzerInformation::close()
         mOutputStream << "</analyzerinfo>\n";
         mOutputStream.close();
     }
+//    closeEncrypt();
+}
+
+void AnalyzerInformation::closeEncrypt()
+{
+    QString fileName = QString::fromStdString(mAnalyzerInfoFile);
+    mAnalyzerInfoFile.clear();
+    if (mOutputStream.is_open()) {
+        mOutputStream << "</analyzerinfo>\n";
+        mOutputStream.close();
+        QFile file(fileName);
+        if(file.exists() && file.open(QIODevice::ReadOnly)) {
+            QByteArray bytes = file.readAll();
+            QByteArray tmp = qCompress(bytes);
+            file.close();
+            if(file.open(QIODevice::WriteOnly | QIODevice::Truncate)) {
+                file.write(tmp);
+                file.close();
+            }
+        }
+    }
 }
 
 static bool skipAnalysis(const std::string &analyzerInfoFile, unsigned long long checksum, std::list<ErrorLogger::ErrorMessage> *errors)
