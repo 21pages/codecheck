@@ -29,6 +29,7 @@ namespace CC {
         Q_INVOKABLE void open(const QString &filepath);
         Q_INVOKABLE void create(const QJsonObject& obj);
         Q_INVOKABLE void close();
+        Q_INVOKABLE void openFile(const QString& exepath,const QString& filepath);
         static Project* instance();
         void setProjectFile(ProjectFile *projectFile, const QJsonObject &obj);
         QJsonObject projectInfo() {return m_projectInfo;}

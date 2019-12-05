@@ -73,8 +73,20 @@ bool Manager::listAddErrorItem(const ErrorItem &item)
     Helper::Severity2Icon(item.severity,iconStr,severityStr);
     QJsonArray array;
     if (item.errorPath.size() > 1) {
+        QList<QErrorPathItem> errorPathTmp;
         for (int i = 0; i < item.errorPath.size(); i++) {
             const QErrorPathItem &e = item.errorPath[i];
+            bool contains = false;
+            for(int j = 0; j < errorPathTmp.size(); j++) {
+                if(errorPathTmp.at(j) == e ){
+                    contains = true;
+                }
+            }
+            if(contains) {
+                continue;
+            } else {
+                errorPathTmp.append(e);
+            }
             QJsonObject obj;
             obj.insert("file",e.file);
             obj.insert("line",e.line);
@@ -139,14 +151,11 @@ void Manager::analysisDone()
         }
         QDir dir(buildDir);
         QFileInfoList infoList = dir.entryInfoList();
-//        QRegExp exp("^[\S\s]+.a\d+$");
+        QRegExp exp("^[\\S\\s]+.a\\d+$");
         for(const QFileInfo& info:infoList) {
             QString fileName = info.fileName();
-//            if(exp.exactMatch(fileName)) {
-//                QFile::remove(info.absolutePath());
-//            }
-            if(fileName.endsWith(".a1")) {
-                QFile::remove(info.filePath());
+            if(exp.exactMatch(fileName)) {
+                QFile::remove(info.absoluteFilePath());
             }
         }
         emit sig_analysisDone(true);

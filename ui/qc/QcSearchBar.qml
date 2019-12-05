@@ -6,9 +6,7 @@ import "qrc:/js/utils.js" as Util
 FocusScope {
     signal search(var str)
     id:control
-    onFocusChanged:{
-        console.log(focus)
-    }
+
     TextField {
         id:field
         leftPadding: 10;rightPadding: btn.width
@@ -24,12 +22,14 @@ FocusScope {
             radius: height * 0.5
         }
         visible:false
-        focus: true
+//        focus: true
         horizontalAlignment: Text.AlignHCenter
         verticalAlignment: Text.AlignBottom
         color:"#FF5722"
         cursorVisible: field.visible
     }
+
+
     ToolButton {
         id:btn
         width: 30;height: 30

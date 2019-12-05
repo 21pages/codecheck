@@ -4,7 +4,6 @@ import QtQuick.Controls 2.12
 
 Page {
     id: page
-
     header: MyToolBar {
         title:"统计"
         leftButton.icon.source:"qrc:/icons/navigation/back.svg"
@@ -17,9 +16,24 @@ Page {
         objectName: "statistics_view"
         currentIndex: 0
         anchors.fill: parent
+        property var statisticsLoaded: false
 
         ChartView {
                 id:chartSeverity;
+                objectName: "chartSeverity"
+                legend.visible: true
+                legend.alignment: Qt.AlignRight
+                antialiasing: true
+                animationOptions:ChartView.GridAxisAnimations
+                localizeNumbers:true
+                title: "等级"
+                PieSeries {
+                    id:severityPie;
+                }
+        }
+        ChartView {
+                id:chartID;
+                objectName: "chartID"
                 legend.visible: true
                 legend.alignment: Qt.AlignRight
                 antialiasing: true
@@ -27,19 +41,34 @@ Page {
                 localizeNumbers:true
                 title: "问题"
                 PieSeries {
-                    id:severityPie;
+                    id:idPie;
                 }
         }
         ChartView {
-                id:chartID;
+                id:chartErrorBar;
+                objectName: "chartErrorBar"
                 legend.visible: true
                 legend.alignment: Qt.AlignRight
                 antialiasing: true
                 animationOptions:ChartView.GridAxisAnimations
                 localizeNumbers:true
-                title: "错误ID"
-                PieSeries {
-                    id:idPie;
+                title: "各种错误类型"
+                BarSeries {
+                    id:barSeriesError;
+                    labelsVisible: true
+                    labelsPosition: AbstractBarSeries.LabelsInsideEnd
+                    labelsFormat: "@value"
+                    axisX: BarCategoryAxis {
+                        id:barSeriesError_axisx
+                        categories: [" "];
+                        titleText: "各种类型错误"
+                        labelsVisible: false
+                    }
+                    axisY: ValueAxis{
+                        id:barSeriesError_axisY
+                        min: 0
+                        titleText:"数量"
+                    }
                 }
         }
 
@@ -57,9 +86,9 @@ Page {
         repeat: true
         interval: 100
         onTriggered: {
-            if(root.testvar !== undefined) {
+            if(Global.$statistics !== undefined) {
                 timer.stop()
-                 setStatistics(root.testvar)
+                 setStatistics(Global.$statistics)
             }
 
         }
@@ -69,20 +98,11 @@ Page {
         timer.start()
     }
 
-//    function toImage(dir)
-//    {
-//        for(var i = 0; i < view.count; i++) {
-//            view.currentIndex = i;
-//            var result = view.grabToImage();
-//            result.saveToFile(dir + "/" + )
-//        }
-//    }
-
     function setStatistics(obj) {
         severityPie.clear()
         var obj_severity = obj["severity"];
-        for(var key1 in obj_severity) {
-            severityPie.append(key1,obj_severity[key1])
+        for(var key in obj_severity) {
+            severityPie.append(key,obj_severity[key])
         }
          for (var i = 0; i < severityPie.count; i++) {
              var slice = severityPie.at(i);
@@ -92,8 +112,8 @@ Page {
          }
         idPie.clear()
         var obj_id = obj["id"];
-        for(var key2 in obj_id) {
-            idPie.append(key2,obj_id[key2])
+        for(var key in obj_id) {
+            idPie.append(key,obj_id[key])
         }
         for (var i = 0; i < idPie.count; i++) {
             var slice = idPie.at(i);
@@ -101,6 +121,18 @@ Page {
            slice.labelVisible = true
            slice.labelPosition = PieSlice.LabelOutside
         }
+        barSeriesError.clear();
+        var obj_error = obj["error"];
+        barSeriesError_axisY.max = obj_error["max"] + 1;
+        for(var key in obj_error) {
+            if(key !== "max") {
+                var arr = [obj_error[key]];
+                barSeriesError.append(key,arr);
+            }
+
+        }
+
+        view.statisticsLoaded = true;
     }
 }
 

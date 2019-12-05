@@ -134,25 +134,86 @@ void Provider::onListViewClicked(const QJsonObject& obj)
     m_watcher_listClick->setFuture(future);
 }
 
-void Provider::getStatistic()
+void Provider::getStatistic(int all0filter1)
 {
-    auto future = QtConcurrent::run(QThreadPool::globalInstance(),[](){
+    auto future = QtConcurrent::run(QThreadPool::globalInstance(),[all0filter1,this](){
+        QStringList severityList;
+        QStringList idList;
+        if(all0filter1 == 0) {
+            for(auto obj : Manager::instance()->errorJsonList) {
+                severityList << obj->value(CONST_severityStr).toString();
+                idList <<  obj->value(CONST_id).toString();
+            }
+        } else {
+            for(int i = 0; i < items()->size(); i++) {
+                const auto & obj = items()->at(i);
+                severityList << obj->severity;
+                idList <<  obj->id;
+            }
+        }
         QHash<QString,int> severity;
         QHash<QString,int> id;
-         for(auto i : Manager::instance()->errorJsonList) {
-             const QString severityStr = i->value(CONST_severityStr).toString();
-             const QString idStr =  i->value(CONST_id).toString();
-             if(severity.keys().contains(severityStr)) {
-                severity[severityStr]++;
-             } else {
-                 severity.insert(severityStr,1);
-             }
-             if(id.keys().contains(idStr)) {
-                 id[idStr]++;
-             } else {
-                 id.insert(idStr,1);
-             }
-         }
+        QHash<QString,int> error;
+        QHash<QString,int> warning;
+        QHash<QString,int> style;
+        QHash<QString,int> performance;
+        QHash<QString,int> portability;
+        QHash<QString,int> information;
+        for(int i = 0; i< severityList.size(); i++) {
+            const QString& severityStr = severityList.at(i);
+            const QString& idStr = idList.at(i);
+            //severity
+            if(severity.keys().contains(severityStr)) {
+               severity[severityStr]++;
+            } else {
+                severity.insert(severityStr,1);
+            }
+            //id
+            if(id.keys().contains(idStr)) {
+                id[idStr]++;
+            } else {
+                id.insert(idStr,1);
+            }
+            if(severityStr == CONST_error) {
+                if(error.keys().contains(idStr)) {
+                          error[idStr]++;
+                } else {
+                          error.insert(idStr , 1);
+                }
+            } else if(severityStr == CONST_warning) {
+                if(warning.keys().contains(idStr)) {
+                          warning[idStr]++;
+                } else {
+                          warning.insert(idStr , 1);
+                }
+            }else if(severityStr == CONST_style) {
+                if(style.keys().contains(idStr)) {
+                          style[idStr]++;
+                } else {
+                          style.insert(idStr , 1);
+                }
+            }else if(severityStr == CONST_performance) {
+                if(performance.keys().contains(idStr)) {
+                          performance[idStr]++;
+                } else {
+                          performance.insert(idStr , 1);
+                }
+            }else if(severityStr == CONST_portability) {
+                if(portability.keys().contains(idStr)) {
+                          portability[idStr]++;
+                } else {
+                          portability.insert(idStr , 1);
+                }
+            }else if(severityStr == CONST_information) {
+                if(information.keys().contains(idStr)) {
+                          information[idStr]++;
+                } else {
+                          information.insert(idStr , 1);
+                }
+            }
+
+        }
+
          QJsonObject severityObj;
          for(auto it = severity.constBegin(); it != severity.constEnd(); it++) {
              severityObj.insert(it.key(),it.value());
@@ -161,16 +222,77 @@ void Provider::getStatistic()
          for(auto it = id.constBegin(); it != id.constEnd();it++) {
              idObj.insert(it.key(),it.value());
          }
+         QJsonObject errorObj;
+         int max_error = 1;
+         for(auto it = error.constBegin(); it != error.constEnd(); it++) {
+             errorObj.insert(it.key(),it.value());
+             if(it.value() > max_error) {
+                 max_error = it.value();
+             }
+         }
+         errorObj.insert("max",max_error);
+         QJsonObject warningObj;
+         int max_warning = 1;
+         for(auto it = warning.constBegin(); it != warning.constEnd(); it++) {
+             warningObj.insert(it.key(),it.value());
+             if(it.value() > max_warning) {
+                 max_warning =it.value();
+             }
+         }
+         warningObj.insert("max",max_warning);
+         QJsonObject styleObj;
+         int max_style = 1;
+         for(auto it = style.constBegin(); it != style.constEnd(); it++) {
+             styleObj.insert(it.key(),it.value());
+             if(it.value() > max_style) {
+                 max_style = it.value();
+             }
+         }
+         styleObj.insert("max",max_style);
+
+         QJsonObject performanceObj;
+         int max_performance  = 1;
+         for(auto it = performance.constBegin(); it != performance.constEnd(); it++) {
+             performanceObj.insert(it.key(),it.value());
+             if(it.value() > max_performance) {
+                 max_performance = it.value();
+             }
+         }
+         performanceObj.insert("max",max_performance);
+         QJsonObject portabilityObj;
+         int max_portability = 1;
+         for(auto it = portability.constBegin(); it != portability.constEnd(); it++) {
+             portabilityObj.insert(it.key(),it.value());
+             if(it.value() > max_portability) {
+                 max_portability = it.value();
+             }
+         }
+         portabilityObj.insert("max",max_portability);
+         QJsonObject informationObj;
+         int max_information = 1;
+         for(auto it = information.constBegin(); it != information.constEnd(); it++) {
+             informationObj.insert(it.key(),it.value());
+             if(it.value() > max_information) {
+                 max_information = it.value();
+             }
+         }
+         informationObj.insert("max",max_information);
          QJsonObject obj;
-         obj.insert("severity",severityObj);
-         obj.insert("id",idObj);
+         obj.insert(CONST_severity,severityObj);
+         obj.insert(CONST_id,idObj);
+         obj.insert(CONST_error,errorObj);
+         obj.insert(CONST_warning,warningObj);
+         obj.insert(CONST_style,styleObj);
+         obj.insert(CONST_performance,performanceObj);
+         obj.insert(CONST_portability,portabilityObj);
+         obj.insert(CONST_information,informationObj);
 
          return obj;
     });
     m_watcher_statistics->setFuture(future);
 }
 
-void Provider::print()
+void Provider::print(int all0filter1)
 {
     QJsonObject obj = Project::instance()->projectInfo();
     QString dir = obj.value("dir").toString();
@@ -179,7 +301,7 @@ void Provider::print()
     }
     QString fileName = dir + obj.value("name").toString() + "-report.pdf";
     m_printReport->setFile(fileName);
-    m_printReport->startPrint();
+    m_printReport->startPrint(all0filter1);
 }
 
 }

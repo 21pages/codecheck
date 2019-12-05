@@ -45,8 +45,8 @@ public:
     Q_INVOKABLE void clearItem();
     Q_INVOKABLE void initProviderFromUI(QJsonObject obj);
     Q_INVOKABLE void onListViewClicked(const QJsonObject &obj);
-    Q_INVOKABLE void getStatistic();
-    Q_INVOKABLE void print();
+    Q_INVOKABLE void getStatistic(int all0filter1);
+    Q_INVOKABLE void print(int all0filter1);
     Q_PROPERTY(int typeShow READ typeShow WRITE setTypeShow NOTIFY typeShowChanged)
     Q_PROPERTY(QString search READ search WRITE setSearch NOTIFY searchChanged)
 public:

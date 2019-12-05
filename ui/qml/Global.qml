@@ -17,4 +17,5 @@ QtObject {
         "information":Material.color(Material.Cyan)
     }
     property var $listItemVar: ({})
+    property var $statistics: undefined
 }

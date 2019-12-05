@@ -241,4 +241,15 @@ Page {
         }
     }
 
+//    Settings{
+//        fileName: provider.exeDir + "/app.ini"
+//        category:"ffpicker"
+
+//        id:settingFFPicker
+//    }
+
+//    Component.onCompleted: {
+
+//    }
+
 }

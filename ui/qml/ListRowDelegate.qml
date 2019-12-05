@@ -6,13 +6,16 @@ import QtQuick.Controls 2.12
 import "qrc:/qc/"
 import "qrc:/MaterialUI/Interface/"
 
-Control {
+Rectangle {
     id:listViewDelegate
     property var d
     Layout.fillWidth: true
     Layout.fillHeight: true
     height:Global.listHeight + listView2.height
     signal listViewItemClicked(var obj)
+    property color textColor:listViewDelegate.ListView.isCurrentItem ? Material.color(Material.Blue) : "#000000"
+
+
 
     MaterialCard{
         id:card
@@ -44,16 +47,42 @@ Control {
                     Column {
                         width: parent.width - severityImage.width
                         height: parent.height
-                        RowLayout {
+                        /*RowLayout*/ Row{
                             height: parent.height * 0.6
+                            width: parent.width
                             Text {
+                                id:textID
                                 text: modelData.id
                                 padding: 5
+                                color: textColor
                             }
                             Text {
-                                text:(modelData.array.length === 0) ? ("行号:" + modelData.line) : ("相关行数:" + modelData.array.length)
+                                id:textLine
+                                text:"行号:" + modelData.line + "  " + ((modelData.array.length === 0) ? "" : ("相关行数:" + modelData.array.length))
                                 padding: 5
                                 fontSizeMode: Text.Fit
+                                color: textColor
+                            }
+
+                            Rectangle {
+                                width: parent.width - textID.width - textLine.width
+                                height: parent.height
+                                QcColoredImage {
+                                    anchors.right: parent.right
+                                    anchors.rightMargin: 10
+                                    id:testBtn
+                                    height: 15
+                                    anchors.verticalCenter: parent.verticalCenter
+                                    width: height
+                                    source: "qrc:/icons/file/file.svg"
+                                    overlayColor: Material.color(Material.Orange)
+                                    MouseArea {
+                                        anchors.fill: parent
+                                        onClicked: {
+                                            projectManager.openFile(textFieldOpenFileExe.text,modelData.file)
+                                        }
+                                    }
+                                }
                             }
                         }
                         Text {
@@ -61,13 +90,16 @@ Control {
                             text: modelData.summary
                             padding: 5
                             font.weight: Font.Light
+                            color: textColor
                         }
                     }
                 }
                 Rectangle {
                     height: parent.height * 0.2
                     width: parent.width
+                    color:"transparent"
                     Text {
+                        id:textIndex
                         anchors.right: parent.right
                         anchors.rightMargin: 10
                         height: parent.height
@@ -81,6 +113,7 @@ Control {
 
         MouseArea {
             anchors.fill: parent
+            propagateComposedEvents: true
             onClicked: {
                 if(modelData.array.length !== 0) {
                     var visible =  listView2.visible;
@@ -89,6 +122,8 @@ Control {
                 }
                 var obj = {"file":modelData.file,"line":modelData.line}
                 listViewItemClicked(obj);
+                listView.currentIndex = index;
+                mouse.accepted = false
             }
         }
     }
@@ -104,6 +139,11 @@ Control {
             }
         }
         visible: false
+        Component.onCompleted:  {
+            listView2.currentIndex = -1
+        }
     }
+
+
 }
 

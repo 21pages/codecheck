@@ -31,6 +31,12 @@ ApplicationWindow {
         }
     }
 
+    property Component ffPickerOpenFileExe : FFPicker{
+        onOk: {
+            textFieldOpenFileExe.text = path
+        }
+    }
+
     property Component createProject: CreateProject {
         onOk:{
             materialUI.showLoading( "正在分析源码,请稍等...");
@@ -41,9 +47,6 @@ ApplicationWindow {
     property Component statisticsPage: Statistics {
 
     }
-
-    property var testvar: undefined
-
     Component.onCompleted: {
         provider.document = edit.textDocument;
         var obj = {
@@ -82,8 +85,7 @@ ApplicationWindow {
     Connections {
         target: provider
         onStatistics:{
-            testvar = obj
-//            statisticsPage.setStatistics(obj)
+            Global.$statistics = obj
         }
         onPrint_finished:{
             materialUI.hideLoading();
@@ -143,23 +145,48 @@ ApplicationWindow {
                     Menu {
                         id: optionsMenu
                         MenuItem {
-                            text:"显示统计"
+                            text:"显示统计(全部)"
                             enabled: textDir.text !== ""
                             onTriggered: {
                                 stackView.push(statisticsPage)
-                                provider.getStatistic()
+                                provider.getStatistic(0)
                             }
                         }
                         MenuItem {
-                            text: "生成报告"
+                            text:"显示统计(过滤)"
+                            enabled: textDir.text !== ""
+                            onTriggered: {
+                                stackView.push(statisticsPage)
+                                provider.getStatistic(1)
+                            }
+                        }
+                        MenuItem {
+                            text: "生成报告(全部)"
                             enabled: textDir.text !== ""
                             onTriggered:  {
-                                provider.print()
+                                optionsMenu.close()
+                                provider.getStatistic(0)
+                                var component = Qt.createComponent("qrc:/qml/Statistics.qml");
+                                if(component.status === Component.Ready) {
+                                    stackView.push(component)
+                                }
+                                provider.print(0)
+                                materialUI.showLoading("正在生成PDF报告...",loadingClickCallBack)
+                            }
+                        }
+                        MenuItem {
+                            text: "生成报告(过滤)"
+                            enabled: textDir.text !== ""
+                            onTriggered:  {
+//                                var component = Qt.createComponent("qrc:/qml/Statistics.qml");
+//                                if(component.status === Component.Ready) {
+//                                    stackView.push(component)
+//                                }
+                                provider.print(1)
                                 materialUI.showLoading("正在生成PDF报告...",loadingClickCallBack)
                             }
                         }
                     }
-
             }
 
 
@@ -200,13 +227,15 @@ ApplicationWindow {
                                  contentX = r.x+r.width-width;
                              if (contentY >= r.y)
                                  contentY = r.y;
-                             else if (contentY+height <= r.y+r.height)
-                                 contentY = r.y+r.height-height;
+//                             else if (contentY+height <= r.y+r.height)
+//                                 contentY = r.y+r.height-height;
+                             else if (contentY+height/2 <= r.y+r.height)
+                                 contentY = r.y + r.height - height /2
                          }
 
                          TextEdit {
                              id: edit
-                             property string fileName: ""
+                             property string file: ""
                              width: flick.width
                              focus: true
                              wrapMode: TextEdit.NoWrap
@@ -215,6 +244,12 @@ ApplicationWindow {
                              textFormat:TextEdit.PlainText
                              selectionColor: Material.color(Material.Yellow)
                              selectedTextColor: Qt.rgba(0,0,0,1)
+                             MouseArea {
+                                anchors.fill: parent
+                                onDoubleClicked: {
+                                    projectManager.openFile(textFieldOpenFileExe.text,edit.file)
+                                }
+                             }
                          }
                      }
 
@@ -291,6 +326,8 @@ ApplicationWindow {
                     onTriggered: {
                         projectManager.close()
                         edit.text = ""
+                        edit.file = ""
+                        textDir.text = ""
                     }
                 }
                 style:QcPieMenuStyle{}
@@ -376,6 +413,17 @@ ApplicationWindow {
                                 color: checkBoxInformation.checked?Global.severityColorMap["information"]:"#88888888"
                         }
                     }
+                    RowLayout {
+                        width: parent.width
+                        Label {
+                            text: "打开文本所用程序:"
+                        }
+                        TextField {
+                            id:textFieldOpenFileExe
+                            Layout.fillWidth: true
+                            text: "C:/Windows/System32/notepad.exe"
+                        }
+                    }
                 }
             }
 
@@ -418,6 +466,7 @@ ApplicationWindow {
         property alias setting_checkBoxPerformance_checked: checkBoxPerformance.checked
         property alias setting_checkBoxPortability_checked: checkBoxPortability.checked
         property alias setting_checkBoxInformation_checked: checkBoxInformation.checked
+        property alias setting_textFieldOpenFileExe_text: textFieldOpenFileExe.text
     }
 
     function textSelect(obj) {
@@ -425,6 +474,7 @@ ApplicationWindow {
         var start = obj["start"];
         var end = obj["end"];
         edit.select(start, end);
+        edit.file = obj["file"];
     }
 
     function getTypeShow() {

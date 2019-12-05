@@ -80,7 +80,7 @@ QJsonObject Helper::getShowContent(const QString &fileName, const QString &codec
     QFile file(fileName);
     if(!file.open(QIODevice::ReadOnly)) {
         QJsonObject obj;
-        obj.insert("fileName","");
+        obj.insert("file","");
         obj.insert("start",0);
         obj.insert("end",0);
         obj.insert("content","");
@@ -100,7 +100,7 @@ QJsonObject Helper::getShowContent(const QString &fileName, const QString &codec
     int lineNumAll = contentList.size();
     if(line > lineNumAll || line < 1) {
         QJsonObject obj;
-        obj.insert("fileName","");
+        obj.insert("file","");
         obj.insert("start",0);
         obj.insert("end",0);
         obj.insert("content","");
@@ -124,7 +124,7 @@ QJsonObject Helper::getShowContent(const QString &fileName, const QString &codec
         showString.append("\n");
     }
     QJsonObject obj;
-    obj.insert("fileName",fileName);
+    obj.insert("file",fileName);
     obj.insert("start",startPos);
     obj.insert("end",endPos);
     obj.insert("content",showString);

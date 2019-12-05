@@ -5,6 +5,7 @@
 
 namespace CC {
 class PrintReport;
+class Provider;
 class DataItemRO : public QObject {
     Q_OBJECT
     Q_PROPERTY( QString file MEMBER file CONSTANT )
@@ -18,6 +19,7 @@ public:
                const QString& id, int line, const QString& summary, const QJsonArray &array)
         :file(file),severity(severity),id(id),line(line),summary(summary),array(array){}
     friend class PrintReport;
+    friend class Provider;
 private:
     QString file;
     QString severity;

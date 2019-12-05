@@ -53,5 +53,9 @@ ListView {
 
     ScrollBar.vertical: ScrollBar {active: true}
     ScrollBar.horizontal: ScrollBar { }
+
+    Component.onCompleted:  {
+        listView.currentIndex = -1
+    }
 }
 

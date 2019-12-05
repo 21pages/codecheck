@@ -11,6 +11,7 @@ Rectangle {
     height: Global.subListHeight
     width: listView.width
     signal listViewItemClicked(var obj)
+    property color textColor: subListDelegate.ListView.isCurrentItem ? Material.color(Material.Blue) : "#000000"
 
     MaterialCard {
         anchors.margins: 5
@@ -21,6 +22,7 @@ Rectangle {
             text: "行号:" +modelData.line+"\t"+modelData.info
             height: Global.subListHeight
             padding: 5
+            color: textColor
         }
         Text {
             anchors.right: parent.right
@@ -38,6 +40,7 @@ Rectangle {
         onClicked: {
             var obj = {"file":modelData.file,"line":modelData.line}
             subListDelegate.listViewItemClicked(obj);
+            subListDelegate.ListView.view.currentIndex = index;
         }
     }
 }

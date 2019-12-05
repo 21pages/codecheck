@@ -7,6 +7,7 @@
 #include <QJsonValue>
 #include <QFileInfo>
 #include <QDir>
+#include <QProcess>
 #include "manager.h"
 #include "mainwindow.h"
 #include "provider.h"
@@ -79,6 +80,22 @@ void Project::close()
     projobj.insert("name","");
     projobj.insert("dir","");
     setProjectInfo(projobj);
+}
+
+void Project::openFile(const QString& exepath,const QString &filepath)
+{
+    QtConcurrent::run(QThreadPool::globalInstance(),[exepath,filepath](){
+        QString exepath2 = exepath;
+        QFileInfo infoExe(exepath2);
+        if(!infoExe.exists()) {
+            exepath2 = "C:/Windows/System32/notepad.exe";
+        }
+        QProcess process;
+        QFileInfo info(filepath);
+        if(info.exists()) {
+            process.startDetached(exepath2,QStringList()<<filepath);
+        }
+    });
 }
 
 Project *Project::instance()
