@@ -22,10 +22,9 @@ FocusScope {
             radius: height * 0.5
         }
         visible:false
-//        focus: true
         horizontalAlignment: Text.AlignHCenter
         verticalAlignment: Text.AlignBottom
-        color:"#FF5722"
+        color:field.focus ?"#FF5722":"#FF9800"
         cursorVisible: field.visible
     }
 
@@ -40,15 +39,15 @@ FocusScope {
         icon.color:  hovered ? "#FF5722":"white"
         onClicked:{
             if(field.visible) {
-                func()
+                var str = field.text;
+                str = Util.trim(str);
+                control.search(str);
+//                if(str === "") {
+                    field.visible = false;
+//                }
+            } else {
+                field.visible = !field.visible
             }
-            field.visible = !field.visible
         }
-    }
-
-    function func() {
-        var str = field.text;
-        str = Util.trim(str);
-        control.search(str);
     }
 }

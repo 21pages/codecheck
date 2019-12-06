@@ -231,6 +231,7 @@ void Provider::getStatistic(int all0filter1)
              }
          }
          errorObj.insert("max",max_error);
+
          QJsonObject warningObj;
          int max_warning = 1;
          for(auto it = warning.constBegin(); it != warning.constEnd(); it++) {
@@ -240,6 +241,7 @@ void Provider::getStatistic(int all0filter1)
              }
          }
          warningObj.insert("max",max_warning);
+
          QJsonObject styleObj;
          int max_style = 1;
          for(auto it = style.constBegin(); it != style.constEnd(); it++) {

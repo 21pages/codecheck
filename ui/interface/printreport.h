@@ -17,6 +17,7 @@ namespace CC {
         void setFile(const QString& filePath);
         void startPrint(int all0filter1);
     private:
+        void makeTitleToHtml(int all0filter1);
         void makeImageToHtml();
         void makeDataToHtml(int all0filter1);
         bool getImage();
@@ -30,11 +31,13 @@ namespace CC {
         QHash<QString,QString> hash_severity_color;
         QHash<QString,QString> hash_severity_cn;
 
-        QSharedPointer<QQuickItemGrabResult> chartSeverityResult;
-        QQuickItemGrabResult * chartSeverityGrabResult;
-        QSharedPointer<QQuickItemGrabResult> chartIDResult;
-        QQuickItemGrabResult * chartIDGrabResult;
+        QHash<QString,QSharedPointer<QQuickItemGrabResult>> grHash;
+        QHash<QString,QQuickItemGrabResult*> pGrHash;
+
         QHash<QString,QString> image_type_path_hash;
+
+        QStringList pngNameList = QStringList()<<"severity"<<"id"<<"error"  \
+                                              <<"warning"<<"style"<<"performance"<<"portability"<<"information";
     };
 }
 

@@ -36,14 +36,27 @@ void CC::Project::open(const QString& filepath)
         emit openFinished(false);
     }
     close();
-    QString name = info.baseName();
-    QString dir = info.absoluteDir().path();
-    QJsonObject obj;
-    obj.insert("name",name);
-    obj.insert("dir",dir);
-    setProjectInfo(obj);
-    auto future = QtConcurrent::run(QThreadPool::globalInstance(),[filepath2](){
+    auto future = QtConcurrent::run(QThreadPool::globalInstance(),[filepath2,info,this](){
         Manager::instance()->mainWindow->openProjectFile(filepath2);
+
+        ProjectFile *pf = Manager::instance()->mainWindow->mProjectFile;
+        QString source;
+        if(pf->getImportProject() != "") {
+            source = pf->getImportProject();
+        } else {
+            QStringList sourceList = pf->getCheckPaths();
+            source= sourceList.size() > 0?sourceList.at(0): "";
+        }
+        QString platform = pf->getPlatform();
+        QString name = info.baseName();
+        QString dir = info.absoluteDir().path();
+        QJsonObject obj;
+        qDebug()<<"open-platform-source"<<platform<<source;
+        obj.insert("name",name);
+        obj.insert("dir",dir);
+        obj.insert("source",source);
+        obj.insert("platform",platform);
+        setProjectInfo(obj);
         return true;
     });
 }
@@ -59,13 +72,21 @@ void Project::create(const QJsonObject& obj)
         if(destination.at(destination.size() - 1) != "/") {
             destination += "/";
         }
-        QJsonObject projobj;
-        projobj.insert("name",name);
-        projobj.insert("dir",destination);
-        setProjectInfo(projobj);
         QString projectPath = destination + name;
         Manager::instance()->mainWindow->newProjectFile(projectPath);
         setProjectFile(Manager::instance()->mainWindow->mProjectFile,obj);
+        {
+            ProjectFile *pf = Manager::instance()->mainWindow->mProjectFile;
+            QString platform = pf->getPlatform();
+            QJsonObject projobj;
+            projobj.insert("name",name);
+            projobj.insert("dir",destination);
+            projobj.insert("platform",platform);
+            projobj.insert("source",source);
+            setProjectInfo(projobj);
+        }
+
+
         Manager::instance()->mainWindow->analyzeProject(Manager::instance()->mainWindow->mProjectFile);
 
         return true;
@@ -79,6 +100,8 @@ void Project::close()
     QJsonObject projobj;
     projobj.insert("name","");
     projobj.insert("dir","");
+    projobj.insert("platform","");
+    projobj.insert("source","");
     setProjectInfo(projobj);
 }
 
@@ -120,10 +143,10 @@ void Project::on_create_finished(bool ret)
 void Project::setProjectFile(ProjectFile *projectFile, const QJsonObject& obj)
 {
     QStringList libraryList;
-    libraryList<<"avr"<<"boost"<<"bsd"<<"cairo"<<"cppcheck-lib"<<"cppunit"<<"daca"<<"embedded_sql" \
+    libraryList<<"avr"<<"boost"<<"bsd"<<"cairo"<<"cppunit"<<"daca"<<"embedded_sql" \
               <<"gnu"<<"googletest"<<"gtk"<<"libcerror"<<"libcurl"<<"lua"<<"mfc"<<"microsoft_atl"<<"microsoft_sal" \
              <<"motif"<<"nspr"<<"opengl"<<"openmp"<<"posix"<<"python"<<"qt"<<"ruby"<<"sdl"<<"sfml"<<"sqlite3"<<"std" \
-            <<"tinyxml2"<<"windows"<<"wxwidgets"<<"zlib";
+            <<"tinyxml2"<<"windows"<<"wxwidgets"<<"zlib";/*<<"cppcheck-lib"*/
     projectFile->setLibraries(libraryList);
     projectFile->setCheckHeaders(true);
     int type = obj.value("type").toInt();
@@ -170,6 +193,8 @@ void Project::setProjectInfo(const QJsonObject &obj)
             changed = true;
         }
     }
+    m_projectInfo["source"] = obj["source"];
+    m_projectInfo["platform"] = obj["platform"];
     if(changed) {
         emit projectInfoChanged();
     }

@@ -13,59 +13,193 @@ Page {
     }
     SwipeView {
         id: view
-        objectName: "statistics_view"
+        objectName: "SwipeViewStatistics"
         currentIndex: 0
         anchors.fill: parent
         property var statisticsLoaded: false
 
         ChartView {
                 id:chartSeverity;
-                objectName: "chartSeverity"
+                objectName: "chartViewSeverity"
                 legend.visible: true
                 legend.alignment: Qt.AlignRight
                 antialiasing: true
                 animationOptions:ChartView.GridAxisAnimations
                 localizeNumbers:true
-                title: "等级"
+                title: "各\"等级\"占比"
                 PieSeries {
                     id:severityPie;
                 }
         }
         ChartView {
                 id:chartID;
-                objectName: "chartID"
+                objectName: "chartViewID"
                 legend.visible: true
                 legend.alignment: Qt.AlignRight
                 antialiasing: true
                 animationOptions:ChartView.GridAxisAnimations
                 localizeNumbers:true
-                title: "问题"
+                title: "各\"问题\"占比"
                 PieSeries {
                     id:idPie;
                 }
         }
         ChartView {
-                id:chartErrorBar;
-                objectName: "chartErrorBar"
+                id:charViewError;
+                objectName: "chartViewError"
                 legend.visible: true
                 legend.alignment: Qt.AlignRight
                 antialiasing: true
                 animationOptions:ChartView.GridAxisAnimations
                 localizeNumbers:true
-                title: "各种错误类型"
+                title: "各\"错误\"的数量"
                 BarSeries {
                     id:barSeriesError;
                     labelsVisible: true
-                    labelsPosition: AbstractBarSeries.LabelsInsideEnd
+                    labelsPosition: AbstractBarSeries.LabelsOutsideEnd
                     labelsFormat: "@value"
                     axisX: BarCategoryAxis {
                         id:barSeriesError_axisx
                         categories: [" "];
-                        titleText: "各种类型错误"
-                        labelsVisible: false
+                        visible: false
                     }
                     axisY: ValueAxis{
                         id:barSeriesError_axisY
+                        min: 0
+                        titleText:"数量"
+                    }
+                }
+        }
+
+        ChartView {
+                id:charViewWarning;
+                objectName: "chartViewWarning"
+                legend.visible: true
+                legend.alignment: Qt.AlignRight
+                antialiasing: true
+                animationOptions:ChartView.GridAxisAnimations
+                localizeNumbers:true
+                title: "各\"警告\"的数量"
+                BarSeries {
+                    id:barSeriesWarning;
+                    labelsVisible: true
+                    labelsPosition: AbstractBarSeries.LabelsOutsideEnd
+                    labelsFormat: "@value"
+                    axisX: BarCategoryAxis {
+                        id:barSeriesWarning_axisx
+                        categories: [" "];
+                        visible: false
+                    }
+                    axisY: ValueAxis{
+                        id:barSeriesWarning_axisY
+                        min: 0
+                        titleText:"数量"
+                    }
+                }
+        }
+
+        ChartView {
+                id:charViewStyle;
+                objectName: "chartViewStyle"
+                legend.visible: true
+                legend.alignment: Qt.AlignRight
+                antialiasing: true
+                animationOptions:ChartView.GridAxisAnimations
+                localizeNumbers:true
+                title: "各\"风格\"的数量"
+                BarSeries {
+                    id:barSeriesStyle;
+                    labelsVisible: true
+                    labelsPosition: AbstractBarSeries.LabelsOutsideEnd
+                    labelsFormat: "@value"
+                    axisX: BarCategoryAxis {
+                        id:barSeriesStyle_axisx
+                        categories: [" "];
+                        visible: false
+                    }
+                    axisY: ValueAxis{
+                        id:barSeriesStyle_axisY
+                        min: 0
+                        titleText:"数量"
+                    }
+                }
+        }
+
+        ChartView {
+                id:charViewPerformance;
+                objectName: "chartViewPerformance"
+                legend.visible: true
+                legend.alignment: Qt.AlignRight
+                antialiasing: true
+                animationOptions:ChartView.GridAxisAnimations
+                localizeNumbers:true
+                title: "各\"性能\"的数量"
+                BarSeries {
+                    id:barSeriesPerformance;
+                    labelsVisible: true
+                    labelsPosition: AbstractBarSeries.LabelsOutsideEnd
+                    labelsFormat: "@value"
+                    axisX: BarCategoryAxis {
+                        id:barSeriesPerformance_axisx
+                        categories: [" "];
+                        visible: false
+                    }
+                    axisY: ValueAxis{
+                        id:barSeriesPerformance_axisY
+                        min: 0
+                        titleText:"数量"
+                    }
+                }
+        }
+
+        ChartView {
+                id:charViewPortability;
+                objectName: "chartViewPortability"
+                legend.visible: true
+                legend.alignment: Qt.AlignRight
+                antialiasing: true
+                animationOptions:ChartView.GridAxisAnimations
+                localizeNumbers:true
+                title: "各\"平台\"的数量"
+                BarSeries {
+                    id:barSeriesPortability;
+                    labelsVisible: true
+                    labelsPosition: AbstractBarSeries.LabelsOutsideEnd
+                    labelsFormat: "@value"
+                    axisX: BarCategoryAxis {
+                        id:barSeriesPortability_axisx
+                        categories: [" "];
+                        visible: false
+                    }
+                    axisY: ValueAxis{
+                        id:barSeriesPortability_axisY
+                        min: 0
+                        titleText:"数量"
+                    }
+                }
+        }
+
+        ChartView {
+                id:charViewInformation;
+                objectName: "chartViewInformation"
+                legend.visible: true
+                legend.alignment: Qt.AlignRight
+                antialiasing: true
+                animationOptions:ChartView.GridAxisAnimations
+                localizeNumbers:true
+                title: "各\"提示\"的数量"
+                BarSeries {
+                    id:barSeriesInformation;
+                    labelsVisible: true
+                    labelsPosition: AbstractBarSeries.LabelsOutsideEnd
+                    labelsFormat: "@value"
+                    axisX: BarCategoryAxis {
+                        id:barSeriesInformation_axisx
+                        categories: [" "];
+                        visible: false
+                    }
+                    axisY: ValueAxis{
+                        id:barSeriesInformation_axisY
                         min: 0
                         titleText:"数量"
                     }
@@ -99,40 +233,41 @@ Page {
     }
 
     function setStatistics(obj) {
-        severityPie.clear()
-        var obj_severity = obj["severity"];
-        for(var key in obj_severity) {
-            severityPie.append(key,obj_severity[key])
+
+        gen_pieSeries(severityPie,obj["severity"]);
+        gen_pieSeries(idPie,obj["id"]);
+        gen_barSeries(barSeriesError,barSeriesError_axisY,obj["error"]);
+        gen_barSeries(barSeriesWarning,barSeriesWarning_axisY,obj["warning"]);
+        gen_barSeries(barSeriesStyle,barSeriesStyle_axisY,obj["style"]);
+        gen_barSeries(barSeriesPerformance,barSeriesPerformance_axisY,obj["performance"]);
+        gen_barSeries(barSeriesPortability,barSeriesPortability_axisY,obj["portability"]);
+        gen_barSeries(barSeriesInformation,barSeriesInformation_axisY,obj["information"]);
+
+        view.statisticsLoaded = true;
+    }
+
+    function gen_pieSeries(pie,obj) {
+        pie.clear()
+        for(var key in obj) {
+            pie.append(key,obj[key])
         }
-         for (var i = 0; i < severityPie.count; i++) {
-             var slice = severityPie.at(i);
-            severityPie.at(i).lable = severityPie.at(i).percentage * 100 + "%(" + slice.value + ")";
-            severityPie.at(i).labelVisible = true
-            severityPie.at(i).labelPosition = PieSlice.LabelOutside
-         }
-        idPie.clear()
-        var obj_id = obj["id"];
-        for(var key in obj_id) {
-            idPie.append(key,obj_id[key])
-        }
-        for (var i = 0; i < idPie.count; i++) {
-            var slice = idPie.at(i);
+        for (var i = 0; i < pie.count; i++) {
+            var slice = pie.at(i);
            slice.lable = slice.percentage * 100 + "%(" + slice.value + ")";
            slice.labelVisible = true
            slice.labelPosition = PieSlice.LabelOutside
         }
-        barSeriesError.clear();
-        var obj_error = obj["error"];
-        barSeriesError_axisY.max = obj_error["max"] + 1;
-        for(var key in obj_error) {
+    }
+
+    function gen_barSeries(bar,axisY,obj) {
+        bar.clear();
+        axisY.max = obj["max"] + 1;
+        for(var key in obj) {
             if(key !== "max") {
-                var arr = [obj_error[key]];
-                barSeriesError.append(key,arr);
+                var arr = [obj[key]];
+                bar.append(key,arr);
             }
-
         }
-
-        view.statisticsLoaded = true;
     }
 }
 

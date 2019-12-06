@@ -171,19 +171,21 @@ ApplicationWindow {
                                     stackView.push(component)
                                 }
                                 provider.print(0)
-                                materialUI.showLoading("正在生成PDF报告...",loadingClickCallBack)
+                                materialUI.showLoading("正在生成PDF报告...")
                             }
                         }
                         MenuItem {
                             text: "生成报告(过滤)"
                             enabled: textDir.text !== ""
                             onTriggered:  {
-//                                var component = Qt.createComponent("qrc:/qml/Statistics.qml");
-//                                if(component.status === Component.Ready) {
-//                                    stackView.push(component)
-//                                }
+                                optionsMenu.close()
+                                provider.getStatistic(1)
+                                var component = Qt.createComponent("qrc:/qml/Statistics.qml");
+                                if(component.status === Component.Ready) {
+                                    stackView.push(component)
+                                }
                                 provider.print(1)
-                                materialUI.showLoading("正在生成PDF报告...",loadingClickCallBack)
+                                materialUI.showLoading("正在生成PDF报告...")
                             }
                         }
                     }
@@ -312,22 +314,22 @@ ApplicationWindow {
                 C14.MenuItem {
                     text: "打开"
                     onTriggered: {
+                        clearUI();
                         stackView.push(ffPickerOpenProject);
                     }
                 }
                 C14.MenuItem {
                     text: "新建"
                     onTriggered: {
+                        clearUI();
                         stackView.push(createProject);
                     }
                 }
                 C14.MenuItem {
                     text: "关闭"
                     onTriggered: {
+                        clearUI();
                         projectManager.close()
-                        edit.text = ""
-                        edit.file = ""
-                        textDir.text = ""
                     }
                 }
                 style:QcPieMenuStyle{}
@@ -442,6 +444,15 @@ ApplicationWindow {
                         verticalAlignment: Qt.AlignVCenter
                         color: "white"
                     }
+                    Text {
+                        text: (provider.search !== "") ?("  搜索:\"" + provider.search + "\""):""
+                        height: parent.height
+                        elide: Text.ElideRight
+                        font.pixelSize: 14
+                        horizontalAlignment: Qt.AlignHCenter
+                        verticalAlignment: Qt.AlignVCenter
+                        color: "white"
+                    }
                 }
             }
         }
@@ -490,5 +501,13 @@ ApplicationWindow {
 
     function loadingClickCallBack() {
         materialUI.hideLoading()
+    }
+
+    function clearUI()
+    {
+        edit.clear();
+        edit.file = ""
+        textDir.text = ""
+        provider.search = "";
     }
 }

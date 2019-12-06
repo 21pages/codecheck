@@ -50,8 +50,13 @@ void PrintReport::setFile(const QString &filePath)
 void PrintReport::startPrint(int all0filter1)
 {
     image_type_path_hash.clear();
-    image_type_path_hash.insert("severity","severity.png");
-    image_type_path_hash.insert("id","id.png");
+    QDir imgDir(Provider::instance()->exeDir() + "/tmp/");
+    if(!imgDir.exists()) {
+        imgDir.mkpath(imgDir.absolutePath());
+    }
+    for(const auto &  name : pngNameList) {
+        image_type_path_hash.insert(name,Provider::instance()->exeDir() + "/tmp/" + name + ".png");
+    }
     for(QString path:image_type_path_hash.values()) {
         QFileInfo info(path);
         if(info.exists()) {
@@ -62,6 +67,7 @@ void PrintReport::startPrint(int all0filter1)
     auto future = QtConcurrent::run(QThreadPool::globalInstance(),[this,all0filter1,img_ret](){
         QTextDocument textDocument;
         m_html.clear();
+        makeTitleToHtml(all0filter1);
         if(img_ret){
             makeImageToHtml();
         }
@@ -70,6 +76,38 @@ void PrintReport::startPrint(int all0filter1)
         textDocument.print(&m_printer);
     });
     watcher->setFuture(future);
+}
+
+void PrintReport::makeTitleToHtml(int all0filter1)
+{
+    QJsonObject obj = Project::instance()->projectInfo();
+    m_html += QString("<div align=\"center\"><h1>代码质量测试报告</h1></div>");
+    m_html += QString("<div><strong>&nbsp;&nbsp;&nbsp;&nbsp;项目名称:</strong>%1</div>").arg(obj.value("name").toString());
+    m_html += QString("<div><strong>&nbsp;&nbsp;&nbsp;&nbsp;源码路径:</strong>%1</div>").arg(obj.value("source").toString());
+    m_html += QString("<div><strong>&nbsp;&nbsp;&nbsp;&nbsp;输出目录:</strong>%1</div>").arg(obj.value("dir").toString());
+    m_html += QString("<div><strong>&nbsp;&nbsp;&nbsp;&nbsp;检测平台:</strong>%1</div>").arg(obj.value("platform").toString());
+    if(all0filter1 == 0) {
+        m_html += QString("<div><strong>&nbsp;&nbsp;&nbsp;&nbsp;报告内容:</strong>全部</div>");
+    } else {
+        int typeShow = Provider::instance()->typeShow();
+        QString typeShowString;
+        QStringList typeList = QStringList()<<"错误"<<"警告"<<"风格"<<"性能"<<"平台"<<"提醒";
+        for(int i = 0; i < typeList.size(); i++) {
+            if((typeShow & (1<<i)) == 0) {
+                typeShowString += "无\"" + typeList.at(i) + "\",";
+            }
+        }
+        if(typeShowString == "") {
+            typeShowString = "无";
+        }
+        m_html += QString("<div><strong>&nbsp;&nbsp;&nbsp;&nbsp;内容筛选:</strong>%1</div>").arg(typeShowString);
+        QString search = Provider::instance()->search();
+        if(search == "") {
+            search = "无";
+        }
+        m_html += QString("<div><strong>&nbsp;&nbsp;&nbsp;&nbsp;搜索条件:</strong>%1</div>").arg(search);
+        m_html += QString("<div><strong>&nbsp;&nbsp;&nbsp;&nbsp;报告时间:</strong>%1</div>").arg(QDateTime::currentDateTime().toString("yy年MM月dd日HH时mm分"));
+    }
 }
 
 void PrintReport::makeImageToHtml()
@@ -87,12 +125,20 @@ void PrintReport::makeImageToHtml()
         }
         QApplication::processEvents(QEventLoop::ExcludeUserInputEvents);
     }
-    m_html += "<div align = \"center\">";
+    for(int i = 0; i < pngNameList.size(); i += 2) {
+        m_html += "<div align = \"center\">";
+        m_html += QString("<img src=\"%1\" width=\"280\"  height=\"210\">") \
+                .arg(image_type_path_hash.value(pngNameList.at(i)));
+        m_html += QString("<img src=\"%1\" width=\"280\"  height=\"210\">") \
+                .arg(image_type_path_hash.value(pngNameList.at(i + 1)));
+        m_html += "</div>";
+    }
+
     for(QString path:image_type_path_hash.values()) {
-        m_html += QString("<img src=\"%1\" width=\"280\"  height=\"210\">").arg(Provider::instance()->exeDir() + "/" + path);
+
         qDebug()<<m_html;
     }
-    m_html += "</div>";
+
 }
 
 void PrintReport::makeDataToHtml(int all0filter1)
@@ -136,9 +182,25 @@ void PrintReport::makeDataToHtml(int all0filter1)
     m_html += "</table>";
 }
 
+#define GET_IMAGE_FN(big,small) {  \
+    QQuickItem * chart##big = qobject_cast<QQuickItem*>(Manager::instance()->findQuick("chartView"#big)); \
+    if(chart##big) { \
+        const QString& key = CONST_##small; \
+        grHash[key] =  chart##big->grabToImage(); \
+        pGrHash[key] = grHash[key].data(); \
+        connect(pGrHash[key],&QQuickItemGrabResult::ready,this,[this,key](){ \
+            QImage img = pGrHash[key]->image(); \
+            img.save(image_type_path_hash.value(key)); \
+        }); \
+    } else { \
+        qDebug()<<"obj null"; \
+        return false; \
+    }   \
+}
+
 bool PrintReport::getImage()
 {
-    QQuickItem *view = qobject_cast<QQuickItem*>(Manager::instance()->findQuick("statistics_view"));
+    QQuickItem *view = qobject_cast<QQuickItem*>(Manager::instance()->findQuick("SwipeViewStatistics"));
     while(view->property("statisticsLoaded").toBool() != true) {
         QApplication::processEvents(QEventLoop::ExcludeUserInputEvents);
         qDebug()<<"in while";
@@ -149,31 +211,15 @@ bool PrintReport::getImage()
         QApplication::processEvents(QEventLoop::ExcludeUserInputEvents);
     }
     qDebug()<<"out while";
-    QQuickItem * chartSeverity = qobject_cast<QQuickItem*>(Manager::instance()->findQuick("chartSeverity"));
-    if(chartSeverity) {
-        chartSeverityResult =  chartSeverity->grabToImage();
-        chartSeverityGrabResult = chartSeverityResult.data();
-        connect(chartSeverityGrabResult,&QQuickItemGrabResult::ready,this,[this](){
-            QImage img = chartSeverityResult->image();//这里转成图片
-            img.save(image_type_path_hash.value("severity"));
-        });
-    } else {
-        qDebug()<<"obj null";
-        return false;
-    }
 
-    QQuickItem * chartID = qobject_cast<QQuickItem*>(Manager::instance()->findQuick("chartID"));
-    if(chartID) {
-        chartIDResult =  chartID->grabToImage();
-        chartIDGrabResult = chartIDResult.data();
-        connect(chartIDGrabResult,&QQuickItemGrabResult::ready,this,[this](){
-            QImage img = chartIDGrabResult->image();//这里转成图片
-            img.save(image_type_path_hash.value("id"));
-        });
-    } else {
-        qDebug()<<"obj null";
-        return false;
-    }
+    GET_IMAGE_FN(Severity,severity)
+    GET_IMAGE_FN(ID,id)
+    GET_IMAGE_FN(Error,error)
+    GET_IMAGE_FN(Warning,warning)
+    GET_IMAGE_FN(Style,style)
+    GET_IMAGE_FN(Performance,performance)
+    GET_IMAGE_FN(Portability,portability)
+    GET_IMAGE_FN(Information,information)
     return true;
 }
 
