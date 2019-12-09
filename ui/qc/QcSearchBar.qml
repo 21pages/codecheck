@@ -26,6 +26,10 @@ FocusScope {
         verticalAlignment: Text.AlignBottom
         color:field.focus ?"#FF5722":"#FF9800"
         cursorVisible: field.visible
+        Keys.onReturnPressed: {
+            func()
+            field.visible = false
+        }
     }
 
 
@@ -38,16 +42,13 @@ FocusScope {
         icon.source: "qrc:/icons/navigation/search.svg"
         icon.color:  hovered ? "#FF5722":"white"
         onClicked:{
-            if(field.visible) {
-                var str = field.text;
-                str = Util.trim(str);
-                control.search(str);
-//                if(str === "") {
-                    field.visible = false;
-//                }
-            } else {
                 field.visible = !field.visible
-            }
         }
+    }
+
+    function func() {
+        var str = field.text;
+        str = Util.trim(str);
+        control.search(str);
     }
 }

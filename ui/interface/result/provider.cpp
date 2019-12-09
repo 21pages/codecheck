@@ -7,6 +7,8 @@
 #include <QMetaObject>
 #include <QApplication>
 #include <QQmlApplicationEngine>
+#include <vector>
+#include <algorithm>
 #include "manager.h"
 #include "codeeditor.h"
 #include "codeeditorstyle.h"
@@ -219,9 +221,30 @@ void Provider::getStatistic(int all0filter1)
              severityObj.insert(it.key(),it.value());
          }
          QJsonObject idObj;
-         for(auto it = id.constBegin(); it != id.constEnd();it++) {
-             idObj.insert(it.key(),it.value());
+         if(id.size() > 10) {
+             int sizeMore = id.size() - 9;
+             QList<QString> idKeys = id.keys();
+             QList<int> idValues = id.values();
+             int otherValue = 0;
+             while(sizeMore-- > 0) {
+                 std::vector<int> idValuesstd = idValues.toVector().toStdVector();
+                 std::vector<int>::iterator min = std::min_element(idValuesstd.begin(),idValuesstd.end());
+                 int index = std::distance(idValuesstd.begin(),min);
+                 otherValue += idValuesstd.at(index);
+                 idValues.removeAt(index);
+                 idKeys.removeAt(index);
+             }
+             for(int i = 0; i < idKeys.size(); i++) {
+                 idObj.insert(idKeys.at(i),idValues.at(i));
+             }
+             idObj.insert("other",otherValue);
+         } else {
+             for(auto it = id.constBegin(); it != id.constEnd();it++) {
+                 idObj.insert(it.key(),it.value());
+             }
          }
+
+
          QJsonObject errorObj;
          int max_error = 1;
          for(auto it = error.constBegin(); it != error.constEnd(); it++) {

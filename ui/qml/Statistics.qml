@@ -17,16 +17,20 @@ Page {
         currentIndex: 0
         anchors.fill: parent
         property var statisticsLoaded: false
+        property font bigTitleFont: Qt.font({family: "Times", pixelSize: 18, bold:true, capitalization: Font.AllUppercase})
+        property font labelFont: Qt.font({family: "Times", bold:true})
+        property font legentFont: Qt.font({family: "Times", bold:true})
 
         ChartView {
                 id:chartSeverity;
                 objectName: "chartViewSeverity"
                 legend.visible: true
                 legend.alignment: Qt.AlignRight
+                legend.font:view.legentFont
                 antialiasing: true
                 animationOptions:ChartView.GridAxisAnimations
-                localizeNumbers:true
                 title: "各\"等级\"占比"
+                titleFont: view.bigTitleFont
                 PieSeries {
                     id:severityPie;
                 }
@@ -36,10 +40,11 @@ Page {
                 objectName: "chartViewID"
                 legend.visible: true
                 legend.alignment: Qt.AlignRight
+                legend.font:view.legentFont
                 antialiasing: true
                 animationOptions:ChartView.GridAxisAnimations
-                localizeNumbers:true
                 title: "各\"问题\"占比"
+                titleFont: view.bigTitleFont
                 PieSeries {
                     id:idPie;
                 }
@@ -49,14 +54,15 @@ Page {
                 objectName: "chartViewError"
                 legend.visible: true
                 legend.alignment: Qt.AlignRight
+                legend.font:view.legentFont
                 antialiasing: true
                 animationOptions:ChartView.GridAxisAnimations
-                localizeNumbers:true
                 title: "各\"错误\"的数量"
+                titleFont: view.bigTitleFont
                 BarSeries {
                     id:barSeriesError;
                     labelsVisible: true
-                    labelsPosition: AbstractBarSeries.LabelsOutsideEnd
+                    labelsPosition: AbstractBarSeries.LabelsCenter
                     labelsFormat: "@value"
                     axisX: BarCategoryAxis {
                         id:barSeriesError_axisx
@@ -76,14 +82,15 @@ Page {
                 objectName: "chartViewWarning"
                 legend.visible: true
                 legend.alignment: Qt.AlignRight
+                legend.font:view.legentFont
                 antialiasing: true
                 animationOptions:ChartView.GridAxisAnimations
-                localizeNumbers:true
                 title: "各\"警告\"的数量"
+                titleFont: view.bigTitleFont
                 BarSeries {
                     id:barSeriesWarning;
                     labelsVisible: true
-                    labelsPosition: AbstractBarSeries.LabelsOutsideEnd
+                    labelsPosition: AbstractBarSeries.LabelsCenter
                     labelsFormat: "@value"
                     axisX: BarCategoryAxis {
                         id:barSeriesWarning_axisx
@@ -98,19 +105,21 @@ Page {
                 }
         }
 
+
         ChartView {
                 id:charViewStyle;
                 objectName: "chartViewStyle"
                 legend.visible: true
                 legend.alignment: Qt.AlignRight
+                legend.font:view.legentFont
                 antialiasing: true
                 animationOptions:ChartView.GridAxisAnimations
-                localizeNumbers:true
                 title: "各\"风格\"的数量"
+                titleFont: view.bigTitleFont
                 BarSeries {
                     id:barSeriesStyle;
                     labelsVisible: true
-                    labelsPosition: AbstractBarSeries.LabelsOutsideEnd
+                    labelsPosition: AbstractBarSeries.LabelsCenter
                     labelsFormat: "@value"
                     axisX: BarCategoryAxis {
                         id:barSeriesStyle_axisx
@@ -130,14 +139,15 @@ Page {
                 objectName: "chartViewPerformance"
                 legend.visible: true
                 legend.alignment: Qt.AlignRight
+                legend.font:view.legentFont
                 antialiasing: true
                 animationOptions:ChartView.GridAxisAnimations
-                localizeNumbers:true
                 title: "各\"性能\"的数量"
+                titleFont: view.bigTitleFont
                 BarSeries {
                     id:barSeriesPerformance;
                     labelsVisible: true
-                    labelsPosition: AbstractBarSeries.LabelsOutsideEnd
+                    labelsPosition: AbstractBarSeries.LabelsCenter
                     labelsFormat: "@value"
                     axisX: BarCategoryAxis {
                         id:barSeriesPerformance_axisx
@@ -157,14 +167,15 @@ Page {
                 objectName: "chartViewPortability"
                 legend.visible: true
                 legend.alignment: Qt.AlignRight
+                legend.font:view.legentFont
                 antialiasing: true
                 animationOptions:ChartView.GridAxisAnimations
-                localizeNumbers:true
                 title: "各\"平台\"的数量"
+                titleFont: view.bigTitleFont
                 BarSeries {
                     id:barSeriesPortability;
                     labelsVisible: true
-                    labelsPosition: AbstractBarSeries.LabelsOutsideEnd
+                    labelsPosition: AbstractBarSeries.LabelsCenter
                     labelsFormat: "@value"
                     axisX: BarCategoryAxis {
                         id:barSeriesPortability_axisx
@@ -184,14 +195,15 @@ Page {
                 objectName: "chartViewInformation"
                 legend.visible: true
                 legend.alignment: Qt.AlignRight
+                legend.font:view.legentFont
                 antialiasing: true
                 animationOptions:ChartView.GridAxisAnimations
-                localizeNumbers:true
                 title: "各\"提示\"的数量"
+                titleFont: view.bigTitleFont
                 BarSeries {
                     id:barSeriesInformation;
                     labelsVisible: true
-                    labelsPosition: AbstractBarSeries.LabelsOutsideEnd
+                    labelsPosition: AbstractBarSeries.LabelsCenter
                     labelsFormat: "@value"
                     axisX: BarCategoryAxis {
                         id:barSeriesInformation_axisx

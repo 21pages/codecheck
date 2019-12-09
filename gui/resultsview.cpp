@@ -27,6 +27,7 @@
 #include <QDate>
 #include <QMenu>
 #include <QClipboard>
+#include <QDebug>
 #include "resultsview.h"
 #include "common.h"
 #include "erroritem.h"
