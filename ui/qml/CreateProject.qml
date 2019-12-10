@@ -4,6 +4,8 @@ import QtQuick.Controls.Material 2.12
 import QtQuick.Layouts 1.12
 import Qt.labs.settings 1.0
 import CC 1.0
+import FileFolder 1.0
+import "qrc:/filefolder/"
 
 
 Page {
@@ -13,14 +15,14 @@ Page {
     Layout.fillWidth: true
     Layout.fillHeight: true
     property string pickerReason: ""
-    property Component ffPicker: FFPicker {
+
+    property Component fileFolder: FileFolder {
         onOk: {
             if(pickerReason === "source") {
                 textFieldSource.text = path
             } else if(pickerReason == "destination") {
                 textFieldDestination.text = path
             }
-
         }
     }
 
@@ -87,7 +89,7 @@ Page {
                      }
                     RadioButton {
                       id:raidoButtonProj
-                      text: "vs项目文件(*.sln,*.vsxproj)"
+                      text: "vs项目文件(*.sln,*.vcxproj)"
                     }
 
                 }
@@ -109,7 +111,16 @@ Page {
                 text: "源码路径"
                 onClicked: {
                     pickerReason = "source"
-                    stackView.push(ffPicker)
+                    var isFolder = radioButtonFolder.checked;
+                    var type =  isFolder ?FileFolder.FileFolderType_Dir:FileFolder.FileFolderType_File
+                    var nameFilters = isFolder ? ["*.*"]:["*.sln","*.vcxproj"]
+                    fileFolderData.setObj({
+                        "nameFilters":nameFilters,
+                        "startDir":textFieldSource.text,
+                        "startName":"",
+                        "type":type
+                    });
+                    stackView.push(fileFolder)
                 }
             }
         }
@@ -127,7 +138,13 @@ Page {
                 text: "输出目录"
                 onClicked: {
                     pickerReason = "destination"
-                    stackView.push(ffPicker)
+                    fileFolderData.obj = {
+                        "nameFilters":["*.*"],
+                        "startDir":textFieldDestination.text,
+                        "startName":"",
+                        "type":FileFolder.FileFolderType_Dir
+                    }
+                    stackView.push(fileFolder)
                 }
             }
         }

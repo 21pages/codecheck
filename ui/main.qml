@@ -9,10 +9,13 @@ import QtQuick.Controls.Material 2.12
 import Qt.labs.settings 1.0
 import QtQuick.Layouts 1.12
 import CC 1.0 as CC
+import FileFolder 1.0
 import "qrc:/qml/"
 import "qrc:/qc/"
 import "qrc:/MaterialUI/"
 import "qrc:/MaterialUI/Interface/"
+import "qrc:/filefolder/"
+import "qrc:/js/utils.js" as Utils
 
 
 
@@ -23,19 +26,20 @@ ApplicationWindow {
     width: Global.screenWidth; height: Global.screenHeight
     property alias stackView: stackView
     property alias materialUI:materialUI
-
-    property Component ffPickerOpenProject : FFPicker{
+    property Component fileFolderOpenProject: FileFolder {
         onOk: {
             materialUI.showLoading( "正在打开项目,请稍等...",loadingClickCallBack);
+            if(!Utils.isEndWith(path,".codecheck")) {
+                materialUI.hideLoading();
+                materialUI.showSnackbarMessage(path+"不是项目文件");
+                return;
+            }
+            setting_main.setValue("fileFolderOpenProject_startDir",Utils.getDir(path))
+            setting_main.setValue("fileFolderOpenProject_startName",Utils.getFile(path))
             projectManager.open(path);
         }
     }
 
-    property Component ffPickerOpenFileExe : FFPicker{
-        onOk: {
-            textFieldOpenFileExe.text = path
-        }
-    }
 
     property Component createProject: CreateProject {
         onOk:{
@@ -67,7 +71,6 @@ ApplicationWindow {
         onProgress:{
             if(materialUI.loadingVisible) {
                 var str = Math.round(value * 1.0  / 1024 * 100).toFixed(0) + "%\t" + description;
-                console.log(str);
                 materialUI.showLoading(str)
             }
         }
@@ -315,7 +318,15 @@ ApplicationWindow {
                     text: "打开"
                     onTriggered: {
                         clearUI();
-                        stackView.push(ffPickerOpenProject);
+                        var startDir = setting_main.value("fileFolderOpenProject_startDir","C:/");
+                        var startName = setting_main.value("fileFolderOpenProject_startName","");
+                        fileFolderData.setObj({
+                                              "nameFilter":["*.codecheck"],
+                                               "startDir":startDir,
+                                               "startName":startName,
+                                                "type":FileFolder.FileFolderType_File
+                                              });
+                        stackView.push(fileFolderOpenProject);
                     }
                 }
                 C14.MenuItem {
@@ -478,6 +489,12 @@ ApplicationWindow {
         property alias setting_checkBoxPortability_checked: checkBoxPortability.checked
         property alias setting_checkBoxInformation_checked: checkBoxInformation.checked
         property alias setting_textFieldOpenFileExe_text: textFieldOpenFileExe.text
+    }
+
+    Settings {
+        id:setting_main
+        fileName: provider.exeDir + "/app.ini"
+        category:"main"
     }
 
     function textSelect(obj) {

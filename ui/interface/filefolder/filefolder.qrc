@@ -1,0 +1,5 @@
+<RCC>
+    <qresource prefix="/filefolder">
+        <file>FileFolder.qml</file>
+    </qresource>
+</RCC>

@@ -14,4 +14,5 @@ SOURCES += \
     $$PWD/project.cpp
 
 include(result/result.pri)
+include(filefolder/filefolder.pri)
 

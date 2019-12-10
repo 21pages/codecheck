@@ -3,11 +3,13 @@
 
 #include "project.h"
 #include "provider.h"
+#include "filefolderinterface.h"
 
 #define REGISTERS_INITIALIZA     \
 {   \
 OPENPROJECT_REGISTER;    \
 Provider_Register;\
+FileFolder_Register;\
 }
 
 

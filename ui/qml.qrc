@@ -9,7 +9,6 @@
         <file>qml/CreateProject.qml</file>
         <file>qtquickcontrols2.conf</file>
         <file>js/utils.js</file>
-        <file>qml/FFPicker.qml</file>
         <file>qml/MyToolBar.qml</file>
         <file>js/awesome.js</file>
         <file>qc/QcButton.qml</file>
