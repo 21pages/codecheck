@@ -56,6 +56,11 @@ void CC::Project::open(const QString& filepath)
         obj.insert("dir",dir);
         obj.insert("source",source);
         obj.insert("platform",platform);
+        if(pf->langccpplist.size() == 3) {
+            obj.insert("lang",pf->langccpplist.at(0).toInt());
+            obj.insert("c",pf->langccpplist.at(1));
+            obj.insert("cpp",pf->langccpplist.at(2));
+        }
         setProjectInfo(obj);
         return true;
     });
@@ -83,6 +88,10 @@ void Project::create(const QJsonObject& obj)
             projobj.insert("dir",destination);
             projobj.insert("platform",platform);
             projobj.insert("source",source);
+            projobj.insert("lang",obj.value("lang").toInt());
+            projobj.insert("c",obj.value("c").toString());
+            projobj.insert("cpp",obj.value("cpp").toString());
+
             setProjectInfo(projobj);
         }
 
@@ -102,6 +111,9 @@ void Project::close()
     projobj.insert("dir","");
     projobj.insert("platform","");
     projobj.insert("source","");
+    projobj.insert("lang",0);
+    projobj.insert("c","");
+    projobj.insert("cpp","");
     setProjectInfo(projobj);
 }
 
@@ -171,6 +183,9 @@ void Project::setProjectFile(ProjectFile *projectFile, const QJsonObject& obj)
     projectFile->setAddons(list);
     projectFile->setClangAnalyzer(false);
     projectFile->setClangTidy(true);
+    projectFile->langccpplist = QStringList()<<QString("%1").arg(obj.value("lang").toInt())
+                                                                    <<obj.value("c").toString()
+                                                                   <<obj.value("cpp").toString();
     projectFile->write();
 }
 
@@ -195,6 +210,9 @@ void Project::setProjectInfo(const QJsonObject &obj)
     }
     m_projectInfo["source"] = obj["source"];
     m_projectInfo["platform"] = obj["platform"];
+    m_projectInfo["lang"] = obj["lang"];
+    m_projectInfo["c"] = obj["c"];
+    m_projectInfo["cpp"] = obj["cpp"];
     if(changed) {
         emit projectInfoChanged();
     }

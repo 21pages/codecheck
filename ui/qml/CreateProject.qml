@@ -71,28 +71,57 @@ Page {
                 }
             }
             RowLayout {
-                Layout.leftMargin: 50
                 Label {
-                    text: "源文件类型:"
-                    width: 100
-                    height: buttons.height
+                    text: "语言"
                 }
-                ButtonGroup {
-                    buttons: [raidoButtonProj,radioButtonFolder]
+                ComboBox {
+                    id:comboBoxLang
+                    model:["通用","C","Cpp"]
                 }
-                Row{
-                     id:buttons
-                     RadioButton {
-                       id:radioButtonFolder
-                       text: "任意文件夹"
-                       checked: true
-                     }
-                    RadioButton {
-                      id:raidoButtonProj
-                      text: "vs项目文件(*.sln,*.vcxproj)"
-                    }
+            }
 
+            RowLayout {
+                Label {
+                    text:"C标准"
                 }
+                ComboBox {
+                    id:comboBoxC
+                    model:["C89","C99","C11"]
+                }
+            }
+            RowLayout {
+                Label {
+                    text:"C++标准"
+                }
+                ComboBox {
+                    id:comboBoxCpp
+                    model:["C++03","C++11","C++14","C++17","C++20"]
+                }
+            }
+        }
+
+        RowLayout {
+            height:80
+            Label {
+                text: "源文件类型:"
+                width: 100
+                height: buttons.height
+            }
+            ButtonGroup {
+                buttons: [raidoButtonProj,radioButtonFolder]
+            }
+            Row{
+                 id:buttons
+                 RadioButton {
+                   id:radioButtonFolder
+                   text: "任意文件夹"
+                   checked: true
+                 }
+                RadioButton {
+                  id:raidoButtonProj
+                  text: "vs项目文件(*.sln,*.vcxproj)"
+                }
+
             }
 
 
@@ -158,7 +187,10 @@ Page {
                     "type":raidoButtonProj.checked ? Project.ProjTypeVS : Project.ProjTypeDIR,
                     "source":textFieldSource.text,
                     "destination":textFieldDestination.text,
-                    "platform":comboBoxPlatform.currentIndex
+                    "platform":comboBoxPlatform.currentIndex,
+                    "lang":comboBoxLang.currentIndex,
+                    "c":comboBoxC.currentText,
+                    "cpp":comboBoxCpp.currentText
                 }
                 ok(obj)
                 root.stackView.pop()
@@ -178,6 +210,9 @@ Page {
         property alias setting_radioButtonProj_checked: raidoButtonProj.checked
         property alias setting_textFieldSource_text: textFieldSource.text
         property alias setting_textFieldDestination_text: textFieldDestination.text
+        property alias setting_comboBoxLang_currentIndex: comboBoxLang.currentIndex
+        property alias setting_comboBoxC_currentIndex: comboBoxC.currentIndex
+        property alias setting_comboBoxCpp_currentIndex: comboBoxCpp.currentIndex
     }
 
 }

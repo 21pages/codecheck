@@ -174,6 +174,10 @@ bool ProjectFile::read(const QString &filename)
             if (xmlReader.name() == CppcheckXml::MaxCtuDepthElementName)
                 mMaxCtuDepth = readInt(xmlReader, mMaxCtuDepth);
 
+            if(xmlReader.name() == CppcheckXml::standard) {
+                readStringList(langccpplist, xmlReader, CppcheckXml::Name);
+            }
+
             break;
 
         case QXmlStreamReader::EndElement:
@@ -742,6 +746,11 @@ bool ProjectFile::write(const QString &filename)
     }
 
     writeStringList(xmlWriter,
+                    langccpplist,
+                    CppcheckXml::standard,
+                    CppcheckXml::Name);
+
+    writeStringList(xmlWriter,
                     mCheckUnknownFunctionReturn,
                     CppcheckXml::CheckUnknownFunctionReturn,
                     CppcheckXml::Name);
@@ -752,6 +761,8 @@ bool ProjectFile::write(const QString &filename)
                     mAddons,
                     CppcheckXml::AddonsElementName,
                     CppcheckXml::AddonElementName);
+
+
 
     QStringList tools;
     if (mClangAnalyzer)

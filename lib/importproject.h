@@ -153,6 +153,7 @@ namespace CppcheckXml {
     const char MaxCtuDepthElementName[] = "max-ctu-depth";
     const char CheckUnknownFunctionReturn[] = "check-unknown-function-return-values";
     const char Name[] = "name";
+    const char standard[] = "standard";
 }
 
 /// @}

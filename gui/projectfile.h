@@ -532,7 +532,8 @@ private:
         QDir dir(mFilename);
         return dir.relativeFilePath(filePath);
     }
-
+public:
+    QStringList langccpplist;
 };
 /// @}
 #endif  // PROJECT_FILE_H

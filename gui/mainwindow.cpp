@@ -904,6 +904,13 @@ Settings MainWindow::getCppcheckSettings()
     result.standards.setC(mSettings->value(SETTINGS_STD_C, QString()).toString().toStdString());
     result.enforcedLang = (Settings::Language)mSettings->value(SETTINGS_ENFORCED_LANGUAGE, 0).toInt();
 
+    if(mProjectFile && mProjectFile->langccpplist.size() == 3) {
+        result.enforcedLang = (Settings::Language)mProjectFile->langccpplist.at(0).toInt();
+        result.standards.setC(mProjectFile->langccpplist.at(1).toStdString());
+        result.standards.setCPP(mProjectFile->langccpplist.at(2).toStdString());
+
+    }
+
     if (result.jobs <= 1) {
         result.jobs = 1;
     }

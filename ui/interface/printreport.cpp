@@ -86,6 +86,16 @@ void PrintReport::makeTitleToHtml(int all0filter1)
     m_html += QString("<div><strong>&nbsp;&nbsp;&nbsp;&nbsp;源码路径:</strong>%1</div>").arg(obj.value("source").toString());
     m_html += QString("<div><strong>&nbsp;&nbsp;&nbsp;&nbsp;输出目录:</strong>%1</div>").arg(obj.value("dir").toString());
     m_html += QString("<div><strong>&nbsp;&nbsp;&nbsp;&nbsp;检测平台:</strong>%1</div>").arg(obj.value("platform").toString());
+    int lang = obj.value("lang").toInt();
+    QString langStr = "";
+    if(lang < 3) {
+        QStringList list;
+        list << "通用"<<"C"<<"C++";
+        langStr = list.at(lang);
+    }
+    m_html += QString("<div><strong>&nbsp;&nbsp;&nbsp;&nbsp;语言选择:</strong>%1</div>").arg(langStr);
+    m_html += QString("<div><strong>&nbsp;&nbsp;&nbsp;&nbsp;C&nbsp;规范:</strong>%1</div>").arg(obj.value("c").toString());
+    m_html += QString("<div><strong>&nbsp;&nbsp;&nbsp;&nbsp;C++规范:</strong>%1</div>").arg(obj.value("cpp").toString());
     if(all0filter1 == 0) {
         m_html += QString("<div><strong>&nbsp;&nbsp;&nbsp;&nbsp;报告内容:</strong>全部</div>");
     } else {
@@ -106,8 +116,8 @@ void PrintReport::makeTitleToHtml(int all0filter1)
             search = "无";
         }
         m_html += QString("<div><strong>&nbsp;&nbsp;&nbsp;&nbsp;搜索条件:</strong>%1</div>").arg(search);
-        m_html += QString("<div><strong>&nbsp;&nbsp;&nbsp;&nbsp;报告时间:</strong>%1</div>").arg(QDateTime::currentDateTime().toString("yy年MM月dd日HH时mm分"));
     }
+    m_html += QString("<div><strong>&nbsp;&nbsp;&nbsp;&nbsp;报告时间:</strong>%1</div>").arg(QDateTime::currentDateTime().toString("yy年MM月dd日HH时mm分"));
 }
 
 void PrintReport::makeImageToHtml()
