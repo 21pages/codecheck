@@ -22,7 +22,7 @@ Rectangle {
         anchors.margins: 5
         height: Global.listHeight - anchors.margins * 2
         width: parent.width - anchors.margins * 2
-        elevation:2
+        elevation:1
 
         Control {
             id:flickable

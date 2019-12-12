@@ -18,4 +18,6 @@ QtObject {
     }
     property var $listItemVar: ({})
     property var $statistics: undefined
+
+    property bool isDarkerTheme: (Material.theme === Material.Dark)
 }

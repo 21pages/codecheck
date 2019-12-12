@@ -44,6 +44,7 @@ FocusScope {
         onClicked:{
                 field.visible = !field.visible
         }
+
     }
 
     function func() {
